@@ -1,0 +1,726 @@
+---
+title: "A Primer for Handling Spatial Data in R"
+author: "Jasper Slingsby - South African Environmental Observation Network (SAEON)"
+date: 2016-11-18
+image: "/img/kogelberg_map.jpg"
+categories: ["R Tutorials"]
+tags: ["spatial"]
+email: jasper@saeon.ac.za
+website: <http://www.saeon.ac.za>; <http://www.saeon-fynbos.org>
+---
+
+Points, lines, polygons and rasters - R can handle them all. My aim for this session is to give you the basics required to teach yourself spatial data analysis in R. 
+
+<!--more-->
+
+I'll start by briefly covering CRAN Task Views and how to install them (using the 'Spatial' task view as an example), followed by some pointers for useful DIY resources for handling and analyzing spatial data, and then work through a practical example exploring fire history layers (polygon), topographic (raster) and locality (point) data using the libraries 'rgdal', 'raster' and 'sp' and a few others. The example will cover setting and changing projections and extents, subseting polygons, raster calculations, rasterizing polygons and extracting data with a few neat tricks and visualisations along the way. 
+
+<br>
+
+##CRAN Task Views <https://cran.r-project.org/>
+
+Some great fellas have taken the time to sift through all the R libraries and make some sense of them for different focal topics and created "Task Views" which allow easy download and installation of all packages in a Task View using library(ctv) - see highlighted code below.
+
+![](/img/CRAN_taskviews.jpg)
+
+<br>
+<br>
+But beware! It can take a while to download and install if it is a big Task View!!!
+
+Each Task View has a landing page with an overview highlighting what you can do with the different packages and their respective strengths, weaknesses etc., e.g.
+<br>
+<br>
+
+![](/img/CRAN_spatial.jpg)
+  
+<br> 
+
+###Topics covered by the *Spatial* Task View, which focuses on "Analysis of Spatial Data":
+- Classes for spatial data
+- Handling spatial data
+- Reading and writing spatial data
+- Reading and writing spatial data - other packages
+- Visualisation
+- Point pattern analysis
+- Geostatistics
+- Disease mapping and areal data analysis
+- Spatial regression
+- Ecological analysis
+
+***
+
+<br>
+
+##Useful DIY resources
+- The Analysis of Spatial Data Task View!
+- <http://www.neondataskills.org>
+- <https://www.nceas.ucsb.edu/scicomp/solutions>
+- <http://pakillo.github.io/R-GIS-tutorial/>
+- <http://robinlovelace.net/>
+- <http://spatial.ly/> - For some visual R inspiration!
+- <http://www.googleityoumoron.com> - There are plenty of resources!!!
+- Applied Spatial Data Analysis with R - R. Bivand 2013
+
+A very good book!  
+![](/img/Bivand.jpg)
+
+***
+
+<br>
+
+##A Practical Example!!!
+
+<br>
+
+###Data Description
+For this exercise we'll play with fine-scale locality (point) data for the critically endangered Clanwilliam cedar (*Widdringtonia cedarbergensis*) mapped by my father for the new Cederberg hiking map (check out <http://www.slingsbymaps.com/>; data for 1000 trees downloadable at <https://dl.dropboxusercontent.com/u/47937308/Cedars.kml>), a 90m (raster) digital elevation model (DEM) that I will show you how to download directly with R, and two "polygon" data sets consisting of mapped burn scars for CapeNature reserves (available at <http://bgis.sanbi.org/Projects/Detail/168>) and the National Vegetation Map (available at <http://bgis.sanbi.org/SpatialDataset/Detail/18>). You will need to download the cedar dataset into your chosen local data directory (see "datwd" below) and download the other data into your chosen GIS data directory (see "giswd" below) and unzip them. *datwd* and *giswd* can be the same for the purposes of this tutorial. You can download the R code (with the RMarkdown content commented out) at <https://dl.dropboxusercontent.com/u/47937308/PrimerSpatialData.R>.
+
+
+***
+
+<br>
+
+###Housekeeping
+Let's start by setting our working directories. I usually work from a "Project" in RStudio linked to a GIT repository (see <https://git-scm.com/> and <https://github.com/>) for version control and easy code sharing/collaboration. I'm not going to go there with this tutorial, but it is worth exploring if you intend to do big projects in R. R projects set the working directory to a good place automatically. Alternatively you can use the setwd() function. 
+If I'm not in a GIT repo or I am working with large data sets that I don't want to replicate in every GIT repo on my hard drive I usually set separate "data", "GIS data" (i.e. biggish data) and "results" working directories by making each path an object and inserting as appropriate for different read and write functions using paste() or paste0(). These would look something like: 
+
+```
+datwd = "/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/"  
+giswd = "/Users/jasper/Documents/GIS/"   
+reswd = "/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Results/"
+```
+
+But! This is not useful if I'm sharing the project or work on multiple machines. In this case it's better to identify the machine/user using Sys.getenv() and wrap the code in an if() statement for each user like so:
+
+<br>
+
+```{r}
+if (Sys.getenv("USER")=='jasper') {datwd="/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/"
+giswd="/Users/jasper/Documents/GIS/"
+reswd="/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Results/"}
+if (Sys.getenv("USER")=='MACUseR') {datwd=""; giswd=""; reswd=""} #For Mac/Linux users
+if (Sys.getenv("USERNAME")=='WINDOZEUseR') {datwd=""; giswd=""; reswd=""} #For Windows
+```
+
+<br>
+
+This way a new project member can add a new line of code without deleting anything, and it only sets the working directories (and any other settings you want) for the appropriate user - i.e. the if() statement ignores settings for all other users.
+NOTE!!! the "USER/USERNAME" difference for Mac vs Windows (I'm pretty sure Linux is the same as Mac, but try Sys.getenv() and see what you get).
+
+Set your username and working directories here. You can just set *datwd*, *giswd* and *reswd* to the same file path for the purposes of this tutorial. Don't forget to add the "/" at the end!
+
+Note that we use single forwardslashes "/". Windows likes to use single backslashes, but R (and just about every other computer programme in the world) doesn't like this. You can use double backslashes on Windows if you must.
+
+Now we can call the extention libraries we'll need for this session. You should install these before running this code using install.packages() while connected to the internet - e.g. install.packages("raster"). Note that one occasionally encounters issues installing doMC, but you can usually install it from their development page using install.packages("doMC", repos="http://R-Forge.R-project.org"). If neither of these work for you don't worry, it is not an essential component of the tutorial.
+
+<br>
+
+```{r, results='hide'}
+library(raster, quietly = T) # To handle rasters
+library(rasterVis, quietly = T) # For fancy raster visualisations
+library(rgdal, quietly = T) # To communicate with GDAL and handle shape files
+library(sp, quietly = T) # To handle shapefiles
+library(doMC, quietly = T) # To run code in parallel
+library(animation, quietly = T) # To make fancy animations...
+library(dismo, quietly = T) # For fancy tricks in Google Earth
+library(googleVis, quietly = T) # For even more fancy tricks in Google Earth
+```
+
+***
+
+<br>
+
+###Getting and cleaning the data, but first and foremost, *projection!!!*
+
+R typically uses the PROJ.4 conventions for cartographic projections (or coordinate reference systems - CRS). Check out <http://proj4js.org> or <http://spatialreference.org/> or google for the "proj4string" for various coordinate reference systems.
+
+I like to set a standardized CRS as an object that I use throughout my workflow.
+
+NOTE!!! Many R functions will allow you to play with objects with different CRS resulting in GARBAGE! Others will reproject one or other of the objects for you, but this can be slow and it's not worth taking the chance. I recommend checking and setting your CRS for all objects. You can check CRS with proj4string(), check that multiple objects have the same CRS using identicalCRS(), and reproject objects of class "Spatial" with spTransform() and objects of class "Raster" with projectRaster().
+
+<br>
+
+```{r}
+#Set a standardized projection
+stdCRS <- "+proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs" 
+#This is "EPSG:32734"
+```
+
+<br>
+
+I like to use Universal Transverse Mercator (UTM) for studies with smallish extents (~<100km a side) because the unit is metres and is easily interpretable. The UTM zone we're in for this example is 34 South <http://whatutmzoneamiin.blogspot.co.za/p/map.html>.
+
+***
+
+<br>
+
+###Let's start with point data (mostly functions from library(rgdal) and library(sp))
+
+Here we use readOGR() from library(rgdal) to read the points in as a shapefile. Note that readOGR() is incredibly versatile and can be used to read in all kinds of shapefiles with different features (point, line, polygon) from different software. Unfortunately some PCs struggle to automatically install the GDAL <http://www.gdal.org/> software that is called from R, but there are plenty of online fora providing solutions. Sometimes (although this issue may be fixed) there are conflicts between library(sp) and library(rgdal) depending on what order they are called.
+
+<br>
+
+```{r}
+rawpts <- readOGR(dsn=paste0(datwd, "Cedars.kml"), layer="Cedars.kml") # A Google Earth KML file
+proj4string(rawpts) # Check projection
+pts <- spTransform(rawpts, CRS(stdCRS)) # Do spatial transform to set projection
+```
+
+<br>
+
+Note the strange *dsn=/layer=* syntax. This will mess with you at first!!! This syntax is used to allow the function to read in many different file formats (type "ogrDrivers()" into the console to see a list). Different drivers often require different inputs for *dsn=* and *layer=*. I often have to play around or ask Google before I get it right for a new file...
+
+Also note the use of the paste0(datwd, "Cedars.kml") trick I mentioned earlier:
+
+<br>
+
+```{r}
+paste0(datwd, "Cedars.kml")
+```
+
+<br>
+
+Note that the presence and number of /'s are very important... It's the first thing to check if you get an error.
+
+<br>
+
+Let's explore our point data a little more and fiddle with different ways of making a "Spatial" object.
+
+<br>
+
+```{r}
+class(pts)
+head(coordinates(pts)) # Get the spatial coordinates
+
+x <- as.data.frame(coordinates(pts)) # Extract the coordinates and make them a regular "data.frame"" object (as if we'd read in a .txt or .csv file)
+class(x)
+
+coordinates(x) <- ~ coords.x1 + coords.x2 # Set coordinates for x, making it a "Spatial" object
+class(x)
+str(x) # Note the lack of proj4string info
+proj4string(x) <- stdCRS # To assign the CRS (IF IT IS KNOWN!!!)
+str(x)
+
+rm(x) # Remove x from R's memory as we won't need it again.
+```
+
+<br>
+
+Note the "@" symbols revealed when we look at the data structure (str()). Many spatial data objects use "slots" to store various components of the data. The slots can be accessed using "@" like you would "$" to call a variable from a dataframe, but it is RECOMMENDED THAT YOU DON'T DO THIS... The reason being that slots were designed so that the R package developers can change the way slots work to improve efficiency, handle new or different objects etc. If you write code that accesses slots directly it may break next time the libraries are updated. There are functions for accessing all slots (e.g. proj4string(), coordinates(), etc.)
+
+***
+
+<br>
+
+###Raster data (mostly functions from library(raster))
+Let's get a digital elevation model (DEM) from the SRTM90 (Shuttle Radar Topography Mission*) digital elevation database, match projection, and trim to the same extent as "pts". We can download the data directly with R using the function getData() (type ?getData for details), but this can be slow because it downloads a much bigger area than we need. To save time I've downloaded the data before and saved it locally with the "path =" setting, hashed (#) out the download code so R won't run it, and read the data in from the local source. You will need to run the hashed out code (without the hash) to download the data the first time you run this script.
+
+*Jarvis A., H.I. Reuter, A.  Nelson, E. Guevara, 2008, Hole-filled  seamless SRTM data V4, International  Centre for Tropical  Agriculture (CIAT), available  from <http://srtm.csi.cgiar.org>
+
+<br>
+
+```{r}
+#dem <- getData('SRTM', lon=19, lat=-32.5, path = paste0(giswd, "SRTM/")) # download data from CGIAR website
+dem <- raster(paste0(giswd, "SRTM/srtm_40_19.tif")) # read in data from local source
+proj4string(dem) # this is not our chosen projection for this tutorial so we need to reproject
+dem <- projectRaster(dem, crs=CRS(stdCRS)) # note that we use a different function for raster data than for shapefiles (points or polygon) - this can take a while...
+
+extent(dem)
+extent(pts) # so our DEM has a much larger extent than our cedars of interest and we should crop it
+
+E <- extent(pts) + c(-900, 900, -900, 900) # The second term adds a 900m buffer
+dem <- crop(dem, E) # Crop DEM to the buffered extent
+```
+
+<br>
+
+Lets have a look?
+
+<br>
+
+```{r}
+plot(dem)
+points(pts, pch=20, cex=.1)
+```
+
+<br>
+
+Now that we have the DEM cleaned up for our study let's use the terrain() function to calculate/extract some topographic information. Note that terrain() is based on the more versatile focal() function, should you want to design your own indices etc. Also see rasterEngine() in library(spatial.tools) which is an equivalent, but with easy parallel processing capability.
+
+<br>
+
+```{r}
+slope <- terrain(dem, "slope")
+aspect <- terrain(dem, "aspect")
+TPI <- terrain(dem, "TPI") # Topographic Position Index
+TRI <- terrain(dem, "TRI") # Terrain Ruggedness Index
+roughness <- terrain(dem, "roughness")
+flowdir <- terrain(dem, "flowdir")
+```
+
+<br>
+
+But "aspect" is circular so small changes in the northern aspects (e.g. 2 to 358 degrees) look like big changes in the data. We can break aspect down into east-westness and north-southness using sin() and cos() - remember your trigonometry?
+
+<br>
+
+```{r}
+eastwest <- sin(aspect)
+northsouth <- cos(aspect)
+```
+
+<br>
+
+Now dealing with all these different rasters gets a bit cumbersome, but they have the same extent, resolution and grid so we can stack() them into one object. But first, we should make sure the data are named in a sensible way otherwise they can all end out being named "layer"...
+
+<br>
+
+```{r}
+names(eastwest)
+names(northsouth) 
+names(dem)
+names(eastwest) <- "eastwest" # To rename the data in the raster
+names(northsouth) <- "northsouth"
+names(dem) <- "dem"
+topo <- stack(dem, slope, eastwest, northsouth, TPI, TRI, roughness, flowdir)
+topo
+
+# Another way to rename rasters in a stack
+# names(topo) <- c("name1", "name2"", etc)
+```
+
+<br>
+
+Some other useful "raster" functions are rasterize(), aggregate() and raster calculations. Let's calculate the tree density by 90m grid cell from the DEM.
+
+<br>
+
+```{r}
+dens <- rasterize(pts, dem, field="Name", fun="count")
+plot(dens) # See anything? Probably not, these are 90m pixels in a large landscape...
+
+plot(aggregate(dens, fact=3, fun="sum"))  # Aggregate the 90m cells into larger 210m cells - better?
+
+plot(dens>10, col="red")  # Use raster calculations to subset
+```
+
+<br>
+
+Note that you can add, subtract, multiply and divide rasters allowing you to easily do some quite complicated calculations. Explore calc() for designing and implementing more complicated functions.
+
+<br>
+
+***
+
+<br>
+
+###Polygons!
+
+Perhaps the best place to start is the National Vegetation Map of South Africa, Lesotho and Swaziland. We need to get the data, set the CRS and crop to our area/extent of interest.
+
+<br>
+
+```{r}
+vegmap <- readOGR(dsn=paste0(giswd, "VegMap/nvm2012beta2_wgs84_Geo/"), layer="nvm2012beta2_wgs84_Geo") # Get the data
+head(vegmap) # Have a look at the first 6 rows of the attribute table 
+extent(vegmap) # Check the extent
+proj4string(vegmap) # Check the projection
+vegmap <- spTransform(vegmap, CRS(stdCRS)) # Reproject - This can take a while...
+vegmap <- crop(vegmap, E) # Note that extent (E) was created earlier
+```
+
+<br>
+
+Let's plot what we've cropped...
+
+<br>
+
+```{r}
+cols <- rainbow(length(unique(vegmap$NAME))) # Make a set of 8 colours
+plot(vegmap, col = cols[as.factor(as.character(vegmap$NAME))]) # Plot the map coloured by veg type
+legend("bottomleft", legend = levels(as.factor(as.character(vegmap$NAME))), text.col = cols, cex=.6) # Add a legend
+points(pts, pch=20, cex=.1) # Add the trees
+```
+
+<br>
+
+Looks like our cedars are restricted to "Cederberg Sandstone Fynbos", but we can test that by extracting the veg type for each tree location.
+
+<br>
+
+```{r}
+# Note that there are a few ways of extracting data from spatial objects. The variants of over() are best for shapefiles
+treeveg <- over(pts, vegmap)
+treeveg2 <- pts %over% vegmap
+identical(treeveg, treeveg2) #Same result!
+
+head(treeveg) # We've extracted the attribute table data for the vegtypes that each tree intersects
+summary(droplevels(treeveg$NAME)) # Note the use of droplevels! If you don't do this summary() will report all ~440 vegetation types in the country where cedars do not occur too...
+
+```
+
+<br>
+
+So a few trees stray off Cederberg Sandstone Fynbos, but this could be errors in the veg mapping. Our vegmap is mostly mapped at 1:250 000 scale (i.e. ~2km error), while our tree locations are accurate to 10m...
+
+<br>
+
+Now let's play with the fire record data we downloaded earlier. Firstly we get data the data and transform to our standard CRS as for the vegmap.
+
+<br>
+
+```{r}
+#Get CapeNature fire data, reproject and trim to the "extent" of pts (+ a 900m buffer)
+firelayers <- readOGR(dsn=paste0(giswd, "CFR/All_fires_15_16_gw"), layer="All_fires_15_16_gw")
+proj4string(firelayers)
+firelayers <- spTransform(firelayers, CRS(stdCRS))
+extent(firelayers)
+```
+
+<br>
+
+The fire data covers all CapeNature reserves across the CFR. We could crop() to our extent (E), but there are other ways. Let's explore and manipulate the data object a little.
+
+<br>
+
+```{r}
+#str(firelayers) # Not useful when there are many layers (e.g. fires). It just prints out all the details for each of the ~3500 separate fire layers...
+firelayers # Better
+head(firelayers)
+names(firelayers)
+class(firelayers$Res_centre)
+levels(firelayers$Res_centre)
+unique(firelayers$Res_centre)
+```
+
+<br>
+
+We can subset shapefiles based on fields in the attribute table using indexing, e.g. where the Res_centre = Cederberg in this case.
+
+<br>
+
+
+```{r}
+firelayers <- firelayers[which(firelayers$Res_centre=="Cederberg"),] # Note that each fire polygon is a separate row in the attribute table so R let's you subset as if you were working with a normal dataframe
+firelayers$Res_centre <- droplevels(firelayers$Res_centre) # Remove unwanted levels that were passed on from the original full extent
+levels(firelayers$Res_centre)
+plot(firelayers) # Plot (without colours)
+```
+
+<br>
+
+Let's use rasterize() to create a raster of the number of fires in each 90m pixel.
+
+<br>
+
+```{r}
+firelayers$ID <- 1:nrow(firelayers) # Add an unique ID for each fire
+firecount <- rasterize(firelayers, dem, field="ID", fun="count") # A count of all fires in each pixel
+plot(firecount) # Note that the extent of our firelayers is larger than the DEM, but R trims it to the smaller extent automatically
+points(pts, pch=20, cex=.1) # Add the trees
+```
+
+<br>
+
+Now lets rasterize() each fire (date) into it's own raster, but first we need to look at the underlying data and see if this will work...
+
+<br>
+
+```{r}
+names(firelayers)
+firelayers$Datestart
+sum(firelayers$Area_ha[is.na(firelayers$Datestart)])/sum(firelayers$Area_ha) # Proportion of burnt area without start date...
+
+firelayers$Year #Lets use "Year" instead...
+```
+
+<br>
+
+Now we're going to loop through our fire years and rasterize them one by one. There are some issues we need to address though:
+
+  * Firstly, this may create a large object in R's memory and slow it down. We can get around this by writing each raster out to a file. Geotif and some other formats allow writing multiple rasters to one file. We should also dump any unwanted objects from memory using rm().
+
+  * Secondly, if there are a lot of cells in the raster and/or there are a lot of layers this operation may take some time either way. If we are on a multicore machine we can speed things up by parallelizing our code.
+
+  * Thirdly, in this case we would like rasters for all years even if there were no fires (you'll see why in a minute). We'll use if() statements to identify years with no fires and fill these in with empty rasters (0's only).
+
+  * Lastly, if you end out running the code multiple times then you don't want to have to repeat big operations like this. We can use file.exists() combined with an if() statement to only run this chunk of code if the file does not exist.
+
+<br>
+
+First let's dump unwanted objects from memory and try rasterizing the fires on a single core using a normal *for* loop.
+
+<br>
+
+```{r}
+rm("aspect","slope", "eastwest", "northsouth", "TPI", "TRI", "roughness", "flowdir")
+
+years <- min(firelayers$Year):max(firelayers$Year) # Get the unique list of years
+
+rfifile <- paste0(datwd, "fires_annual_90m.tif") # Set a file name
+
+system.time( # To time the process
+if(!file.exists(rfifile)) { # Check if the file exists. If not, run this
+td <- list() # Create an empty list
+# Loop through years making a raster of burnt cells (1/0) for each
+  for (i in 1:length(years)) { 
+  y <- years[i] # The index year
+  # If no fires that year, return a raster of zeros
+  if(sum(firelayers$Year==y)==0)  
+      td[[i]] <-  raster(extent(dem),res=res(dem),vals=0)
+  # If there are fires, rasterize
+  if(sum(firelayers$Year==y)>0) 
+      td[[i]] <- rasterize(firelayers[which(firelayers$Year==y),],dem, field="Year", fun="count", background=0) 
+  } # End loop
+rfi <- stack(td) 
+writeRaster(rfi,file=rfifile) # Write out rasters to one file
+} # End if() statement
+) # End timing
+```
+
+<br>
+
+Now lets try it in parallel using the *foreach/%dopar%* loop in library(doMC)...
+
+<br>
+
+###Going parallel!
+
+<br>
+
+```{r}
+registerDoMC(3) # Set the computer up as a cluster with 3 cores (I have 4, but want to save 1 for other programmes)
+
+rfifileP <- paste0(datwd, "fires_annual_90m_parallel.tif") # Set a file name
+
+system.time( # To time the process
+if(!file.exists(rfifileP)) { # Check if the file exists. If not, run this
+# Start parallel processing
+rfi <- foreach(y=years,.combine=stack,.packages="raster") %dopar% { 
+ # Loop through years making a raster of burnt cells (1/0) for each
+  # Check if there were any fires that year, if not, return zeros
+  if(sum(firelayers$Year==y)==0) 
+      td <-  raster(extent(dem),res=res(dem),vals=0)
+  # If there are fires, rasterize
+  if(sum(firelayers$Year==y)>0)
+      td <- rasterize(firelayers[which(firelayers$Year==y),],dem, field="Year", fun="count", background=0) 
+  # Return the individual raster
+  return(td)
+  } # End parallelized code
+writeRaster(rfi,file=rfifileP) # Write out the set of rasters to one file
+} # End if() statement
+) # End timing
+```
+
+<br>
+
+Not much time difference here, but then this is a small example and most of the time is spent interpreting the input code rather than processing. Going parallel really pays when crunching big analyses...
+
+Now lets read in the data and plot them.
+
+<br>
+
+```{r}
+rfi <- stack(rfifile) # Read the files back in as a stack
+rfi # Look at the stack
+names(rfi)=paste0("Fire_",years) # Add year as name for each raster
+rfi <- crop(rfi, E) # Crop to just our area of interest (speeds things up)
+plot(rfi) # Plot all layers
+```
+
+<br>
+
+Pretty messy... there must be a sexier way? 
+
+<br>
+
+###Animation!
+
+There are more and more ways of producing cool animations and interactive graphics in R. Here's a simple example using library(animation). Note that this reqires installing the stand-alone software <http://www.imagemagick.org/>.
+
+<br>
+
+```{r}
+if(!file.exists(paste0(reswd,"fires.gif"))) { # Check if the file exists
+  saveGIF({
+    for (i in 1:dim(rfi)[3]) plot(rfi[[i]],
+                      main=names(rfi)[i],
+                      legend.lab="Fire!",
+                      col=rev(terrain.colors(2)),
+                      breaks=c(-0.1,.1,1.1))}, 
+    movie.name = paste0(reswd,"fires.gif"), 
+    ani.width = 480, ani.height = 600, 
+    interval=.5)
+}
+```
+
+<br>
+
+![](/img/fires.gif) 
+
+<br>
+
+Hmm... not that impressive... What if we take advantage of raster calculations and add all the rasters leading up to each time step using sum()?
+
+<br>
+
+```{r}
+if(!file.exists(paste0(reswd,"firesadded.gif"))) { # Check if the file exists
+  saveGIF({
+    for (i in 1:dim(rfi)[3]) plot(sum(rfi[[1:i]], na.rm=T), #Note the summing of rasters 1 to i
+                      main=names(rfi)[i],
+                      legend.lab="Fire!",
+                      col=rev(terrain.colors(11)),
+                      breaks=c(seq(-0.5,10.5,1)))}, 
+    movie.name = paste0(reswd,"firesadded.gif"), 
+    ani.width = 480, ani.height = 600, 
+    interval=.5)
+}
+```
+
+<br>
+
+![](/img/firesadded.gif) 
+
+<br>
+
+###Some other data visualization and analysis
+
+<br>
+
+```{r}
+# Plotting functions in library(rasterVis)
+levelplot(dem)
+contourplot(dem)
+persp(dem)
+```
+
+<br>
+
+Some fancy tricks with Google Earth...
+
+<br>
+
+```{r}
+gbmap <- gmap(Mercator(rawpts), type = "satellite")
+plot(gbmap)
+points(Mercator(rawpts), pch = 20, col = "red", cex=.3)
+```
+
+<br>
+
+If you thought that was fancy, check this out! (Note that this only works for embedding into RMarkdown or an html page)
+
+<br>
+
+```{r, results='asis', tidy=FALSE}
+op <- options(gvis.plot.tag="chart") # Set gvis options for rmarkdown
+
+points.gb <- as.data.frame(rawpts[sample(1:1000, 20),]) # Just select a few trees
+points.gb$latlon <- paste(points.gb$coords.x2, points.gb$coords.x1, sep=":")
+map.gb <- gvisMap(points.gb, locationvar="latlon", tipvar="Name")
+plot(map.gb)
+
+options(op) # Reset gvis options to default
+```
+
+<br>
+
+###But what about our poor cedars? 
+I haven't shown you how to extract the data!
+
+<br>
+
+```{r, echo=FALSE}
+dev.off()
+```
+
+```{r}
+topo$fire <- firecount
+topo$dens <- dens
+plot(topo)
+```
+
+<br>
+
+Current theories around the cedar's decline include increased fire frequency and climate change. Here are a couple of basic hypotheses we could test:
+
+  * Under increased fire frequency we would expect fewer cedars in areas where greater numbers of fires occur, but higher survival in areas with greater topographic roughness as this may provide refuge from fire (note that just the perimeters are mapped for most fires).
+
+  * Under climate change we may expect cedars to be more numerous at higher altitudes, at more northern latitudes, and on South-facing slopes.
+
+<br>
+
+```{r}
+# Here's an easy way to get all data and fiddle.
+dat = as.data.frame(topo)
+
+par(mfrow=c(2,2))
+plot(dens ~ fire, data=dat)
+plot(dens ~ tri, data=dat)
+plot(dens ~ dem, data=dat)
+plot(dens ~ northsouth, data=dat)
+par(mfrow=c(1,1))
+
+# Or just extract the locations we want (note that there'll be repetition of cells with multiple cedars)
+dat = as.data.frame(extract(topo, pts))
+
+par(mfrow=c(2,2))
+plot(dens ~ fire, data=dat)
+plot(dens ~ tri, data=dat)
+plot(dens ~ dem, data=dat)
+plot(dens ~ northsouth, data=dat)
+par(mfrow=c(1,1))
+```
+
+<br>
+
+We can also model the species' distribution based on these variables using functions in the package *dismo*. Here I just do a BioClim model, but you can run many other models too. Even MaxEnt is available if you install it separately and tell R where it is on your machine.
+
+<br>
+
+```{r}
+
+bc <- bioclim(topo[[-10]], pts) # The [[-10]] tells R not to use the 10th raster (dens) in the model fitting as this would be circular...
+
+p <- predict(topo, bc) # Predict potential distribution back onto base data
+plot(p)
+points(pts, pch=20, cex=.1)
+
+```
+
+<br>
+
+Type vignette("sdm") to get a tutorial on Species Distribution Modelling in R with dismo. 
+
+<br>
+
+###Options for writing out spatial data
+
+<br>
+
+```
+?writeOGR # For shapefiles - can save in many many formats
+?writeRaster # For rasters - also has many formats
+?save # To write out a subset of objects from the project
+?save.image # To write out the whole project with all objects (like a .mxd in ArcGIS really)
+```
+
+<br>
+
+THANKS!!!
+
+If you try this code and have issues the session info is below. Also note that all kinds of weird settings to Flash etc are required to do the gvisMap plot and it only works if embedded in an HTML webpage or similar.
+
+<br>
+
+```{r}
+sessionInfo()
+```
+<br>
+
+```{r,echo=FALSE,eval=TRUE,results='hide',messages=FALSE,error=FALSE}
+## this chunk outputs a copy of this script converted to a 'normal' R file with all the text and chunk information commented out
+#library(knitr)
+#purl("/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/PrimerSpatialData.Rmd",documentation=2, output=paste0(datwd, "PrimerSpatialData.R"))
+```

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Contacts on Jasper Slingsby</title>
+    <link>/contact/index.xml</link>
+    <description>Recent content in Contacts on Jasper Slingsby</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy;2016 Your name or company</copyright>
+    <lastBuildDate>Sun, 06 Nov 2016 13:00:25 +0530</lastBuildDate>
+    <atom:link href="/contact/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Get in touch</title>
+      <link>/contact/</link>
+      <pubDate>Sun, 06 Nov 2016 13:00:25 +0530</pubDate>
+      
+      <guid>/contact/</guid>
+      <description>&lt;p&gt;The easiest way to get hold of me is to drop me an email using myfirstname_at_saeon.ac.za. Note that I haven&amp;rsquo;t up this email submission form properly yet, so it probably doesn&amp;rsquo;t work! I&amp;rsquo;m not much of a social media person either, so none of the links below work :P&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

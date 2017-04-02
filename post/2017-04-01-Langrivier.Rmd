@@ -1,0 +1,264 @@
+---
+title: "Drought Monitor for the Jonkershoek Valley, Western Cape, South Africa"
+date: 2017-03-08
+image: "/img/jonkershoek2.png"
+---
+
+*This analysis was prepared by the [Fynbos Node](http://www.saeon-fynbos.org) of [the South African Environmental Observation Network (SAEON)](http://www.saeon.ac.za).*
+
+
+```{r, echo=FALSE}
+
+if(Sys.getenv("USER") == "jasper") {setwd("/Users/jasper/Dropbox/Shared/Jonkershoek Weather and Streamflow/")}
+
+if(Sys.getenv("USERNAME") == "abri") {setwd("C://Dropbox//Shared//jonkershoek//")}
+
+
+suppressWarnings(suppressMessages(library(xts, quietly=T, warn.conflicts=F))) #WARNING!!! Suppressing warnings like this is dodgy as it hides conflicts. If this script creates weird output or fails, run the internal "library(...)" separately for each package and see if it gives you important warnings...
+suppressWarnings(suppressMessages(library(dygraphs, quietly=T, warn.conflicts=F)))
+suppressWarnings(suppressMessages(library(dplyr, quietly=T, warn.conflicts=F)))
+suppressWarnings(suppressMessages(library(ggplot2, quietly=T, warn.conflicts=F)))
+
+### Get Langrivier stream flow from the different instruments
+#Orpheus Mini
+om <- read.csv("Streamflow/Langrivier streamflow data_Jasper/Orpheus Mini.csv") #cumecs (m^3/s)
+om$DataValue <- om$DataValue*3.6 #Convert to Total hourly streamflow volume in ML
+om$Offering <- rep("Total hourly streamflow volume", nrow(om))
+om$Symbol <- rep("ML", nrow(om))
+
+#Belfort charts
+bf <- read.csv("Streamflow/Langrivier streamflow data_Jasper/Belfort.csv") #m^3
+bf$DataValue <- bf$DataValue/1000
+
+#Kent charts - STILL NEED TO INCLUDE!!! - Having some wierd issue with merging and interpolating...
+kt <- read.csv("Streamflow/Langrivier streamflow data_Jasper/Kent.csv") #m^3
+kt$DataValue <- kt$DataValue/1000
+
+#Combine instruments and reformat date
+ldat <- rbind(kt, bf, om)
+x <- gsub("T", " ", ldat$Date)
+x <- gsub("+02:00", "", x, fixed=T)
+ldat$Date <- strptime(x, format = "%Y-%m-%d %H:%M:%S", tz="Africa/Johannesburg")
+ldat$DataValue[which(ldat$DataValue==0)] <- NA
+ldat$Instrument <- c(rep("Kent", nrow(kt)), rep("Belfort", nrow(bf)), rep("Orpheus mini", nrow(om)))
+
+#Split, interpolate missing and [recombine -later (interpolation procedure messes up the Kent Chart data...)]
+#ldk <- ldat[which(ldat$Instrument=="Kent"),] #Kent chart data
+ldn <- ldat[-which(ldat$Instrument=="Kent"),] #Everything else...
+
+#Get start and end of orpheus mini data
+beginom <- head(ldat[which(ldat$Instrument=="Orpheus mini"),]$Date, 1)
+endom <- tail(ldat[which(ldat$Instrument=="Orpheus mini"),]$Date, 1)
+
+#Make data an xts object and interpolate
+lang <- xts(ldn$DataValue, order.by = ldn$Date) #Make xts object
+lang <- merge(lang, timeBasedSeq(paste(start(lang), end(lang), "H", sep="::"))) #Fill in missing dates (with NA)
+#miss <- lang[which(is.na(lang))] # ID missing data
+langI <- na.approx(lang, maxgap=720) #interpolate missing values (up to a month)
+#bmiss <- langI[which(is.na(langI))] # ID big missing data that remains
+tzone(langI) <- "Africa/Johannesburg"
+
+names(langI) <- "Streamflow Volume" #"Streamflow Rate"
+langId <- apply.daily(langI, "sum", na.rm=F)
+langIm <- apply.monthly(langI, "sum", na.rm=F)
+langIm <- langIm[-nrow(langIm),] #Remove most recent (i.e. incomplete) month
+langIa <- apply.yearly(langI, "sum", na.rm=F)
+langIa <- langIa[-nrow(langIa),] #Remove most recent (i.e. incomplete) year
+
+#Make summaries for barplot
+x <- tbl_df(data.frame(Streamflow = langIm[,1], Date = time(langIm)))
+mmeans <- summarise(group_by(x, months(Date, abbreviate=T)), mean(Streamflow.Volume, na.rm=T))
+colnames(mmeans) <- c("Month", "Streamflow")
+mmeans$Month <- as.factor(mmeans$Month)
+mmeans$Month <- reorder(mmeans$Month, c(4,8,12,2,1,7,6,3,5,11,10,9)) #c(5,4,8,1,9,7,6,2,12,11,10,3)
+mmeans <- mmeans[order(mmeans$Month),]
+
+m2015 <- data.frame(Month = levels(mmeans$Month), Streamflow = as.numeric(langIm["2015"])) # All months in 2015                   
+m2016 <- as.numeric(langIm["2016"])
+m2016 <- data.frame(Month = levels(mmeans$Month)[1:length(m2016)], Streamflow = m2016) # All months in 2016
+m2017 <- as.numeric(langIm["2017"])
+m2017 <- data.frame(Month = levels(mmeans$Month)[1:length(m2017)], Streamflow = m2017) # All months in 2017
+
+mmeans$Cumulative_Streamflow <- cumsum(mmeans$Streamflow)
+m2015$Cumulative_Streamflow <- cumsum(m2015$Streamflow)
+m2016$Cumulative_Streamflow <- cumsum(m2016$Streamflow)
+m2017$Cumulative_Streamflow <- cumsum(m2017$Streamflow)
+
+monthvals <- rbind(mmeans, m2015, m2016, m2017) 
+monthvals$Time <- c(rep("Mean (1961 to current)", 12), rep("2015", 12), rep("2016", nrow(m2016)), rep("2017", nrow(m2017)))
+
+##Pseudocode for to calculate cumulative streamflow
+#sumstreamflow <- monthvals
+#sumstreamflow$Streamflow <- c(cumsum(mmeans$Streamflow),cumsum(m2015),cumsum(m2015)) #NEED TO FIX ORDER OF MONTHS!!!
+
+###Fetch weather data
+
+#Historical
+dbgH <- read.csv("Weatherdata/Dwarsberg rainfall data_Jasper/Historic Dwarsberg rainfall 2_Allsopp2015.csv")
+dbgH$Comment <- rep("", nrow(dbgH))
+
+#New
+dbgN <- read.csv("Weatherdata/Dwarsberg rainfall data_Jasper/Dwarsberg hourly rainfall.csv")
+
+#Bind data
+dbg <- rbind(dbgH, dbgN)
+x <- gsub("T", " ", dbg$Date)
+x <- gsub("+02:00", "", x, fixed=T)
+dbg$Date <- strptime(x, format = "%Y-%m-%d %H:%M:%S", tz="Africa/Johannesburg")
+dbg <- xts(dbg$DataValue, order.by = dbg$Date)
+#dbg <- merge(dbg, timeBasedSeq(paste("1991-09-01", end(dbg), sep="::"))) #Fill in missing dates (with NA)
+#dbg <- na.approx(dbg, maxgap=720) #interpolate missing values (up to a day)
+tzone(dbg) <- "Africa/Johannesburg"
+
+#Calculate monthly and annual summaries
+names(dbg) <- "Summed rainfall"
+dbgm <- apply.monthly(dbg, "sum", na.rm=F)
+dbgm <- dbgm[-nrow(dbgm),] #Drop last current (incomplete) month
+dbga <- apply.yearly(dbg, "sum", na.rm=F)
+dbga <- dbga[-nrow(dbga),] #Drop last current (incomplete) year
+
+
+#Make summaries for barplot
+xR <- tbl_df(data.frame(Rainfall = dbgm[,1], Date = time(dbgm)))
+sumsR <- summarise(group_by(xR, months(Date, abbreviate=T)), mean(Summed.rainfall, na.rm=T))
+colnames(sumsR) <- c("Month", "Rainfall")
+sumsR$Month <- as.factor(sumsR$Month)
+sumsR$Month <- reorder(sumsR$Month, c(4,8,12,2,1,7,6,3,5,11,10,9)) #c(5,4,8,1,9,7,6,2,12,11,10,3)) 
+sumsR <- sumsR[order(sumsR$Month),]
+
+m2015 <- data.frame(Month = levels(sumsR$Month), Rainfall = as.numeric(dbgm["2015"])) # All months in 2015  
+
+m2016 <- as.numeric(dbgm["2016"])
+m2016 <- data.frame(Month = levels(sumsR$Month)[1:length(m2016)], Rainfall = m2016) # All months in 2016
+m2017 <- as.numeric(dbgm["2017"])
+m2017 <- data.frame(Month = levels(sumsR$Month)[1:length(m2017)], Rainfall = m2017) # All months in 2017
+
+
+sumsR$Cumulative_Rainfall <- cumsum(sumsR$Rainfall)
+m2015$Cumulative_Rainfall <- cumsum(m2015$Rainfall)
+m2016$Cumulative_Rainfall <- cumsum(m2016$Rainfall)
+m2017$Cumulative_Rainfall <- cumsum(m2017$Rainfall)
+
+monthvalsR <- rbind(sumsR, m2015, m2016, m2017) 
+monthvalsR$Time <- c(rep("Mean (1945 to current)", 12), rep("2015", 12), rep("2016", nrow(m2016)), rep("2017", nrow(m2017)))
+monthvalsR$Missing <- ""
+monthvalsR$Missing[which(monthvalsR$Time==2015 & monthvalsR$Month %in% c("May", "Jun", "Jul"))] <- "*"
+
+
+```
+
+Here we present the record of **stream flow rates for the Langrivier catchment** and **rainfall from the Dwarsberg weather station** in the Jonkershoek Valley for the period January 1961 to the end of February 2017. 
+
+<!--more-->
+
+We plan to update this page monthly. For live weather data and the record over the past month please access the [Dwarsberg weather station directly](http://lognet.saeon.ac.za:8088/Dwarsberg/index.html). You may also be interested in our [Constantiaberg weather station](http://lognet.saeon.ac.za:8088/Constantiaberg/index.html) on the Cape Peninsula or our [Engelsmanskloof weather station](http://lognet.saeon.ac.za:8088/EngCed/index.html) in the Cederberg.
+
+<br>
+
+*PLEASE NOTE: We cannot guarantee that these data or analyses are error free, particularly with regards to the older historical data and the comparability of the older and newer instrumentation. Gaps in the data were filled using linear interpolation from the most recent data for up to a 30 day period. This filled all gaps other than the period August 2008 to September 2011 - these data exist in hardcopy, but are still being digitized. There are much better gap-filling techniques, but the appropriate method depends on the question being asked.*
+
+***
+
+##Streamflow record
+
+***
+
+Here are the recent monthly streamflow values relative to averages across the entire time period (1961 to current).
+
+```{r, echo=FALSE, fig.align="center"}
+g <- ggplot(monthvals, aes(Month, Streamflow, fill=Time), na.rm=TRUE)
+g <- g + geom_bar(stat="identity", position="dodge", na.rm=TRUE) + scale_fill_manual(values = c("#4393C3","#D6604D","forestgreen","darkgrey")) + ggtitle("Monthly Streamflow") + ylab(bquote("Streamflow (ML)"))
+g
+```
+
+
+Note that missing months (e.g. October-November 2015) are those that overlap a data gap of over 30 days.
+
+***
+
+We can also view this cumulatively:
+
+***
+
+```{r, echo=FALSE, fig.align="center"}
+monthvalsNA <- na.omit(monthvals)
+
+ggplot(monthvalsNA, aes(x = Month, y = Cumulative_Streamflow, colour=Time)) + geom_point() + scale_colour_manual(values = c("#4393C3","#D6604D","forestgreen","darkgrey"))
+```
+
+***
+
+The following **dynamic figures** illustrate the mean monthly and annual stream flow. Note you can hover over a piece of the time series to get the date and streamflow value, and adjust and zoom the window of interest by sliding the toggles in the bar at the bottom of each figure. Note the historical data (pre September 2011) has been infilled previously, but we still need to ascertain where the gaps were and what method was used.
+
+***
+
+```{r, echo=FALSE, fig.align="center"}
+dygraph(langIm, ylab = "Streamflow (ML)", xlab = "Date", main = "Langrivier Monthly Streamflow")  %>% 
+  dyRangeSelector() %>%
+  dyLimit(mean(langIm, na.rm=T), label = "Mean", labelLoc = "left", color = "black", strokePattern = "dashed") %>%
+  dyLimit(min(mmeans[,2]), labelLoc = "left", color = "#D6604D", strokePattern = "dashed", label = "Mean Flow of Driest Month") %>%
+  dyLimit(max(mmeans[,2]), labelLoc = "left", color = "#4393C3", strokePattern = "dashed", label = "Mean Flow of Wettest Month")  %>%
+  dyShading(from = beginom, to = endom)
+```
+
+***
+
+```{r, echo=FALSE, fig.align="center"}
+#dygraph(langIa, ylab = "Streamflow (ML)", xlab = "Date", main = "Langrivier Annual Streamflow")  %>% 
+#  dyRangeSelector() %>%
+#  dyLimit(mean(langIa, na.rm=T), label = "Mean", labelLoc = "left", color = "black", strokePattern = "dashed")
+
+```
+
+***
+
+##Rainfall Record
+
+***
+
+Here are the recent monthly rainfall values relative to averages across the entire time period (1945 to current):
+
+```{r, echo=FALSE, fig.align="center"}
+g <- ggplot(monthvalsR, aes(Month, Rainfall, fill=Time))
+g + geom_bar(stat="identity", position="dodge") + scale_fill_manual(values = c("#4393C3","#D6604D","forestgreen","darkgrey")) + ggtitle("Monthly Rainfall") + ylab("Rainfall (mm)") + geom_text(data=monthvalsR, aes(label=Missing), vjust=0, hjust=1)
+```
+
+*Indicates that these months were missing data in 2015 due to power supply problems.
+
+***
+
+And if we view this cumulatively:
+
+***
+
+```{r, echo=FALSE, fig.align="center"}
+ggplot(monthvalsR, aes(x = Month, y = Cumulative_Rainfall, colour=Time)) + geom_point() + scale_colour_manual(values = c("#4393C3","#D6604D","forestgreen","darkgrey"))
+```
+
+***
+
+```{r, echo=FALSE, fig.align="center"}
+dygraph(dbgm, ylab = "Rainfall (mm)", xlab = "Date", main = "Monthly Rainfall record for Dwarsberg")  %>% 
+dyRangeSelector() %>%
+dyLimit(mean(dbgm, na.rm=T), label = "Mean", labelLoc = "left", color = "black", strokePattern = "dashed") %>%
+dyShading(from = "1991-09-01", to = "2013-03-03")
+```
+
+Note that this raingauge was not operational from 1991 to 2013.
+
+***
+
+```{r, echo=F, fig.align="center"}
+#dygraph(dbga, ylab = "Rainfall (mm)", xlab = "Date", main = "Annual Rainfall record for Dwarsberg")  %>% 
+#dyRangeSelector() %>%
+#dyLimit(mean(dbga, na.rm=T), label = "Mean", labelLoc = "left", color = "black", strokePattern = "dashed") %>%
+#dyShading(from = "1991-09-01", to = "2013-03-03")
+
+```
+
+***
+
+If you spot any issues, have any queries, or would like to use or cite these data please contact the [SAEON Fynbos Node](http://www.saeon-fynbos.org) or jasper or abri, both @saeon.ac.za.
+
+***
+***
