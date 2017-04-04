@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+ <title>MODIS and Landsat primer for Hannah</title>
+
+
+
+<meta name="description" content="Describe your website">
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="all,follow">
+<meta name="googlebot" content="index,follow,snippet,archive">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<link rel="stylesheet" id="ct-tracks-google-fonts-css" href="//fonts.googleapis.com/css?family=Raleway%3A400%2C700&amp;subset=latin%2Clatin-ext&amp;ver=4.7.2" type="text/css" media="all">
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+<link href="/css/style.default.css" rel="stylesheet" id="theme-stylesheet">
+
+<link href="/css/custom.css" rel="stylesheet">
+<link rel="shortcut icon" href="/img/favicon.png">
+
+
+</head>
+  <body>
+    <div id="root">
+      <div class="container-fluid">
+        <div class="row site-header">
+          <div class="col-md-12">
+            <div class="row">
+              <div class="col-md-12 top-navigation">
+                <div class="row">
+  <div class="col-sm-6">
+    <div class="categories-block">
+      <a href="" class="track-categories">//</a>
+      
+      <a href="/categories/r-tutorials">r-tutorials</a>
+      
+    </div>
+  </div>
+
+  <div class="col-sm-6">
+    <div class="social-media-block">
+
+      
+      <a href="full%20page%20or%20profile%20url%20in%20facebook" data-animate-hover="pulse" class="external facebook">
+        <i class="fa fa-facebook"></i>
+      </a>
+      
+      
+      <a href="full%20profile%20url%20in%20googleplus" data-animate-hover="pulse" class="external gplus">
+        <i class="fa fa-google-plus"></i>
+      </a>
+      
+      
+      <a href="full%20profile%20url%20in%20twitter" data-animate-hover="pulse" class="external twitter">
+        <i class="fa fa-twitter"></i>
+      </a>
+      
+      
+      <a href="full%20profile%20url%20in%20instagram" title="" class="external instagram">
+        <i class="fa fa-instagram"></i>
+      </a>
+      
+      
+      <a href="mailto:email@example.com" data-animate-hover="pulse" class="email">
+        <i class="fa fa-envelope"></i>
+      </a>
+      
+      
+      <a href="full%20profile%20url%20in%20linkedin" data-animate-hover="pulse">
+        <i class="fa fa-linkedin"></i>
+      </a>
+      
+      
+      <a href="full%20profile%20url%20in%20stackoverflow" data-animate-hover="pulse">
+        <i class="fa fa-stack-overflow"></i>
+      </a>
+      
+      
+      <a href="full%20profile%20url%20in%20github" data-animate-hover="pulse">
+        <i class="fa fa-github"></i>
+      </a>
+      
+
+    </div>
+  </div>
+</div>
+
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-10 header col-md-offset-1">
+                <div class="row">
+  <div class="col-md-6">
+    <div class="title-info">
+      
+      <a href=""> Jasper Slingsby </a>
+      
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="menu">
+      <a href="/">Home /</a>
+      
+      
+      <a href="/about">about / </a>
+      
+      
+      
+      <a href="/contact">contact / </a>
+      
+      
+      
+      
+      
+      <a href="/publications">publications / </a>
+      
+      
+      
+      <a href="/students">students / </a>
+      
+      
+    </div>
+  </div>
+
+</div>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-10 main-content col-md-offset-1">
+            
+
+<div class="col-md-12 entry">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="entry-meta">
+        4 April 2017
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="entry-header">
+       MODIS and Landsat primer for Hannah
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2">
+      <div class="entry-sidebar">
+        CATEGORY
+        <div class="entry-categories">
+        </div>
+        tags
+        <div class="entry-tags">
+        </div>
+      </div>
+    </div>
+    <div class="col-md-10">
+      <div class="entry-content">
+        <p>This is a quick primer on how to handle MODIS NDVI data from <a href="https://earthengine.google.com/"><strong>Google Earth Engine (GEE)</strong></a> in R. It’s primarily for my Honours student, Hannah Simon, but why not make it public for all to share? I hope to add Landsat too, but that’ll be another day.</p>
+<p>For a general introduction for many of the functions used and handling spatial data in general see <a href="https://jslingsby.github.io/post/2017-04-01-PrimerSpatialData/"><strong>A Primer for Handling Spatial Data in R</strong></a> posted previously.</p>
+<p>We start by getting the necessary libraries and data:</p>
+<pre class="r"><code>#Get libraries
+library(raster) #to handle rasters</code></pre>
+<pre><code>## Loading required package: methods</code></pre>
+<pre><code>## Loading required package: sp</code></pre>
+<pre class="r"><code>library(rgdal) #to handle shapefiles</code></pre>
+<pre><code>## rgdal: version: 1.1-10, (SVN revision 622)
+##  Geospatial Data Abstraction Library extensions to R successfully loaded
+##  Loaded GDAL runtime: GDAL 1.11.4, released 2016/01/25
+##  Path to GDAL shared files: /Library/Frameworks/R.framework/Versions/3.3/Resources/library/rgdal/gdal
+##  Loaded PROJ.4 runtime: Rel. 4.9.1, 04 March 2015, [PJ_VERSION: 491]
+##  Path to PROJ.4 shared files: /Library/Frameworks/R.framework/Versions/3.3/Resources/library/rgdal/proj
+##  Linking to sp version: 1.2-3</code></pre>
+<pre class="r"><code>library(reshape) #for data wrangling
+library(ggplot2) #for pretty plotting
+library(animation) #for silly animations
+
+#Get data
+mNDVI &lt;- stack(&quot;/Users/jasper/Documents/GIS/CFR/MODISforHannah/2017043_MODIS_v1g_JNP_MOD_NDVI.tif&quot;) #Note that the file has multiple bands so stack() is the easiest way to read all bands
+
+mNDVI #See what the data look like</code></pre>
+<pre><code>## class       : RasterStack 
+## dimensions  : 15, 20, 300, 393  (nrow, ncol, ncell, nlayers)
+## resolution  : 250, 250  (x, y)
+## extent      : 361250, 366250, 6242250, 6246000  (xmin, xmax, ymin, ymax)
+## coord. ref. : +proj=utm +zone=34 +south +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0 
+## names       : X2017043_//MOD_NDVI.1, X2017043_//MOD_NDVI.2, X2017043_//MOD_NDVI.3, X2017043_//MOD_NDVI.4, X2017043_//MOD_NDVI.5, X2017043_//MOD_NDVI.6, X2017043_//MOD_NDVI.7, X2017043_//MOD_NDVI.8, X2017043_//MOD_NDVI.9, X2017043_//OD_NDVI.10, X2017043_//OD_NDVI.11, X2017043_//OD_NDVI.12, X2017043_//OD_NDVI.13, X2017043_//OD_NDVI.14, X2017043_//OD_NDVI.15, ... 
+## min values  :                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768, ... 
+## max values  :                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767, ...</code></pre>
+<p>So we’ve pulled in the full record of NDVI from the “MODIS/MOD13Q1 16-day composite vegetation indices” product from the dawn of time (i.e. the 18th February 2000) until as recent as possible (6th March 2017), but you’ll notice the names in the raster, e.g. X2017043_MODIS_v1g_JNP_MOD_NDVI.1 aren’t very informative, simply numbering the layers from 1 to 393, but not giving us the dates… For some reason I still haven’t worked out how to embed the dates in the .tif raster exported from GEE, so I save them manually from the console into a text file (stone age, I know, sorry…).</p>
+<pre class="r"><code>metdat &lt;- read.delim(&quot;/Users/jasper/Documents/GIS/CFR/MODISforHannah/MODIS_metadata.txt&quot;, sep = &quot; &quot;, header = F)
+
+head(metdat)</code></pre>
+<pre><code>##   V1    V2                                   V3 V4    V5
+## 1 0: Image MODIS/MOD13Q1/MOD13Q1_005_2000_02_18 (1 band)
+## 2 1: Image MODIS/MOD13Q1/MOD13Q1_005_2000_03_05 (1 band)
+## 3 2: Image MODIS/MOD13Q1/MOD13Q1_005_2000_03_21 (1 band)
+## 4 3: Image MODIS/MOD13Q1/MOD13Q1_005_2000_04_06 (1 band)
+## 5 4: Image MODIS/MOD13Q1/MOD13Q1_005_2000_04_22 (1 band)
+## 6 5: Image MODIS/MOD13Q1/MOD13Q1_005_2000_05_08 (1 band)</code></pre>
+<p>Still not pretty, but getting closer…</p>
+<pre class="r"><code>date &lt;- substr(metdat[,3], start = 27, stop = 37)
+date[1:5]</code></pre>
+<pre><code>## [1] &quot;2000_02_18&quot; &quot;2000_03_05&quot; &quot;2000_03_21&quot; &quot;2000_04_06&quot; &quot;2000_04_22&quot;</code></pre>
+<p>With a bit of squint-counting and trial and error we manage to use substr() to extract the dates!</p>
+<p>But for R to treat them as dates we need to tell it they are dates with as.Date(), and specify the date format (see ?strptime).</p>
+<pre class="r"><code>date &lt;- as.Date(date, format = &quot;%Y_%m_%d&quot;)
+date[1:5]</code></pre>
+<pre><code>## [1] &quot;2000-02-18&quot; &quot;2000-03-05&quot; &quot;2000-03-21&quot; &quot;2000-04-06&quot; &quot;2000-04-22&quot;</code></pre>
+<p>Et voilà!</p>
+<p>So we now have a stack of MODIS NDVI images through time, and we know their dates. We can embed the dates into the raster like so:</p>
+<pre class="r"><code>names(mNDVI) &lt;- date
+
+mNDVI #Have another look at the data</code></pre>
+<pre><code>## class       : RasterStack 
+## dimensions  : 15, 20, 300, 393  (nrow, ncol, ncell, nlayers)
+## resolution  : 250, 250  (x, y)
+## extent      : 361250, 366250, 6242250, 6246000  (xmin, xmax, ymin, ymax)
+## coord. ref. : +proj=utm +zone=34 +south +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0 
+## names       : X2000.02.18, X2000.03.05, X2000.03.21, X2000.04.06, X2000.04.22, X2000.05.08, X2000.05.24, X2000.06.09, X2000.06.25, X2000.07.11, X2000.07.27, X2000.08.12, X2000.08.28, X2000.09.13, X2000.09.29, ... 
+## min values  :      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768, ... 
+## max values  :       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767, ...</code></pre>
+<p>Great! But now you’ll notice that the min and max values are rather strange (-32767 to 32767) when we know that NDVI can only range from -1 to 1, and rarely goes below 0. Very strange! Let’s have a look at our first image.</p>
+<pre class="r"><code>plot(mNDVI[[1]])</code></pre>
+<p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>0 to 4000? Even stranger!</p>
+<p>It turns out the issue is that GEE has exported the data in what appears to be a strange format to reduce the file size. We need to tell R how to interpret it by setting a gain and offset.</p>
+<pre class="r"><code>NAvalue(mNDVI)=-32767
+offs(mNDVI)=0
+gain(mNDVI)=.0001
+plot(mNDVI[[1]])</code></pre>
+<p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Much more reasonable!</p>
+<p>Ok, so now we can begin to look at our questions; namely, how does MODIS NDVI vary in space and time?</p>
+<p>But first, we should set our focal area.</p>
+<pre class="r"><code>site &lt;- readOGR(dsn=&quot;/Users/jasper/Documents/GIS/CFR/MODISforHannah/Jonaskop 120m.kml&quot;, layer=&quot;Jonaskop 120m.kml&quot;) # A Google Earth KML file</code></pre>
+<pre><code>## OGR data source with driver: KML 
+## Source: &quot;/Users/jasper/Documents/GIS/CFR/MODISforHannah/Jonaskop 120m.kml&quot;, layer: &quot;Jonaskop 120m.kml&quot;
+## with 1 features
+## It has 2 fields</code></pre>
+<pre><code>## Warning in readOGR(dsn = &quot;/Users/jasper/Documents/GIS/CFR/MODISforHannah/
+## Jonaskop 120m.kml&quot;, : Z-dimension discarded</code></pre>
+<pre class="r"><code>site &lt;- spTransform(site, CRS(proj4string(mNDVI))) #Reproject to match the projection of the MODIS data (UTM 34S in this case)
+
+plot(mNDVI[[1]])
+plot(site, add=T)</code></pre>
+<p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>It looks like we’re wrangling a lot more MODIS data than we need to. Let’s crop to out focal area…</p>
+<pre class="r"><code>mNDVI &lt;- crop(mNDVI, site, snap = &quot;out&quot;) #&quot;snap=&quot;out&quot;&quot; adds a buffer around the site
+
+plot(mNDVI[[1]])
+plot(site, add=T)</code></pre>
+<p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-9-1.png" width="672" /> …and look at a few images through time.</p>
+<pre class="r"><code>plot(mNDVI) #Note that R limits it to the first 16 images</code></pre>
+<p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>Lots of variation in space! What about time?</p>
+<pre class="r"><code>if(!file.exists(&quot;/Users/jasper/GIT/jslingsby.github.io_local/static/img/output/mNDVI.gif&quot;)) { # Check if the file exists
+  saveGIF({
+    for (i in 1:dim(mNDVI)[3]) plot(mNDVI[[i]],
+                      main=names(mNDVI)[i],
+                      legend.lab=&quot;NDVI&quot;,
+                      col=rev(terrain.colors(length(c(seq(0,.7,.05),1)))),
+                      breaks=seq(0,.7,.05))}, 
+    movie.name = &quot;/Users/jasper/GIT/jslingsby.github.io_local/static/img/output/mNDVI.gif&quot;, 
+    ani.width = 600, ani.height = 500, 
+    interval=.25)
+}</code></pre>
+<div class="figure">
+<img src="/img/output/mNDVI.gif" />
+
+</div>
+<p>You could make it a lot prettier, but pretty fancy. Still, not very useful for the print edition. How about just a simple line graph? this requires extracting the data to a data.frame.</p>
+<pre class="r"><code>dat &lt;- as.data.frame(mNDVI)
+
+dat[1:10,1:10] #look at the data</code></pre>
+<pre><code>##    X2000.02.18 X2000.03.05 X2000.03.21 X2000.04.06 X2000.04.22 X2000.05.08
+## 1       0.2889      0.3280      0.3723      0.3743      0.3979      0.3902
+## 2       0.3127      0.3745      0.3850      0.3872      0.3680      0.4681
+## 3       0.3205      0.3508      0.3909      0.3878      0.3647      0.4488
+## 4       0.3256      0.3323      0.3823      0.4001      0.3542      0.4050
+## 5       0.3206      0.3841      0.3934      0.3817      0.3864      0.3987
+## 6       0.2866      0.3567      0.3723      0.3757      0.3799      0.4278
+## 7       0.2866      0.3567      0.3832      0.3808      0.3510      0.4681
+## 8       0.3340      0.3709      0.4215      0.3787      0.4191      0.4681
+## 9       0.3205      0.4144      0.4215      0.4099      0.3900      0.4615
+## 10      0.3256      0.4278      0.4363      0.4085      0.4115      0.4615
+##    X2000.05.24 X2000.06.09 X2000.06.25 X2000.07.11
+## 1       0.4644      0.4777      0.4730      0.4220
+## 2       0.4704      0.4777      0.4730      0.4289
+## 3       0.4698      0.4574      0.4340      0.4532
+## 4       0.4596      0.4574      0.4636      0.4228
+## 5       0.4522      0.4193      0.4636      0.4517
+## 6       0.4493      0.4538      0.4091      0.4160
+## 7       0.4043      0.4913      0.4730      0.4359
+## 8       0.4885      0.4913      0.4616      0.4300
+## 9       0.4318      0.4589      0.4908      0.4363
+## 10      0.4212      0.4413      0.4697      0.4489</code></pre>
+<p>So each date is a column and each cell in space is a row in our data frame. This isn;t ideal for plotting so let’s reshape the data into long format.</p>
+<pre class="r"><code>rownames(dat) &lt;- paste0(&quot;A&quot;,1:20) #Add dummy column labels
+
+dat &lt;- as.data.frame(t(dat)) #transpose data.frame
+
+dat$Date &lt;- as.Date(rownames(dat), format = &quot;X%Y.%m.%d&quot;)
+
+dat &lt;- melt(dat, id=c(&quot;Date&quot;))
+
+head(dat)</code></pre>
+<pre><code>##         Date variable  value
+## 1 2000-02-18       A1 0.2889
+## 2 2000-03-05       A1 0.3280
+## 3 2000-03-21       A1 0.3723
+## 4 2000-04-06       A1 0.3743
+## 5 2000-04-22       A1 0.3979
+## 6 2000-05-08       A1 0.3902</code></pre>
+<p>Now let’s make some pretty pictures!</p>
+<pre class="r"><code>ggplot(data = dat, aes(x = Date, y = value, colour = variable)) + geom_line()</code></pre>
+<p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>Pretty neat! It looks like our site burnt in the summer of 2000/2001. Now let’s split them up.</p>
+<pre class="r"><code>ggplot(data = dat, aes(x = Date, y = value, colour = variable)) + geom_line() + facet_wrap(~variable)</code></pre>
+<p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>Well there’s definitely clear seasonality and, while subtle, there are differences among the cells…</p>
+
+      </div>
+    </div>
+  </div>
+
+  <hr/>
+  
+
+</div>
+
+          </div>
+        </div>
+        <div class="row site-footer">
+          <div class="col-md-12">
+            <div class="row">
+  <div class="col-md-12 footer-title">
+    <h2>
+      
+      <a href=""> Jasper Slingsby </a>
+      
+    </h2>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12 footer-menu">
+      <a href="/">Home /</a>
+      
+      
+      <a href="/about">about / </a>
+      
+      
+      
+      <a href="/contact">contact / </a>
+      
+      
+      
+      
+      
+      <a href="/publications">publications / </a>
+      
+      
+      
+      <a href="/students">students / </a>
+      
+      
+
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="social-media-block-footer">
+      
+      <a href="full%20page%20or%20profile%20url%20in%20facebook" data-animate-hover="pulse" class="external facebook">
+        <i class="fa fa-facebook"></i>
+      </a>
+      
+      
+      <a href="full%20profile%20url%20in%20googleplus" data-animate-hover="pulse" class="external gplus">
+        <i class="fa fa-google-plus"></i>
+      </a>
+      
+      
+      <a href="full%20profile%20url%20in%20twitter" data-animate-hover="pulse" class="external twitter">
+        <i class="fa fa-twitter"></i>
+      </a>
+      
+      
+      <a href="full%20profile%20url%20in%20instagram" title="" class="external instagram">
+        <i class="fa fa-instagram"></i>
+      </a>
+      
+      
+      <a href="mailto:email@example.com" data-animate-hover="pulse" class="email">
+        <i class="fa fa-envelope"></i>
+      </a>
+      
+      
+      <a href="full%20profile%20url%20in%20linkedin" data-animate-hover="pulse">
+        <i class="fa fa-linkedin"></i>
+      </a>
+      
+      
+      <a href="full%20profile%20url%20in%20stackoverflow" data-animate-hover="pulse">
+        <i class="fa fa-stack-overflow"></i>
+      </a>
+      
+      
+      <a href="full%20profile%20url%20in%20github" data-animate-hover="pulse">
+        <i class="fa fa-github"></i>
+      </a>
+      
+
+    </div>
+  </div>
+</div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.cookie.js"> </script>
+<script src="/js/ekko-lightbox.js"></script>
+<script src="/js/jquery.scrollTo.min.js"></script>
+<script src="/js/masonry.pkgd.min.js"></script>
+<script src="/js/imagesloaded.pkgd.min.js"></script>
+<script src="/js/owl.carousel.min.js"></script>
+<script src="/js/front.js"></script>
+
+  </body>
+</html>

@@ -166,7 +166,28 @@
     </div>
     <div class="col-md-10">
       <div class="entry-content">
-        <p>Points, lines, polygons and rasters - R can handle them all. My aim for this session is to give you the basics required to teach yourself spatial data analysis in R.</p>
+        <div id="TOC">
+<ul>
+<li><a href="#cran-task-views-httpscran.r-project.org">CRAN Task Views <a href="https://cran.r-project.org/" class="uri">https://cran.r-project.org/</a></a><ul>
+<li><a href="#topics-covered-by-the-spatial-task-view-which-focuses-on-analysis-of-spatial-data">Topics covered by the <em>Spatial</em> Task View, which focuses on “Analysis of Spatial Data”:</a></li>
+</ul></li>
+<li><a href="#useful-diy-resources">Useful DIY resources</a></li>
+<li><a href="#a-practical-example">A Practical Example!!!</a><ul>
+<li><a href="#data-description">Data Description</a></li>
+<li><a href="#housekeeping">Housekeeping</a></li>
+<li><a href="#getting-and-cleaning-the-data-but-first-and-foremost-projection">Getting and cleaning the data, but first and foremost, <em>projection!!!</em></a></li>
+<li><a href="#lets-start-with-point-data-mostly-functions-from-libraryrgdal-and-librarysp">Let’s start with point data (mostly functions from library(rgdal) and library(sp))</a></li>
+<li><a href="#raster-data-mostly-functions-from-libraryraster">Raster data (mostly functions from library(raster))</a></li>
+<li><a href="#polygons">Polygons!</a></li>
+<li><a href="#going-parallel">Going parallel!</a></li>
+<li><a href="#animation">Animation!</a></li>
+<li><a href="#some-other-data-visualization-and-analysis">Some other data visualization and analysis</a></li>
+<li><a href="#but-what-about-our-poor-cedars">But what about our poor cedars?</a></li>
+<li><a href="#options-for-writing-out-spatial-data">Options for writing out spatial data</a></li>
+</ul></li>
+</ul>
+</div>
+<p>Points, lines, polygons and rasters - R can handle them all. My aim for this session is to give you the basics required to teach yourself spatial data analysis in R.</p>
 <!--more-->
 <p>I’ll start by briefly covering CRAN Task Views and how to install them (using the ‘Spatial’ task view as an example), followed by some pointers for useful DIY resources for handling and analyzing spatial data, and then work through a practical example exploring fire history layers (polygon), topographic (raster) and locality (point) data using the libraries ‘rgdal’, ‘raster’ and ‘sp’ and a few others. The example will cover setting and changing projections and extents, subseting polygons, raster calculations, rasterizing polygons and extracting data with a few neat tricks and visualisations along the way.</p>
 <p><br></p>
@@ -907,113 +928,113 @@ points.gb$latlon &lt;- paste(points.gb$coords.x2, points.gb$coords.x1, sep=&quot
 map.gb &lt;- gvisMap(points.gb, locationvar=&quot;latlon&quot;, tipvar=&quot;Name&quot;)
 plot(map.gb)</code></pre>
 <!-- Map generated in R 3.3.2 by googleVis 0.6.1 package -->
-<!-- Sat Apr  1 21:51:41 2017 -->
+<!-- Mon Apr  3 04:35:53 2017 -->
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataMapID7f0f74a64545 () {
+function gvisDataMapID97fa14a72169 () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
  [
--32.25813671,
-19.09604547,
+-32.34482878,
+19.08021393,
 ""
 ],
 [
--32.32726618,
-19.11113386,
+-32.36254961,
+19.07937494,
 ""
 ],
 [
--32.32464976,
-19.11309889,
+-32.3742216,
+19.09086183,
 ""
 ],
 [
--32.32364187,
-19.103072,
+-32.2480314,
+19.0921355,
 ""
 ],
 [
--32.40841644,
-19.13980106,
+-32.35127926,
+19.1225095,
 ""
 ],
 [
--32.35648766,
-19.12262936,
+-32.32400513,
+19.10500995,
 ""
 ],
 [
--32.40998314,
-19.13321759,
+-32.29224178,
+19.12210154,
 ""
 ],
 [
--32.22132745,
-19.08522512,
+-32.35388656,
+19.20409355,
 ""
 ],
 [
--32.35699835,
-19.07745222,
+-32.33297824,
+19.17444348,
 ""
 ],
 [
--32.21685638,
-19.07623385,
+-32.25277118,
+19.08529366,
 ""
 ],
 [
--32.26161274,
-19.11405079,
+-32.35109762,
+19.14768188,
 ""
 ],
 [
--32.28513424,
-19.14676123,
+-32.32834538,
+19.10619365,
 ""
 ],
 [
--32.21720576,
-19.07627445,
+-32.3130884,
+19.13534981,
 ""
 ],
 [
--32.28240192,
-19.11711668,
+-32.31896511,
+19.10284018,
 ""
 ],
 [
--32.2558822,
-19.09819716,
+-32.36356375,
+19.19231081,
 ""
 ],
 [
--32.34505457,
-19.129841,
+-32.36738056,
+19.10363186,
 ""
 ],
 [
--32.27819841,
-19.10716187,
+-32.2962396,
+19.10470538,
 ""
 ],
 [
--32.23249683,
-19.083964,
+-32.40064937,
+19.20561092,
 ""
 ],
 [
--32.27495673,
-19.12683066,
+-32.21705753,
+19.07624945,
 ""
 ],
 [
--32.2584546,
-19.09905266,
+-32.32384041,
+19.13844581,
 ""
 ] 
 ];
@@ -1025,13 +1046,13 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartMapID7f0f74a64545() {
-var data = gvisDataMapID7f0f74a64545();
+function drawChartMapID97fa14a72169() {
+var data = gvisDataMapID97fa14a72169();
 var options = {};
 options["showTip"] = true;
 
     var chart = new google.visualization.Map(
-    document.getElementById('MapID7f0f74a64545')
+    document.getElementById('MapID97fa14a72169')
     );
     chart.draw(data,options);
     
@@ -1055,9 +1076,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartMapID7f0f74a64545);
+callbacks.push(drawChartMapID97fa14a72169);
 })();
-function displayChartMapID7f0f74a64545() {
+function displayChartMapID97fa14a72169() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -1080,9 +1101,9 @@ callbacks.shift()();
 // jsFooter
 </script>
 <!-- jsChart -->
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapID7f0f74a64545"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapID97fa14a72169"></script>
 <!-- divChart -->
-<div id="MapID7f0f74a64545" style="width: 500; height: automatic;">
+<div id="MapID97fa14a72169" style="width: 500; height: automatic;">
 
 </div>
 <pre class="r"><code>options(op) # Reset gvis options to default</code></pre>

@@ -1,0 +1,164 @@
+---
+title: "MODIS and Landsat primer for Hannah"
+author: "Jasper Slingsby"
+date: '2017-04-04'
+image: /img/jonaskop_landsat.png
+slug: modis-primer-for-hannah
+tags: []
+categories: R Tutorials
+---
+
+This is a quick primer on how to handle MODIS NDVI data from [**Google Earth Engine (GEE)**](https://earthengine.google.com/) in R. It's primarily for my Honours student, Hannah Simon, but why not make it public for all to share? I hope to add Landsat too, but that'll be another day.
+
+For a general introduction for many of the functions used and handling spatial data in general see [**A Primer for Handling Spatial Data in R**](https://jslingsby.github.io/post/2017-04-01-PrimerSpatialData/) posted previously.
+
+We start by getting the necessary libraries and data:
+
+```{r}
+#Get libraries
+library(raster) #to handle rasters
+library(rgdal) #to handle shapefiles
+library(reshape) #for data wrangling
+library(ggplot2) #for pretty plotting
+library(animation) #for silly animations
+
+#Get data
+mNDVI <- stack("/Users/jasper/Documents/GIS/CFR/MODISforHannah/2017043_MODIS_v1g_JNP_MOD_NDVI.tif") #Note that the file has multiple bands so stack() is the easiest way to read all bands
+
+mNDVI #See what the data look like
+```
+
+So we've pulled in the full record of NDVI from the "MODIS/MOD13Q1 16-day composite vegetation indices" product from the dawn of time (i.e. the 18th February 2000) until as recent as possible (6th March 2017), but you'll notice the names in the raster, e.g. `r names(mNDVI)[1]` aren't very informative, simply numbering the layers from 1 to `r length(names(mNDVI))`, but not giving us the dates... For some reason I still haven't worked out how to embed the dates in the .tif raster exported from GEE, so I save them manually from the console into a text file (stone age, I know, sorry...).
+
+```{r}
+metdat <- read.delim("/Users/jasper/Documents/GIS/CFR/MODISforHannah/MODIS_metadata.txt", sep = " ", header = F)
+
+head(metdat)
+```
+
+Still not pretty, but getting closer...
+
+```{r}
+date <- substr(metdat[,3], start = 27, stop = 37)
+date[1:5]
+```
+
+With a bit of squint-counting and trial and error we manage to use substr() to extract the dates!
+
+But for R to treat them as dates we need to tell it they are dates with as.Date(), and specify the date format (see ?strptime).
+
+```{r}
+date <- as.Date(date, format = "%Y_%m_%d")
+date[1:5]
+```
+
+Et voilà!
+
+So we now have a stack of MODIS NDVI images through time, and we know their dates. We can embed the dates into the raster like so:
+
+```{r}
+names(mNDVI) <- date
+
+mNDVI #Have another look at the data
+```
+
+Great! But now you'll notice that the min and max values are rather strange (-32767 to 32767) when we know that NDVI can only range from -1 to 1, and rarely goes below 0. Very strange! Let's have a look at our first image.
+
+```{r}
+plot(mNDVI[[1]])
+```
+
+0 to 4000? Even stranger!
+
+It turns out the issue is that GEE has exported the data in what appears to be a strange format to reduce the file size. We need to tell R how to interpret it by setting a gain and offset.
+
+```{r}
+NAvalue(mNDVI)=-32767
+offs(mNDVI)=0
+gain(mNDVI)=.0001
+plot(mNDVI[[1]])
+```
+
+Much more reasonable!
+
+Ok, so now we can begin to look at our questions; namely, how does MODIS NDVI vary in space and time?
+
+But first, we should set our focal area.
+
+```{r}
+site <- readOGR(dsn="/Users/jasper/Documents/GIS/CFR/MODISforHannah/Jonaskop 120m.kml", layer="Jonaskop 120m.kml") # A Google Earth KML file
+site <- spTransform(site, CRS(proj4string(mNDVI))) #Reproject to match the projection of the MODIS data (UTM 34S in this case)
+
+plot(mNDVI[[1]])
+plot(site, add=T)
+```
+
+It looks like we're wrangling a lot more MODIS data than we need to. Let's crop to out focal area...
+
+```{r}
+mNDVI <- crop(mNDVI, site, snap = "out") #"snap="out"" adds a buffer around the site
+
+plot(mNDVI[[1]])
+plot(site, add=T)
+```
+...and look at a few images through time.
+
+```{r}
+plot(mNDVI) #Note that R limits it to the first 16 images
+```
+
+Lots of variation in space! What about time?
+
+```{r}
+if(!file.exists("/Users/jasper/GIT/jslingsby.github.io_local/static/img/output/mNDVI.gif")) { # Check if the file exists
+  saveGIF({
+    for (i in 1:dim(mNDVI)[3]) plot(mNDVI[[i]],
+                      main=names(mNDVI)[i],
+                      legend.lab="NDVI",
+                      col=rev(terrain.colors(length(c(seq(0,.7,.05),1)))),
+                      breaks=seq(0,.7,.05))}, 
+    movie.name = "/Users/jasper/GIT/jslingsby.github.io_local/static/img/output/mNDVI.gif", 
+    ani.width = 600, ani.height = 500, 
+    interval=.25)
+}
+
+```
+
+![](/img/output/mNDVI.gif)
+
+You could make it a lot prettier, but pretty fancy. Still, not very useful for the print edition. How about just a simple line graph? this requires extracting the data to a data.frame.
+
+```{r}
+dat <- as.data.frame(mNDVI)
+
+dat[1:10,1:10] #look at the data
+```
+
+So each date is a column and each cell in space is a row in our data frame. This isn;t ideal for plotting so let's reshape the data into long format.
+
+```{r}
+rownames(dat) <- paste0("A",1:20) #Add dummy column labels
+
+dat <- as.data.frame(t(dat)) #transpose data.frame
+
+dat$Date <- as.Date(rownames(dat), format = "X%Y.%m.%d")
+
+dat <- melt(dat, id=c("Date"))
+
+head(dat)
+```
+
+Now let's make some pretty pictures!
+
+```{r}
+ggplot(data = dat, aes(x = Date, y = value, colour = variable)) + geom_line()
+```
+
+Pretty neat! It looks like our site burnt in the summer of 2000/2001. Now let's split them up.
+
+```{r}
+ggplot(data = dat, aes(x = Date, y = value, colour = variable)) + geom_line() + facet_wrap(~variable)
+```
+
+Well there's definitely clear seasonality and, while subtle, there are differences among the cells...
+

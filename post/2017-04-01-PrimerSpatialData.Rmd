@@ -5,8 +5,10 @@ date: 2016-11-18
 image: "/img/kogelberg_map.jpg"
 categories: ["R Tutorials"]
 tags: ["spatial"]
-email: jasper@saeon.ac.za
 website: <http://www.saeon.ac.za>; <http://www.saeon-fynbos.org>
+output:
+  blogdown::html_page:
+    toc: true
 ---
 
 Points, lines, polygons and rasters - R can handle them all. My aim for this session is to give you the basics required to teach yourself spatial data analysis in R. 
