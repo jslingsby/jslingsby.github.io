@@ -3,8 +3,8 @@ title: "A Primer for Handling Spatial Data in R"
 author: "Jasper Slingsby - South African Environmental Observation Network (SAEON)"
 date: 2016-11-18
 image: "/img/kogelberg_map.jpg"
-categories: ["R Tutorials"]
-tags: ["spatial"]
+categories: ["R Tutorials", "All"]
+tags: ["spatial", "All"]
 website: <http://www.saeon.ac.za>; <http://www.saeon-fynbos.org>
 output:
   blogdown::html_page:

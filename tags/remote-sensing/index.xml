@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Remote Sensing on Jasper Slingsby</title>
+    <link>/tags/remote-sensing/index.xml</link>
+    <description>Recent content in Remote Sensing on Jasper Slingsby</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy;2016 Your name or company</copyright>
+    <atom:link href="/tags/remote-sensing/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>MODIS and Landsat primer for Hannah</title>
+      <link>/post/modis-primer-for-hannah/</link>
+      <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/modis-primer-for-hannah/</guid>
+      <description>&lt;p&gt;This is a quick primer on how to handle MODIS NDVI data from &lt;a href=&#34;https://earthengine.google.com/&#34;&gt;&lt;strong&gt;Google Earth Engine (GEE)&lt;/strong&gt;&lt;/a&gt; in R. It’s primarily for my Honours student, Hannah Simon, but why not make it public for all to share? I hope to add Landsat too, but that’ll be another day.&lt;/p&gt;
+&lt;p&gt;For a general introduction for many of the functions used and handling spatial data in general see &lt;a href=&#34;https://jslingsby.github.io/post/2017-04-01-PrimerSpatialData/&#34;&gt;&lt;strong&gt;A Primer for Handling Spatial Data in R&lt;/strong&gt;&lt;/a&gt; posted previously.&lt;/p&gt;
+&lt;p&gt;We start by getting the necessary libraries and data:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#Get libraries
+library(raster) #to handle rasters&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Loading required package: methods&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Loading required package: sp&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(rgdal) #to handle shapefiles&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## rgdal: version: 1.1-10, (SVN revision 622)
+##  Geospatial Data Abstraction Library extensions to R successfully loaded
+##  Loaded GDAL runtime: GDAL 1.11.4, released 2016/01/25
+##  Path to GDAL shared files: /Library/Frameworks/R.framework/Versions/3.3/Resources/library/rgdal/gdal
+##  Loaded PROJ.4 runtime: Rel. 4.9.1, 04 March 2015, [PJ_VERSION: 491]
+##  Path to PROJ.4 shared files: /Library/Frameworks/R.framework/Versions/3.3/Resources/library/rgdal/proj
+##  Linking to sp version: 1.2-3&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(reshape) #for data wrangling
+library(ggplot2) #for pretty plotting
+library(animation) #for silly animations
+
+#Get data
+mNDVI &amp;lt;- stack(&amp;quot;/Users/jasper/Documents/GIS/CFR/MODISforHannah/2017043_MODIS_v1g_JNP_MOD_NDVI.tif&amp;quot;) #Note that the file has multiple bands so stack() is the easiest way to read all bands
+
+mNDVI #See what the data look like&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## class       : RasterStack 
+## dimensions  : 15, 20, 300, 393  (nrow, ncol, ncell, nlayers)
+## resolution  : 250, 250  (x, y)
+## extent      : 361250, 366250, 6242250, 6246000  (xmin, xmax, ymin, ymax)
+## coord. ref. : +proj=utm +zone=34 +south +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0 
+## names       : X2017043_//MOD_NDVI.1, X2017043_//MOD_NDVI.2, X2017043_//MOD_NDVI.3, X2017043_//MOD_NDVI.4, X2017043_//MOD_NDVI.5, X2017043_//MOD_NDVI.6, X2017043_//MOD_NDVI.7, X2017043_//MOD_NDVI.8, X2017043_//MOD_NDVI.9, X2017043_//OD_NDVI.10, X2017043_//OD_NDVI.11, X2017043_//OD_NDVI.12, X2017043_//OD_NDVI.13, X2017043_//OD_NDVI.14, X2017043_//OD_NDVI.15, ... 
+## min values  :                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768, ... 
+## max values  :                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767, ...&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So we’ve pulled in the full record of NDVI from the “MODIS/MOD13Q1 16-day composite vegetation indices” product from the dawn of time (i.e. the 18th February 2000) until as recent as possible (6th March 2017), but you’ll notice the names in the raster, e.g. X2017043_MODIS_v1g_JNP_MOD_NDVI.1 aren’t very informative, simply numbering the layers from 1 to 393, but not giving us the dates… For some reason I still haven’t worked out how to embed the dates in the .tif raster exported from GEE, so I save them manually from the console into a text file (stone age, I know, sorry…).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;metdat &amp;lt;- read.delim(&amp;quot;/Users/jasper/Documents/GIS/CFR/MODISforHannah/MODIS_metadata.txt&amp;quot;, sep = &amp;quot; &amp;quot;, header = F)
+
+head(metdat)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   V1    V2                                   V3 V4    V5
+## 1 0: Image MODIS/MOD13Q1/MOD13Q1_005_2000_02_18 (1 band)
+## 2 1: Image MODIS/MOD13Q1/MOD13Q1_005_2000_03_05 (1 band)
+## 3 2: Image MODIS/MOD13Q1/MOD13Q1_005_2000_03_21 (1 band)
+## 4 3: Image MODIS/MOD13Q1/MOD13Q1_005_2000_04_06 (1 band)
+## 5 4: Image MODIS/MOD13Q1/MOD13Q1_005_2000_04_22 (1 band)
+## 6 5: Image MODIS/MOD13Q1/MOD13Q1_005_2000_05_08 (1 band)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Still not pretty, but getting closer…&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;date &amp;lt;- substr(metdat[,3], start = 27, stop = 37)
+date[1:5]&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;2000_02_18&amp;quot; &amp;quot;2000_03_05&amp;quot; &amp;quot;2000_03_21&amp;quot; &amp;quot;2000_04_06&amp;quot; &amp;quot;2000_04_22&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With a bit of squint-counting and trial and error we manage to use substr() to extract the dates!&lt;/p&gt;
+&lt;p&gt;But for R to treat them as dates we need to tell it they are dates with as.Date(), and specify the date format (see ?strptime).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;date &amp;lt;- as.Date(date, format = &amp;quot;%Y_%m_%d&amp;quot;)
+date[1:5]&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;2000-02-18&amp;quot; &amp;quot;2000-03-05&amp;quot; &amp;quot;2000-03-21&amp;quot; &amp;quot;2000-04-06&amp;quot; &amp;quot;2000-04-22&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Et voilà!&lt;/p&gt;
+&lt;p&gt;So we now have a stack of MODIS NDVI images through time, and we know their dates. We can embed the dates into the raster like so:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;names(mNDVI) &amp;lt;- date
+
+mNDVI #Have another look at the data&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## class       : RasterStack 
+## dimensions  : 15, 20, 300, 393  (nrow, ncol, ncell, nlayers)
+## resolution  : 250, 250  (x, y)
+## extent      : 361250, 366250, 6242250, 6246000  (xmin, xmax, ymin, ymax)
+## coord. ref. : +proj=utm +zone=34 +south +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0 
+## names       : X2000.02.18, X2000.03.05, X2000.03.21, X2000.04.06, X2000.04.22, X2000.05.08, X2000.05.24, X2000.06.09, X2000.06.25, X2000.07.11, X2000.07.27, X2000.08.12, X2000.08.28, X2000.09.13, X2000.09.29, ... 
+## min values  :      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768, ... 
+## max values  :       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767, ...&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Great! But now you’ll notice that the min and max values are rather strange (-32767 to 32767) when we know that NDVI can only range from -1 to 1, and rarely goes below 0. Very strange! Let’s have a look at our first image.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(mNDVI[[1]])&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;0 to 4000? Even stranger!&lt;/p&gt;
+&lt;p&gt;It turns out the issue is that GEE has exported the data in what appears to be a strange format to reduce the file size. We need to tell R how to interpret it by setting a gain and offset.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;NAvalue(mNDVI)=-32767
+offs(mNDVI)=0
+gain(mNDVI)=.0001
+plot(mNDVI[[1]])&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Much more reasonable!&lt;/p&gt;
+&lt;p&gt;Ok, so now we can begin to look at our questions; namely, how does MODIS NDVI vary in space and time?&lt;/p&gt;
+&lt;p&gt;But first, we should set our focal area.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;site &amp;lt;- readOGR(dsn=&amp;quot;/Users/jasper/Documents/GIS/CFR/MODISforHannah/Jonaskop 120m.kml&amp;quot;, layer=&amp;quot;Jonaskop 120m.kml&amp;quot;) # A Google Earth KML file&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## OGR data source with driver: KML 
+## Source: &amp;quot;/Users/jasper/Documents/GIS/CFR/MODISforHannah/Jonaskop 120m.kml&amp;quot;, layer: &amp;quot;Jonaskop 120m.kml&amp;quot;
+## with 1 features
+## It has 2 fields&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in readOGR(dsn = &amp;quot;/Users/jasper/Documents/GIS/CFR/MODISforHannah/
+## Jonaskop 120m.kml&amp;quot;, : Z-dimension discarded&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;site &amp;lt;- spTransform(site, CRS(proj4string(mNDVI))) #Reproject to match the projection of the MODIS data (UTM 34S in this case)
+
+plot(mNDVI[[1]])
+plot(site, add=T)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;It looks like we’re wrangling a lot more MODIS data than we need to. Let’s crop to out focal area…&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;mNDVI &amp;lt;- crop(mNDVI, site, snap = &amp;quot;out&amp;quot;) #&amp;quot;snap=&amp;quot;out&amp;quot;&amp;quot; adds a buffer around the site
+
+plot(mNDVI[[1]])
+plot(site, add=T)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt; …and look at a few images through time.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(mNDVI) #Note that R limits it to the first 16 images&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Lots of variation in space! What about time?&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;if(!file.exists(&amp;quot;/Users/jasper/GIT/jslingsby.github.io_local/static/img/output/mNDVI.gif&amp;quot;)) { # Check if the file exists
+  saveGIF({
+    for (i in 1:dim(mNDVI)[3]) plot(mNDVI[[i]],
+                      main=names(mNDVI)[i],
+                      legend.lab=&amp;quot;NDVI&amp;quot;,
+                      col=rev(terrain.colors(length(c(seq(0,.7,.05),1)))),
+                      breaks=seq(0,.7,.05))}, 
+    movie.name = &amp;quot;/Users/jasper/GIT/jslingsby.github.io_local/static/img/output/mNDVI.gif&amp;quot;, 
+    ani.width = 600, ani.height = 500, 
+    interval=.25)
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;figure&#34;&gt;
+&lt;img src=&#34;/img/output/mNDVI.gif&#34; /&gt;
+
+&lt;/div&gt;
+&lt;p&gt;*NOTE: this writes a .gif to file and does not render in R (or R notebook), so I had to insert it in the Markdown script.&lt;/p&gt;
+&lt;p&gt;You could make it a lot prettier, but pretty fancy. Still, not very useful for the print edition. How about just a simple line graph? this requires extracting the data to a data.frame.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dat &amp;lt;- as.data.frame(mNDVI)
+
+dat[1:10,1:10] #look at the data&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##    X2000.02.18 X2000.03.05 X2000.03.21 X2000.04.06 X2000.04.22 X2000.05.08
+## 1       0.2889      0.3280      0.3723      0.3743      0.3979      0.3902
+## 2       0.3127      0.3745      0.3850      0.3872      0.3680      0.4681
+## 3       0.3205      0.3508      0.3909      0.3878      0.3647      0.4488
+## 4       0.3256      0.3323      0.3823      0.4001      0.3542      0.4050
+## 5       0.3206      0.3841      0.3934      0.3817      0.3864      0.3987
+## 6       0.2866      0.3567      0.3723      0.3757      0.3799      0.4278
+## 7       0.2866      0.3567      0.3832      0.3808      0.3510      0.4681
+## 8       0.3340      0.3709      0.4215      0.3787      0.4191      0.4681
+## 9       0.3205      0.4144      0.4215      0.4099      0.3900      0.4615
+## 10      0.3256      0.4278      0.4363      0.4085      0.4115      0.4615
+##    X2000.05.24 X2000.06.09 X2000.06.25 X2000.07.11
+## 1       0.4644      0.4777      0.4730      0.4220
+## 2       0.4704      0.4777      0.4730      0.4289
+## 3       0.4698      0.4574      0.4340      0.4532
+## 4       0.4596      0.4574      0.4636      0.4228
+## 5       0.4522      0.4193      0.4636      0.4517
+## 6       0.4493      0.4538      0.4091      0.4160
+## 7       0.4043      0.4913      0.4730      0.4359
+## 8       0.4885      0.4913      0.4616      0.4300
+## 9       0.4318      0.4589      0.4908      0.4363
+## 10      0.4212      0.4413      0.4697      0.4489&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So each date is a column and each cell in space is a row in our data frame. This isn;t ideal for plotting so let’s reshape the data into long format.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rownames(dat) &amp;lt;- paste0(&amp;quot;A&amp;quot;,1:20) #Add dummy column labels
+
+dat &amp;lt;- as.data.frame(t(dat)) #transpose data.frame
+
+dat$Date &amp;lt;- as.Date(rownames(dat), format = &amp;quot;X%Y.%m.%d&amp;quot;)
+
+dat &amp;lt;- melt(dat, id=c(&amp;quot;Date&amp;quot;))
+
+head(dat)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##         Date variable  value
+## 1 2000-02-18       A1 0.2889
+## 2 2000-03-05       A1 0.3280
+## 3 2000-03-21       A1 0.3723
+## 4 2000-04-06       A1 0.3743
+## 5 2000-04-22       A1 0.3979
+## 6 2000-05-08       A1 0.3902&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now let’s make some pretty pictures!&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(data = dat, aes(x = Date, y = value, colour = variable)) + geom_line()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Pretty neat! It looks like our site burnt in the summer of 2000/2001. Now let’s split them up.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(data = dat, aes(x = Date, y = value, colour = variable)) + geom_line() + facet_wrap(~variable)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Well there’s definitely clear seasonality and, while subtle, there are differences among the cells…&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

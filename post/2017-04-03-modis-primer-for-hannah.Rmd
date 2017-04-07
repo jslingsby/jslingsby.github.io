@@ -4,8 +4,8 @@ author: "Jasper Slingsby"
 date: '2017-04-04'
 image: /img/jonaskop_landsat.png
 slug: modis-primer-for-hannah
-tags: []
-categories: R Tutorials
+tags: ["remote sensing", "All"]
+categories: ["R Tutorials", "All"]
 ---
 
 This is a quick primer on how to handle MODIS NDVI data from [**Google Earth Engine (GEE)**](https://earthengine.google.com/) in R. It's primarily for my Honours student, Hannah Simon, but why not make it public for all to share? I hope to add Landsat too, but that'll be another day.

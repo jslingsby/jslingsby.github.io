@@ -43,7 +43,25 @@
   </url>
   
   <url>
+    <loc>/tags/all/</loc>
+    <lastmod>2017-04-07T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/all/</loc>
+    <lastmod>2017-04-07T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/climate/</loc>
+    <lastmod>2017-04-07T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -73,6 +91,12 @@
   
   <url>
     <loc>/categories/r-tutorials/</loc>
+    <lastmod>2017-04-04T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/remote-sensing/</loc>
     <lastmod>2017-04-04T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>

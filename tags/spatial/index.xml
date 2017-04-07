@@ -657,7 +657,7 @@ writeRaster(rfi,file=rfifile) # Write out rasters to one file
 } # End if() statement
 ) # End timing&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##    user  system elapsed 
-##       0       0       0&lt;/code&gt;&lt;/pre&gt;
+##   0.000   0.000   0.001&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Now lets try it in parallel using the &lt;em&gt;foreach/%dopar%&lt;/em&gt; loop in library(doMC)…&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
@@ -777,28 +777,48 @@ points.gb$latlon &amp;lt;- paste(points.gb$coords.x2, points.gb$coords.x1, sep=&
 map.gb &amp;lt;- gvisMap(points.gb, locationvar=&amp;quot;latlon&amp;quot;, tipvar=&amp;quot;Name&amp;quot;)
 plot(map.gb)&lt;/code&gt;&lt;/pre&gt;
 &lt;!-- Map generated in R 3.3.2 by googleVis 0.6.1 package --&gt;
-&lt;!-- Mon Apr  3 04:35:53 2017 --&gt;
+&lt;!-- Fri Apr  7 21:38:38 2017 --&gt;
 &lt;!-- jsHeader --&gt;
 &lt;script type=&#34;text/javascript&#34;&gt;
  
 // jsData 
-function gvisDataMapID97fa14a72169 () {
+function gvisDataMapID4a8257b1a95 () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
  [
--32.34482878,
-19.08021393,
+-32.21705753,
+19.07624945,
 &#34;&#34;
 ],
 [
--32.36254961,
-19.07937494,
+-32.22123746,
+19.08465073,
 &#34;&#34;
 ],
 [
--32.3742216,
-19.09086183,
+-32.37125328,
+19.09075697,
+&#34;&#34;
+],
+[
+-32.27262508,
+19.11887719,
+&#34;&#34;
+],
+[
+-32.32846065,
+19.17213367,
+&#34;&#34;
+],
+[
+-32.35957022,
+19.13214821,
+&#34;&#34;
+],
+[
+-32.34617253,
+19.09800858,
 &#34;&#34;
 ],
 [
@@ -807,83 +827,63 @@ var datajson =
 &#34;&#34;
 ],
 [
--32.35127926,
-19.1225095,
+-32.23473583,
+19.08750048,
 &#34;&#34;
 ],
 [
--32.32400513,
-19.10500995,
+-32.21715281,
+19.07549098,
 &#34;&#34;
 ],
 [
--32.29224178,
-19.12210154,
+-32.32496011,
+19.10314975,
 &#34;&#34;
 ],
 [
--32.35388656,
-19.20409355,
+-32.22946292,
+19.09688965,
 &#34;&#34;
 ],
 [
--32.33297824,
-19.17444348,
+-32.35562325,
+19.13415585,
 &#34;&#34;
 ],
 [
--32.25277118,
-19.08529366,
+-32.21691198,
+19.07589986,
 &#34;&#34;
 ],
 [
--32.35109762,
-19.14768188,
+-32.23603258,
+19.0918143,
 &#34;&#34;
 ],
 [
--32.32834538,
-19.10619365,
+-32.28442124,
+19.11987604,
 &#34;&#34;
 ],
 [
--32.3130884,
-19.13534981,
+-32.28875089,
+19.11938289,
 &#34;&#34;
 ],
 [
--32.31896511,
-19.10284018,
+-32.29555942,
+19.10333819,
 &#34;&#34;
 ],
 [
--32.36356375,
-19.19231081,
+-32.35732017,
+19.07740725,
 &#34;&#34;
 ],
 [
--32.36738056,
-19.10363186,
-&#34;&#34;
-],
-[
--32.2962396,
-19.10470538,
-&#34;&#34;
-],
-[
--32.40064937,
-19.20561092,
-&#34;&#34;
-],
-[
--32.21705753,
-19.07624945,
-&#34;&#34;
-],
-[
--32.32384041,
-19.13844581,
+-32.32487539,
+19.102618,
 &#34;&#34;
 ] 
 ];
@@ -895,13 +895,13 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartMapID97fa14a72169() {
-var data = gvisDataMapID97fa14a72169();
+function drawChartMapID4a8257b1a95() {
+var data = gvisDataMapID4a8257b1a95();
 var options = {};
 options[&#34;showTip&#34;] = true;
 
     var chart = new google.visualization.Map(
-    document.getElementById(&#39;MapID97fa14a72169&#39;)
+    document.getElementById(&#39;MapID4a8257b1a95&#39;)
     );
     chart.draw(data,options);
     
@@ -925,9 +925,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartMapID97fa14a72169);
+callbacks.push(drawChartMapID4a8257b1a95);
 })();
-function displayChartMapID97fa14a72169() {
+function displayChartMapID4a8257b1a95() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -950,9 +950,9 @@ callbacks.shift()();
 // jsFooter
 &lt;/script&gt;
 &lt;!-- jsChart --&gt;
-&lt;script type=&#34;text/javascript&#34; src=&#34;https://www.google.com/jsapi?callback=displayChartMapID97fa14a72169&#34;&gt;&lt;/script&gt;
+&lt;script type=&#34;text/javascript&#34; src=&#34;https://www.google.com/jsapi?callback=displayChartMapID4a8257b1a95&#34;&gt;&lt;/script&gt;
 &lt;!-- divChart --&gt;
-&lt;div id=&#34;MapID97fa14a72169&#34; style=&#34;width: 500; height: automatic;&#34;&gt;
+&lt;div id=&#34;MapID4a8257b1a95&#34; style=&#34;width: 500; height: automatic;&#34;&gt;
 
 &lt;/div&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;options(op) # Reset gvis options to default&lt;/code&gt;&lt;/pre&gt;
