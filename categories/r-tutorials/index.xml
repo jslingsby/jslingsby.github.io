@@ -128,6 +128,7 @@ plot(site, add=T)&lt;/code&gt;&lt;/pre&gt;
 &lt;img src=&#34;/img/output/mNDVI.gif&#34; /&gt;
 
 &lt;/div&gt;
+&lt;p&gt;*NOTE: this writes a .gif to file and does not render in R (or R notebook), so I had to insert it in the Markdown script.&lt;/p&gt;
 &lt;p&gt;You could make it a lot prettier, but pretty fancy. Still, not very useful for the print edition. How about just a simple line graph? this requires extracting the data to a data.frame.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dat &amp;lt;- as.data.frame(mNDVI)
 

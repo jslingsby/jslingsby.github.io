@@ -1,10 +1,19 @@
 ---
 title: "Drought Monitor for the Jonkershoek Valley, Western Cape, South Africa"
-date: 2017-03-08
+date: 2017-04-07
 image: "/img/jonkershoek2.png"
 ---
 
-*This analysis was prepared by the [Fynbos Node](http://www.saeon-fynbos.org) of [the South African Environmental Observation Network (SAEON)](http://www.saeon.ac.za).*
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics("/img/SAEON_DST.png")
+```
+
+<br>
+
+<br>
+
+*This analysis was prepared by the [**Fynbos Node**](http://www.saeon-fynbos.org) of [the **South African Environmental Observation Network (SAEON)**](http://www.saeon.ac.za).*
 
 
 ```{r, echo=FALSE}
@@ -147,11 +156,11 @@ monthvalsR$Missing[which(monthvalsR$Time==2015 & monthvalsR$Month %in% c("May", 
 
 ```
 
-Here we present the record of **stream flow rates for the Langrivier catchment** and **rainfall from the Dwarsberg weather station** in the Jonkershoek Valley for the period January 1961 to the end of February 2017. 
+Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of March 2017. 
 
 <!--more-->
 
-We plan to update this page monthly. For live weather data and the record over the past month please access the [Dwarsberg weather station directly](http://lognet.saeon.ac.za:8088/Dwarsberg/index.html). You may also be interested in our [Constantiaberg weather station](http://lognet.saeon.ac.za:8088/Constantiaberg/index.html) on the Cape Peninsula or our [Engelsmanskloof weather station](http://lognet.saeon.ac.za:8088/EngCed/index.html) in the Cederberg.
+We plan to update this page monthly. For live weather data and the record over the past month please access the [**Dwarsberg weather station directly**](http://lognet.saeon.ac.za:8088/Dwarsberg/index.html). You may also be interested in our [**Constantiaberg weather station**](http://lognet.saeon.ac.za:8088/Constantiaberg/index.html) on the Cape Peninsula or our [**Engelsmanskloof weather station**](http://lognet.saeon.ac.za:8088/EngCed/index.html) in the Cederberg.
 
 <br>
 
@@ -188,7 +197,7 @@ ggplot(monthvalsNA, aes(x = Month, y = Cumulative_Streamflow, colour=Time)) + ge
 
 ***
 
-The following **dynamic figures** illustrate the mean monthly and annual stream flow. Note you can hover over a piece of the time series to get the date and streamflow value, and adjust and zoom the window of interest by sliding the toggles in the bar at the bottom of each figure. Note the historical data (pre September 2011) has been infilled previously, but we still need to ascertain where the gaps were and what method was used.
+The following dynamic figures illustrate the mean monthly and annual stream flow. Note you can hover over a piece of the time series to get the date and streamflow value, and adjust and zoom the window of interest by sliding the toggles in the bar at the bottom of each figure. Note the historical data (pre September 2011) has been infilled previously, but we still need to ascertain where the gaps were and what method was used.
 
 ***
 
@@ -237,12 +246,20 @@ ggplot(monthvalsR, aes(x = Month, y = Cumulative_Rainfall, colour=Time)) + geom_
 
 ***
 
+Or dynamically:
+
+<br>
+
 ```{r, echo=FALSE, fig.align="center"}
 dygraph(dbgm, ylab = "Rainfall (mm)", xlab = "Date", main = "Monthly Rainfall record for Dwarsberg")  %>% 
 dyRangeSelector() %>%
 dyLimit(mean(dbgm, na.rm=T), label = "Mean", labelLoc = "left", color = "black", strokePattern = "dashed") %>%
 dyShading(from = "1991-09-01", to = "2013-03-03")
 ```
+
+<br>
+
+<br>
 
 Note that this raingauge was not operational from 1991 to 2013.
 
@@ -258,7 +275,7 @@ Note that this raingauge was not operational from 1991 to 2013.
 
 ***
 
-If you spot any issues, have any queries, or would like to use or cite these data please contact the [SAEON Fynbos Node](http://www.saeon-fynbos.org) or jasper or abri, both @saeon.ac.za.
+If you spot any issues, have any queries, or would like to use or cite these data please contact the [**SAEON Fynbos Node**](http://www.saeon-fynbos.org) or jasper or abri, both @saeon.ac.za.
 
 ***
 ***

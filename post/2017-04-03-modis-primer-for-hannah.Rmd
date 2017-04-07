@@ -126,6 +126,8 @@ if(!file.exists("/Users/jasper/GIT/jslingsby.github.io_local/static/img/output/m
 
 ![](/img/output/mNDVI.gif)
 
+*NOTE: this writes a .gif to file and does not render in R (or R notebook), so I had to insert it in the Markdown script.
+
 You could make it a lot prettier, but pretty fancy. Still, not very useful for the print edition. How about just a simple line graph? this requires extracting the data to a data.frame.
 
 ```{r}
