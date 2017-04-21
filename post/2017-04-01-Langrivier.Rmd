@@ -1,9 +1,12 @@
 ---
 title: "Drought Monitor for the Jonkershoek Valley, Western Cape, South Africa"
-date: 2017-04-07
-image: "/img/jonkershoek2.png"
-categories: ["All", "Climate"]
-tags: ["All"]
+date: '2017-04-07'
+image: /img/jonkershoek2.png
+output: pdf_document
+tags: All
+categories:
+- All
+- Climate
 ---
 
 
