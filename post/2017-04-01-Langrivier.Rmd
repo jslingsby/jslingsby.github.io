@@ -1,6 +1,6 @@
 ---
 title: "Drought Monitor for the Jonkershoek Valley, Western Cape, South Africa"
-date: '2017-04-07'
+date: '2017-05-02'
 image: /img/jonkershoek2.png
 output: pdf_document
 tags: All
@@ -161,7 +161,7 @@ monthvalsR$Missing[which(monthvalsR$Time==2015 & monthvalsR$Month %in% c("May", 
 
 ```
 
-Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of March 2017. 
+Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of April 2017. 
 
 <!--more-->
 
