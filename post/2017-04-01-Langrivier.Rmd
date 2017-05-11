@@ -21,7 +21,7 @@ knitr::include_graphics("/img/SAEON_DST.png")
 *This analysis was prepared by the [**Fynbos Node**](http://www.saeon-fynbos.org) of [the **South African Environmental Observation Network (SAEON)**](http://www.saeon.ac.za).*
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 if(Sys.getenv("USER") == "jasper") {setwd("/Users/jasper/Dropbox/Shared/Jonkershoek Weather and Streamflow/")}
 
@@ -87,6 +87,7 @@ mmeans$Month <- as.factor(mmeans$Month)
 mmeans$Month <- reorder(mmeans$Month, c(4,8,12,2,1,7,6,3,5,11,10,9)) #c(5,4,8,1,9,7,6,2,12,11,10,3)
 mmeans <- mmeans[order(mmeans$Month),]
 
+#Calculate cummulative flows
 m2015 <- data.frame(Month = levels(mmeans$Month), Streamflow = as.numeric(langIm["2015"])) # All months in 2015                   
 m2016 <- as.numeric(langIm["2016"])
 m2016 <- data.frame(Month = levels(mmeans$Month)[1:length(m2016)], Streamflow = m2016) # All months in 2016
@@ -101,9 +102,52 @@ m2017$Cumulative_Streamflow <- cumsum(m2017$Streamflow)
 monthvals <- rbind(mmeans, m2015, m2016, m2017) 
 monthvals$Time <- c(rep("Mean (1961 to current)", 12), rep("2015", 12), rep("2016", nrow(m2016)), rep("2017", nrow(m2017)))
 
-##Pseudocode for to calculate cumulative streamflow
-#sumstreamflow <- monthvals
-#sumstreamflow$Streamflow <- c(cumsum(mmeans$Streamflow),cumsum(m2015),cumsum(m2015)) #NEED TO FIX ORDER OF MONTHS!!!
+#Calculate annual summer and winter streamflow
+
+#Calculate Summer streamflow
+Summer1 = apply.yearly(langIm[.indexmon(langIm) %in% 9:11], "sum", na.rm=F)  # last summer months for all years (note zero-based indexing!)
+Summer2 = apply.yearly(langIm[.indexmon(langIm) %in% 0:2], "sum", na.rm=F)  # Summer months for all years (note zero-based indexing!)
+Summer1$Year <- format(index(Summer1),"%Y")
+Summer2$Year <- format(index(Summer2),"%Y")
+Summer2$Year <- Summer2$Year - 1
+names(Summer1)[1] <- "Streamflow"
+Hmm <- merge(as.data.frame(Summer1), as.data.frame(Summer2))
+Summer <- data.frame(Year = Hmm$Year, Streamflow.Volume = rowSums(Hmm[,2:3]), Season = "Summer")
+
+#Calculate Winter streamflow
+Winter = apply.yearly(langIm[.indexmon(langIm) %in% c(3:8)], "sum", na.rm=F)   
+Winter$Year <- format(index(Winter),"%Y")
+Winter <- as.data.frame(Winter)
+Winter$Season <- "Winter"
+Winter <- Winter[-which(Winter$Year == format(Sys.time(), "%Y")),] #DROP CURRENT YEAR!!!
+
+#Highlight driest summers and winters
+Winter$Season[which(Winter$Streamflow.Volume < quantile(Winter$Streamflow.Volume, 0.1, na.rm = T))] <- "Winter (lowest 10%)"
+Summer$Season <- as.character(Summer$Season)
+Summer$Season[which(Summer$Streamflow.Volume < quantile(Summer$Streamflow.Volume, 0.1, na.rm = T))] <- "Summer (lowest 10%)"
+
+#Combine summer and winter streamflow
+sdat <- rbind(Winter, Summer)
+sdat$Year <- as.factor(sdat$Year)
+
+as <- ggplot(sdat, aes(Year, y = Streamflow.Volume, fill=as.factor(Season))) + 
+  geom_bar(stat="identity") +
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
+  ylab(bquote("Streamflow (ML)")) +
+  geom_hline(yintercept = mean(langIa, na.rm = T)) +
+#  geom_vline(xintercept = 47.5, linetype=3) +
+  annotate("text", x = 5, y = mean(langIa, na.rm = T) + 400, label = "Average") +
+  annotate("text", x = 55, y = 4000, angle=90, label = "*") +
+  scale_fill_manual(name="",values=c("#D6604D", "goldenrod1", "#4393C3", "slateblue4"))
+
+#pdf("/Users/jasper/GIT/Jonkershoek/Output/dwarsberg_annual_streamflow2016.pdf", height = 5, width = 12)
+#as
+#dev.off()
+
+#png("/Users/jasper/GIT/Jonkershoek/Output/dwarsberg_annual_streamflow2016.png", height = 5, width = 12, units = "in", res=600)
+#as
+#dev.off()
+
 
 ###Fetch weather data
 
@@ -131,7 +175,6 @@ dbgm <- dbgm[-nrow(dbgm),] #Drop last current (incomplete) month
 dbga <- apply.yearly(dbg, "sum", na.rm=F)
 dbga <- dbga[-nrow(dbga),] #Drop last current (incomplete) year
 
-
 #Make summaries for barplot
 xR <- tbl_df(data.frame(Rainfall = dbgm[,1], Date = time(dbgm)))
 sumsR <- summarise(group_by(xR, months(Date, abbreviate=T)), mean(Summed.rainfall, na.rm=T))
@@ -140,13 +183,13 @@ sumsR$Month <- as.factor(sumsR$Month)
 sumsR$Month <- reorder(sumsR$Month, c(4,8,12,2,1,7,6,3,5,11,10,9)) #c(5,4,8,1,9,7,6,2,12,11,10,3)) 
 sumsR <- sumsR[order(sumsR$Month),]
 
+#Calculate cumulative rainfall
 m2015 <- data.frame(Month = levels(sumsR$Month), Rainfall = as.numeric(dbgm["2015"])) # All months in 2015  
 
 m2016 <- as.numeric(dbgm["2016"])
 m2016 <- data.frame(Month = levels(sumsR$Month)[1:length(m2016)], Rainfall = m2016) # All months in 2016
 m2017 <- as.numeric(dbgm["2017"])
 m2017 <- data.frame(Month = levels(sumsR$Month)[1:length(m2017)], Rainfall = m2017) # All months in 2017
-
 
 sumsR$Cumulative_Rainfall <- cumsum(sumsR$Rainfall)
 m2015$Cumulative_Rainfall <- cumsum(m2015$Rainfall)
@@ -157,6 +200,52 @@ monthvalsR <- rbind(sumsR, m2015, m2016, m2017)
 monthvalsR$Time <- c(rep("Mean (1945 to current)", 12), rep("2015", 12), rep("2016", nrow(m2016)), rep("2017", nrow(m2017)))
 monthvalsR$Missing <- ""
 monthvalsR$Missing[which(monthvalsR$Time==2015 & monthvalsR$Month %in% c("May", "Jun", "Jul"))] <- "*"
+
+
+#Calculate annual summer and winter rainfall
+#Calculate Summer rainfall
+Summer1 = apply.yearly(dbgm[.indexmon(dbgm) %in% 9:11], "sum", na.rm=F)  # last summer months for all years (note zero-based indexing!)
+Summer2 = apply.yearly(dbgm[.indexmon(dbgm) %in% 0:2], "sum", na.rm=F)  # Summer months for all years (note zero-based indexing!)
+Summer1$Year <- format(index(Summer1),"%Y")
+Summer2$Year <- format(index(Summer2),"%Y")
+Summer2$Year <- Summer2$Year - 1
+names(Summer1)[1] <- "Rain"
+Hmm <- merge(as.data.frame(Summer1), as.data.frame(Summer2))
+Summer <- data.frame(Year = Hmm$Year, Summed.rainfall = rowSums(Hmm[,2:3]), Season = "Summer")
+
+#Calculate Winter rainfall
+Winter = apply.yearly(dbgm[.indexmon(dbgm) %in% c(3:8)], "sum", na.rm=F)   
+Winter$Year <- format(index(Winter),"%Y")
+Winter <- as.data.frame(Winter)
+Winter$Season <- "Winter"
+Winter <- Winter[-which(Winter$Year == format(Sys.time(), "%Y")),] #DROP CURRENT YEAR!!!
+
+#Highlight driest summers and winters
+Winter$Season[which(Winter$Summed.rainfall < quantile(Winter$Summed.rainfall, 0.1))] <- "Winter (lowest 10%)"
+Summer$Season <- as.character(Summer$Season)
+Summer$Season[which(Summer$Summed.rainfall < quantile(Summer$Summed.rainfall, 0.1, na.rm = T))] <- "Summer (lowest 10%)"
+
+#Combine summer and winter rainfall
+dat <- rbind(Winter, Summer)
+dat$Year <- as.factor(dat$Year)
+
+ar <- ggplot(dat, aes(Year, y = Summed.rainfall, fill=as.factor(Season))) + 
+  geom_bar(stat="identity") +
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
+  ylab(bquote("Rainfall (mm)")) +
+  geom_hline(yintercept = mean(dbga, na.rm = T)) +
+  geom_vline(xintercept = 47.5, linetype=3) +
+  annotate("text", x = 3.5, y = mean(dbga, na.rm = T) + 200, label = "Average") +
+  annotate("text", x = 47, y = 4000, angle=90, label = "Missing data") +
+  scale_fill_manual(name="",values=c("#D6604D", "goldenrod1", "#4393C3", "slateblue4"))
+
+#pdf("/Users/jasper/GIT/Jonkershoek/Output/dwarsberg_annual_rainfall2016.pdf", height = 5, width = 12)
+#ar
+#dev.off()
+
+#png("/Users/jasper/GIT/Jonkershoek/Output/dwarsberg_annual_rainfall2016.png", height = 5, width = 12, units = "in", res=600)
+#ar
+#dev.off()
 
 
 ```
@@ -202,7 +291,23 @@ ggplot(monthvalsNA, aes(x = Month, y = Cumulative_Streamflow, colour=Time)) + ge
 
 ***
 
-The following dynamic figures illustrate the mean monthly and annual stream flow. Note you can hover over a piece of the time series to get the date and streamflow value, and adjust and zoom the window of interest by sliding the toggles in the bar at the bottom of each figure. Note the historical data (pre September 2011) has been infilled previously, but we still need to ascertain where the gaps were and what method was used.
+Or compare across all years on record:
+
+***
+
+```{r, echo = F, fig.align="center", message=FALSE, warning=FALSE, fig.width=11, fig.height=5}
+as
+```
+
+***
+
+Note that "Summer" denotes the Austral summer (here defined as October - March), overlapping 2 years. In this figure we have lumped summers by the preceding year, e.g. summer 2016 represents the period October 2016 to March 2017, which incidentally has been the driest summer on record in terms of both streamflow and rainfall.
+
+*Data for October - December from the summer of 2015/2016 are missing due to vandalism of the weir, but January - March 2016 was among the lowest 10% of flows for that period, suggesting that 2015 was likely the driest year on record. Of those with complete data, 2003 was the driest year, follwed by 1974.
+
+***
+
+The following dynamic figures illustrate the mean monthly stream flow. Note you can hover over a piece of the time series to get the date and streamflow value, and adjust and zoom the window of interest by sliding the toggles in the bar at the bottom of each figure. Note the historical data (pre September 2011) has been infilled previously, but we still need to ascertain where the gaps were and what method was used.
 
 ***
 
@@ -251,6 +356,20 @@ ggplot(monthvalsR, aes(x = Month, y = Cumulative_Rainfall, colour=Time)) + geom_
 
 ***
 
+Or compare across all years on record:
+
+***
+
+```{r, echo = F, fig.align="center", message=FALSE, warning=FALSE, fig.width=11, fig.height=5}
+ar
+```
+
+***
+
+So 2015 and 2016 have been the lowest rainfall years on record, while 2013 was not far behind...
+
+***
+
 Or dynamically:
 
 <br>
@@ -266,7 +385,7 @@ dyShading(from = "1991-09-01", to = "2013-03-03")
 
 <br>
 
-Note that this raingauge was not operational from 1991 to 2013.
+Note that this raingauge was not operational from 1991 to 2013, crucially missing some of the low stream flows in the 1990s and the lowest in 2003.
 
 ***
 
