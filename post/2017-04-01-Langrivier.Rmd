@@ -1,6 +1,6 @@
 ---
 title: "Drought Monitor for the Jonkershoek Valley, Western Cape, South Africa"
-date: '2017-05-02'
+date: '2017-06-01'
 image: /img/jonkershoek2.png
 output: pdf_document
 tags: All
@@ -87,12 +87,22 @@ mmeans$Month <- as.factor(mmeans$Month)
 mmeans$Month <- reorder(mmeans$Month, c(4,8,12,2,1,7,6,3,5,11,10,9)) #c(5,4,8,1,9,7,6,2,12,11,10,3)
 mmeans <- mmeans[order(mmeans$Month),]
 
+#summarise(group_by(x, months(Date, abbreviate=T)), min(Streamflow.Volume, na.rm=T)) #Minimum by month
+
+#Calculate confidence intervals
+sds <- summarise(group_by(x, months(Date, abbreviate=T)), sd(Streamflow.Volume, na.rm=T)) #Standard deviation
+colnames(sds) <- c("Month", "Streamflow")
+sds$Month <- as.factor(sds$Month)
+sds$Month <- reorder(sds$Month, c(4,8,12,2,1,7,6,3,5,11,10,9)) #c(5,4,8,1,9,7,6,2,12,11,10,3)
+sds <- sds[order(sds$Month),]
+mmeans$StreamflowCI <- (sds$Streamflow / sqrt(nrow(x)/12)) *qt(0.975/2 + .5, sqrt(nrow(x)/12-1)) #convert to standard error and then confidence interval
+
 #Calculate cummulative flows
-m2015 <- data.frame(Month = levels(mmeans$Month), Streamflow = as.numeric(langIm["2015"])) # All months in 2015                   
+m2015 <- data.frame(Month = levels(mmeans$Month), Streamflow = as.numeric(langIm["2015"]), StreamflowCI = NA) # All months in 2015                   
 m2016 <- as.numeric(langIm["2016"])
-m2016 <- data.frame(Month = levels(mmeans$Month)[1:length(m2016)], Streamflow = m2016) # All months in 2016
+m2016 <- data.frame(Month = levels(mmeans$Month)[1:length(m2016)], Streamflow = m2016, StreamflowCI = NA) # All months in 2016
 m2017 <- as.numeric(langIm["2017"])
-m2017 <- data.frame(Month = levels(mmeans$Month)[1:length(m2017)], Streamflow = m2017) # All months in 2017
+m2017 <- data.frame(Month = levels(mmeans$Month)[1:length(m2017)], Streamflow = m2017, StreamflowCI = NA) # All months in 2017
 
 mmeans$Cumulative_Streamflow <- cumsum(mmeans$Streamflow)
 m2015$Cumulative_Streamflow <- cumsum(m2015$Streamflow)
@@ -183,13 +193,23 @@ sumsR$Month <- as.factor(sumsR$Month)
 sumsR$Month <- reorder(sumsR$Month, c(4,8,12,2,1,7,6,3,5,11,10,9)) #c(5,4,8,1,9,7,6,2,12,11,10,3)) 
 sumsR <- sumsR[order(sumsR$Month),]
 
+#summarise(group_by(xR, months(Date, abbreviate=T)), min(Summed.rainfall, na.rm=T)) #Minimum by month
+
+#Calculate confidence intervals
+sds <- summarise(group_by(xR, months(Date, abbreviate=T)), sd(Summed.rainfall, na.rm=T)) #Standard deviation
+colnames(sds) <- c("Month", "Summed.rainfall")
+sds$Month <- as.factor(sds$Month)
+sds$Month <- reorder(sds$Month, c(4,8,12,2,1,7,6,3,5,11,10,9)) #c(5,4,8,1,9,7,6,2,12,11,10,3)
+sds <- sds[order(sds$Month),]
+sumsR$RainfallCI <- (sds$Summed.rainfall / sqrt(nrow(xR)/12)) *qt(0.975/2 + .5, sqrt(nrow(xR)/12-1)) #convert to standard error and then confidence interval
+
 #Calculate cumulative rainfall
-m2015 <- data.frame(Month = levels(sumsR$Month), Rainfall = as.numeric(dbgm["2015"])) # All months in 2015  
+m2015 <- data.frame(Month = levels(sumsR$Month), Rainfall = as.numeric(dbgm["2015"]), RainfallCI = NA) # All months in 2015  
 
 m2016 <- as.numeric(dbgm["2016"])
-m2016 <- data.frame(Month = levels(sumsR$Month)[1:length(m2016)], Rainfall = m2016) # All months in 2016
+m2016 <- data.frame(Month = levels(sumsR$Month)[1:length(m2016)], Rainfall = m2016, RainfallCI = NA) # All months in 2016
 m2017 <- as.numeric(dbgm["2017"])
-m2017 <- data.frame(Month = levels(sumsR$Month)[1:length(m2017)], Rainfall = m2017) # All months in 2017
+m2017 <- data.frame(Month = levels(sumsR$Month)[1:length(m2017)], Rainfall = m2017, RainfallCI = NA) # All months in 2017
 
 sumsR$Cumulative_Rainfall <- cumsum(sumsR$Rainfall)
 m2015$Cumulative_Rainfall <- cumsum(m2015$Rainfall)
@@ -250,7 +270,7 @@ ar <- ggplot(dat, aes(Year, y = Summed.rainfall, fill=as.factor(Season))) +
 
 ```
 
-Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of April 2017. 
+Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of May 2017. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams.
 
 <!--more-->
 
@@ -266,16 +286,17 @@ We plan to update this page monthly. For live weather data and the record over t
 
 ***
 
-Here are the recent monthly streamflow values relative to averages across the entire time period (1961 to current).
+Here are the recent monthly streamflow values for Langrivier relative to averages across the entire time period (1961 to current).
 
-```{r, echo=FALSE, fig.align="center"}
+```{r, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE}
 g <- ggplot(monthvals, aes(Month, Streamflow, fill=Time), na.rm=TRUE)
-g <- g + geom_bar(stat="identity", position="dodge", na.rm=TRUE) + scale_fill_manual(values = c("#4393C3","#D6604D","forestgreen","darkgrey")) + ggtitle("Monthly Streamflow") + ylab(bquote("Streamflow (ML)"))
+g <- g + geom_bar(stat="identity", position="dodge", na.rm=TRUE) + scale_fill_manual(values = c("#4393C3","#D6604D","forestgreen","darkgrey")) + ggtitle("Monthly Streamflow") + ylab(bquote("Streamflow (ML)")) 
+g <- g + geom_errorbar(aes(ymin=Streamflow-StreamflowCI, ymax=Streamflow+StreamflowCI), width=.2, position=position_dodge(.9))
+
 g
 ```
 
-
-Note that missing months (e.g. October-November 2015) are those that overlap a data gap of over 30 days.
+Black error bars around the mean (grey column) indicate 95% confidence intervals. Monthly values lower than the lower bar are among the lowest 5% of recorded flows for that month. January, February, March and May 2017 are the lowest streamflows ever recorded for their respective months. Note that missing months (e.g. October-November 2015) are those that overlap a data gap of over 30 days.
 
 ***
 
@@ -283,8 +304,8 @@ We can also view this cumulatively:
 
 ***
 
-```{r, echo=FALSE, fig.align="center"}
-monthvalsNA <- na.omit(monthvals)
+```{r, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE}
+monthvalsNA <- monthvals[!is.na(monthvals$Streamflow),]
 
 ggplot(monthvalsNA, aes(x = Month, y = Cumulative_Streamflow, colour=Time)) + geom_point() + scale_colour_manual(values = c("#4393C3","#D6604D","forestgreen","darkgrey"))
 ```
@@ -295,7 +316,7 @@ Or compare across all years on record:
 
 ***
 
-```{r, echo = F, fig.align="center", message=FALSE, warning=FALSE, fig.width=11, fig.height=5}
+```{r, echo = F, fig.align="center", message=FALSE, warning=FALSE, fig.width=8, fig.height=4}
 as
 ```
 
@@ -303,11 +324,11 @@ as
 
 Note that "Summer" denotes the Austral summer (here defined as October - March), overlapping 2 years. In this figure we have lumped summers by the preceding year, e.g. summer 2016 represents the period October 2016 to March 2017, which incidentally has been the driest summer on record in terms of both streamflow and rainfall.
 
-*Data for October - December from the summer of 2015/2016 are missing due to vandalism of the weir, but January - March 2016 was among the lowest 10% of flows for that period, suggesting that 2015 was likely the driest year on record. Of those with complete data, 2003 was the driest year, follwed by 1974.
+*Data for October - December from the summer of 2015/2016 are missing due to vandalism of the weir, but January - March 2016 was among the lowest 10% of flows for that period, suggesting that 2015 was likely the driest year on record. Of those with complete data, 2003 was the driest year, followed by 1974.
 
 ***
 
-The following dynamic figures illustrate the mean monthly stream flow. Note you can hover over a piece of the time series to get the date and streamflow value, and adjust and zoom the window of interest by sliding the toggles in the bar at the bottom of each figure. Note the historical data (pre September 2011) has been infilled previously, but we still need to ascertain where the gaps were and what method was used.
+The following dynamic figures illustrate the mean monthly stream flow. You can hover over a piece of the time series to get the date and streamflow value, and adjust and zoom the window of interest by sliding the toggles in the bar at the bottom of each figure. Note the historical data (pre September 2011) has been infilled previously, but we still need to ascertain where the gaps were and what method was used.
 
 ***
 
@@ -337,10 +358,15 @@ dygraph(langIm, ylab = "Streamflow (ML)", xlab = "Date", main = "Langrivier Mont
 
 Here are the recent monthly rainfall values relative to averages across the entire time period (1945 to current):
 
-```{r, echo=FALSE, fig.align="center"}
+```{r, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE}
 g <- ggplot(monthvalsR, aes(Month, Rainfall, fill=Time))
-g + geom_bar(stat="identity", position="dodge") + scale_fill_manual(values = c("#4393C3","#D6604D","forestgreen","darkgrey")) + ggtitle("Monthly Rainfall") + ylab("Rainfall (mm)") + geom_text(data=monthvalsR, aes(label=Missing), vjust=0, hjust=1)
+g <- g + geom_bar(stat="identity", position="dodge") + scale_fill_manual(values = c("#4393C3","#D6604D","forestgreen","darkgrey")) + ggtitle("Monthly Rainfall") + ylab("Rainfall (mm)") + geom_text(data=monthvalsR, aes(label=Missing), vjust=0, hjust=1)
+g <- g + geom_errorbar(aes(ymin=Rainfall-RainfallCI, ymax=Rainfall+RainfallCI), width=.2, position=position_dodge(.9))
+
+g
 ```
+
+Black error bars around the mean (grey column) indicate 95% confidence intervals. Monthly values lower than the lower bar are among the lowest 5% of recorded flows for that month.
 
 *Indicates that these months were missing data in 2015 due to power supply problems.
 
@@ -360,7 +386,7 @@ Or compare across all years on record:
 
 ***
 
-```{r, echo = F, fig.align="center", message=FALSE, warning=FALSE, fig.width=11, fig.height=5}
+```{r, echo = F, fig.align="center", message=FALSE, warning=FALSE, fig.width=8, fig.height=4}
 ar
 ```
 
