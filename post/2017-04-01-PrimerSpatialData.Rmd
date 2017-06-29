@@ -4,7 +4,6 @@ author: "Jasper Slingsby - South African Environmental Observation Network (SAEO
 date: 2017-06-29
 image: "/img/kogelberg_map.jpg"
 categories: ["R Tutorials", "All"]
-tags: ["spatial", "All"]
 website: <http://www.saeon.ac.za>; <http://www.saeon-fynbos.org>
 output:
   blogdown::html_page:
@@ -98,7 +97,7 @@ Note that I occassionally include comments in the R chunks. Comments are precede
 <br>
 
 ###Data Description
-For this exercise we'll play with fine-scale locality (point) data for the critically endangered Clanwilliam cedar (*Widdringtonia cedarbergensis*) mapped by my father for the new Cederberg hiking map (check out <http://www.slingsbymaps.com/>; data for 1000 trees downloadable at <https://dl.dropboxusercontent.com/u/47937308/Cedars.kml>), a 90m (raster) digital elevation model (DEM) that I will show you how to download directly with R, and two "polygon" data sets consisting of mapped burn scars for CapeNature reserves (available at <http://bgis.sanbi.org/Projects/Detail/168>) and the National Vegetation Map (available at <http://bgis.sanbi.org/SpatialDataset/Detail/18>). You will need to download the cedar dataset into your chosen local data directory (see "datwd" below) and download the other data into your chosen GIS data directory (see "giswd" below) and unzip them. *datwd* and *giswd* can be the same for the purposes of this tutorial. You can download the R code (with the RMarkdown content commented out) at <https://dl.dropboxusercontent.com/u/47937308/PrimerSpatialData.R>.
+For this exercise we'll play with fine-scale locality (point) data for the critically endangered Clanwilliam cedar (*Widdringtonia cedarbergensis*) mapped by my father for the new Cederberg hiking map (check out **<http://www.slingsbymaps.com/>**; data for 1000 trees downloadable at **<https://dl.dropboxusercontent.com/u/47937308/Cedars.kml>**), a 90m (raster) digital elevation model (DEM) (**<https://dl.dropboxusercontent.com/u/47937308/SRTM.zip>**) that I will also show you how to download directly with R, and two "polygon" data sets consisting of mapped burn scars for CapeNature reserves (available at **<http://bgis.sanbi.org/Projects/Detail/168>**) and the National Vegetation Map (available at **<http://bgis.sanbi.org/SpatialDataset/Detail/18>**). You will need to download the cedar dataset into your chosen local data directory (see "datwd" below) and download the other data into your chosen GIS data directory (see "giswd" below) and unzip them. *datwd* and *giswd* can be the same for the purposes of this tutorial. You can download the R code (with the RMarkdown content commented out) at **<https://dl.dropboxusercontent.com/u/47937308/PrimerSpatialData.R>**.
 
 
 ***
@@ -109,11 +108,9 @@ For this exercise we'll play with fine-scale locality (point) data for the criti
 Let's start by setting our working directories. I usually work from a "Project" in RStudio linked to a GIT repository (see <https://git-scm.com/> and <https://github.com/>) for version control and easy code sharing/collaboration. I'm not going to go there with this tutorial, but it is worth exploring if you intend to do big projects in R. R projects set the working directory to a good place automatically. Alternatively you can use the setwd() function. 
 If I'm not in a repo or I am working with large data sets that I don't want to replicate in every GIT repo on my hard drive I usually set separate "data", "GIS data" (i.e. biggish data) and "results" working directories by making each path an object and inserting as appropriate for different read and write functions using paste() or paste0(). These would look something like: 
 
-```
 datwd = "/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/"  
 giswd = "/Users/jasper/Documents/GIS/"   
 reswd = "/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Results/"
-```
 
 But! This is not useful if I'm sharing the project or work on multiple machines. In this case it's better to identify the machine/user using Sys.getenv() and wrap the code in an if() statement for each user like so:
 
@@ -205,7 +202,7 @@ paste0(datwd, "Cedars.kml")
 
 <br>
 
-Note that the presence and number of /'s are very important... It's the first thing to check if you get an error.
+Note that the presence and number of /'s are very important... It's the first thing to check if you get an error!!! IF YOU HAVE ANY ISSUES READING IN DATA AT ANY STAGE THE FIRST THING TO DO IS TO RUN THE "paste0(...)" SECTION OF THE SCRIPT AND MAKE SURE IT MATCHES EXACTLY THE PATH TO YOUR FILE!!!
 
 <br>
 
@@ -246,7 +243,7 @@ Let's get a digital elevation model (DEM) from the SRTM90 (Shuttle Radar Topogra
 
 ```{r}
 #dem <- getData('SRTM', lon=19, lat=-32.5, path = paste0(giswd, "SRTM/")) # download data from CGIAR website
-dem <- raster(paste0(giswd, "SRTM/srtm_40_19.tif")) # read in data from local source
+dem <- raster(paste0(giswd, "SRTM/srtm_40_19.tif")) # read in data from local source - NOTE THAT YOU MAY NEED TO UNZIP THE FILE YOU DOWNLOADED!!!
 proj4string(dem) # this is not our chosen projection for this tutorial so we need to reproject
 dem <- projectRaster(dem, crs=CRS(stdCRS)) # note that we use a different function for raster data than for shapefiles (points or polygon) - this can take a while...
 
@@ -346,7 +343,7 @@ Perhaps the best place to start is the National Vegetation Map of South Africa, 
 <br>
 
 ```{r}
-vegmap <- readOGR(dsn=paste0(giswd, "VegMap/nvm2012beta2_wgs84_Geo/"), layer="nvm2012beta2_wgs84_Geo") # Get the data
+vegmap <- readOGR(dsn=paste0(giswd, "nvm2012beta2_wgs84_Geo"), layer="nvm2012beta2_wgs84_Geo") # Get the data
 head(vegmap) # Have a look at the first 6 rows of the attribute table 
 extent(vegmap) # Check the extent
 proj4string(vegmap) # Check the projection

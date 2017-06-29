@@ -259,16 +259,16 @@ ga('send', 'pageview');
 </div>
 <div id="data-description" class="section level3">
 <h3>Data Description</h3>
-<p>For this exercise we’ll play with fine-scale locality (point) data for the critically endangered Clanwilliam cedar (<em>Widdringtonia cedarbergensis</em>) mapped by my father for the new Cederberg hiking map (check out <a href="http://www.slingsbymaps.com/" class="uri">http://www.slingsbymaps.com/</a>; data for 1000 trees downloadable at <a href="https://dl.dropboxusercontent.com/u/47937308/Cedars.kml" class="uri">https://dl.dropboxusercontent.com/u/47937308/Cedars.kml</a>), a 90m (raster) digital elevation model (DEM) that I will show you how to download directly with R, and two “polygon” data sets consisting of mapped burn scars for CapeNature reserves (available at <a href="http://bgis.sanbi.org/Projects/Detail/168" class="uri">http://bgis.sanbi.org/Projects/Detail/168</a>) and the National Vegetation Map (available at <a href="http://bgis.sanbi.org/SpatialDataset/Detail/18" class="uri">http://bgis.sanbi.org/SpatialDataset/Detail/18</a>). You will need to download the cedar dataset into your chosen local data directory (see “datwd” below) and download the other data into your chosen GIS data directory (see “giswd” below) and unzip them. <em>datwd</em> and <em>giswd</em> can be the same for the purposes of this tutorial. You can download the R code (with the RMarkdown content commented out) at <a href="https://dl.dropboxusercontent.com/u/47937308/PrimerSpatialData.R" class="uri">https://dl.dropboxusercontent.com/u/47937308/PrimerSpatialData.R</a>.</p>
+<p>For this exercise we’ll play with fine-scale locality (point) data for the critically endangered Clanwilliam cedar (<em>Widdringtonia cedarbergensis</em>) mapped by my father for the new Cederberg hiking map (check out <strong><a href="http://www.slingsbymaps.com/" class="uri">http://www.slingsbymaps.com/</a></strong>; data for 1000 trees downloadable at <strong><a href="https://dl.dropboxusercontent.com/u/47937308/Cedars.kml" class="uri">https://dl.dropboxusercontent.com/u/47937308/Cedars.kml</a></strong>), a 90m (raster) digital elevation model (DEM) (<strong><a href="https://dl.dropboxusercontent.com/u/47937308/SRTM.zip" class="uri">https://dl.dropboxusercontent.com/u/47937308/SRTM.zip</a></strong>) that I will also show you how to download directly with R, and two “polygon” data sets consisting of mapped burn scars for CapeNature reserves (available at <strong><a href="http://bgis.sanbi.org/Projects/Detail/168" class="uri">http://bgis.sanbi.org/Projects/Detail/168</a></strong>) and the National Vegetation Map (available at <strong><a href="http://bgis.sanbi.org/SpatialDataset/Detail/18" class="uri">http://bgis.sanbi.org/SpatialDataset/Detail/18</a></strong>). You will need to download the cedar dataset into your chosen local data directory (see “datwd” below) and download the other data into your chosen GIS data directory (see “giswd” below) and unzip them. <em>datwd</em> and <em>giswd</em> can be the same for the purposes of this tutorial. You can download the R code (with the RMarkdown content commented out) at <strong><a href="https://dl.dropboxusercontent.com/u/47937308/PrimerSpatialData.R" class="uri">https://dl.dropboxusercontent.com/u/47937308/PrimerSpatialData.R</a></strong>.</p>
 <hr />
 <p><br></p>
 </div>
 <div id="housekeeping" class="section level3">
 <h3>Housekeeping</h3>
 <p>Let’s start by setting our working directories. I usually work from a “Project” in RStudio linked to a GIT repository (see <a href="https://git-scm.com/" class="uri">https://git-scm.com/</a> and <a href="https://github.com/" class="uri">https://github.com/</a>) for version control and easy code sharing/collaboration. I’m not going to go there with this tutorial, but it is worth exploring if you intend to do big projects in R. R projects set the working directory to a good place automatically. Alternatively you can use the setwd() function. If I’m not in a repo or I am working with large data sets that I don’t want to replicate in every GIT repo on my hard drive I usually set separate “data”, “GIS data” (i.e. biggish data) and “results” working directories by making each path an object and inserting as appropriate for different read and write functions using paste() or paste0(). These would look something like:</p>
-<pre><code>datwd = &quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/&quot;  
-giswd = &quot;/Users/jasper/Documents/GIS/&quot;   
-reswd = &quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Results/&quot;</code></pre>
+<p>datwd = “/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/”<br />
+giswd = “/Users/jasper/Documents/GIS/”<br />
+reswd = “/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Results/”</p>
 <p>But! This is not useful if I’m sharing the project or work on multiple machines. In this case it’s better to identify the machine/user using Sys.getenv() and wrap the code in an if() statement for each user like so:</p>
 <p><br></p>
 <pre class="r"><code>if (Sys.getenv(&quot;USER&quot;)==&#39;jasper&#39;) {datwd=&quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/&quot;
@@ -349,7 +349,7 @@ stdCRS &lt;- &quot;+proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m 
 <pre class="r"><code>paste0(datwd, &quot;Cedars.kml&quot;)</code></pre>
 <pre><code>## [1] &quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/Cedars.kml&quot;</code></pre>
 <p><br></p>
-<p>Note that the presence and number of /’s are very important… It’s the first thing to check if you get an error.</p>
+<p>Note that the presence and number of /’s are very important… It’s the first thing to check if you get an error!!! IF YOU HAVE ANY ISSUES READING IN DATA AT ANY STAGE THE FIRST THING TO DO IS TO RUN THE “paste0(…)” SECTION OF THE SCRIPT AND MAKE SURE IT MATCHES EXACTLY THE PATH TO YOUR FILE!!!</p>
 <p><br></p>
 <p>Let’s explore our point data a little more and fiddle with different ways of making a “Spatial” object.</p>
 <p><br></p>
@@ -410,7 +410,7 @@ str(x)</code></pre>
 <p>*Jarvis A., H.I. Reuter, A. Nelson, E. Guevara, 2008, Hole-filled seamless SRTM data V4, International Centre for Tropical Agriculture (CIAT), available from <a href="http://srtm.csi.cgiar.org" class="uri">http://srtm.csi.cgiar.org</a></p>
 <p><br></p>
 <pre class="r"><code>#dem &lt;- getData(&#39;SRTM&#39;, lon=19, lat=-32.5, path = paste0(giswd, &quot;SRTM/&quot;)) # download data from CGIAR website
-dem &lt;- raster(paste0(giswd, &quot;SRTM/srtm_40_19.tif&quot;)) # read in data from local source
+dem &lt;- raster(paste0(giswd, &quot;SRTM/srtm_40_19.tif&quot;)) # read in data from local source - NOTE THAT YOU MAY NEED TO UNZIP THE FILE YOU DOWNLOADED!!!
 proj4string(dem) # this is not our chosen projection for this tutorial so we need to reproject</code></pre>
 <pre><code>## [1] &quot;+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0&quot;</code></pre>
 <pre class="r"><code>dem &lt;- projectRaster(dem, crs=CRS(stdCRS)) # note that we use a different function for raster data than for shapefiles (points or polygon) - this can take a while...
@@ -493,9 +493,9 @@ plot(dens) # See anything? Probably not, these are 90m pixels in a large landsca
 <h3>Polygons!</h3>
 <p>Perhaps the best place to start is the National Vegetation Map of South Africa, Lesotho and Swaziland. We need to get the data, set the CRS and crop to our area/extent of interest.</p>
 <p><br></p>
-<pre class="r"><code>vegmap &lt;- readOGR(dsn=paste0(giswd, &quot;VegMap/nvm2012beta2_wgs84_Geo/&quot;), layer=&quot;nvm2012beta2_wgs84_Geo&quot;) # Get the data</code></pre>
+<pre class="r"><code>vegmap &lt;- readOGR(dsn=paste0(giswd, &quot;nvm2012beta2_wgs84_Geo&quot;), layer=&quot;nvm2012beta2_wgs84_Geo&quot;) # Get the data</code></pre>
 <pre><code>## OGR data source with driver: ESRI Shapefile 
-## Source: &quot;/Users/jasper/Documents/GIS/VegMap/nvm2012beta2_wgs84_Geo/&quot;, layer: &quot;nvm2012beta2_wgs84_Geo&quot;
+## Source: &quot;/Users/jasper/Documents/GIS/nvm2012beta2_wgs84_Geo&quot;, layer: &quot;nvm2012beta2_wgs84_Geo&quot;
 ## with 44822 features
 ## It has 21 fields</code></pre>
 <pre class="r"><code>head(vegmap) # Have a look at the first 6 rows of the attribute table </code></pre>
@@ -943,113 +943,113 @@ points.gb$latlon &lt;- paste(points.gb$coords.x2, points.gb$coords.x1, sep=&quot
 map.gb &lt;- gvisMap(points.gb, locationvar=&quot;latlon&quot;, tipvar=&quot;Name&quot;)
 plot(map.gb)</code></pre>
 <!-- Map generated in R 3.4.0 by googleVis 0.6.2 package -->
-<!-- Thu Jun 29 09:38:05 2017 -->
+<!-- Thu Jun 29 13:19:42 2017 -->
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataMapID97646fc946 () {
+function gvisDataMapID16bb34e6b69 () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
  [
--32.32895638,
-19.13263525,
+-32.28621555,
+19.12212654,
 ""
 ],
 [
--32.33576239,
-19.17605099,
+-32.29224178,
+19.12210154,
 ""
 ],
 [
--32.25526767,
-19.10369737,
+-32.35661931,
+19.1904917,
 ""
 ],
 [
--32.25379668,
-19.09995477,
+-32.21945631,
+19.0831088,
 ""
 ],
 [
--32.34949643,
-19.13227819,
+-32.27348223,
+19.10630658,
 ""
 ],
 [
--32.33297824,
-19.17444348,
+-32.33685064,
+19.12413104,
 ""
 ],
 [
--32.24217522,
-19.09339992,
+-32.30639554,
+19.14437352,
 ""
 ],
 [
--32.32533112,
-19.13554602,
+-32.33865384,
+19.07087484,
 ""
 ],
 [
--32.32282123,
-19.17455279,
+-32.21896741,
+19.044433,
 ""
 ],
 [
--32.41672387,
-19.14110275,
+-32.38853692,
+19.17820817,
 ""
 ],
 [
--32.40863478,
-19.17928187,
+-32.29984199,
+19.1159996,
 ""
 ],
 [
--32.29132662,
-19.11474482,
+-32.34975528,
+19.20061016,
 ""
 ],
 [
--32.3432987,
-19.06358107,
+-32.32448687,
+19.05727396,
 ""
 ],
 [
--32.21653158,
-19.06304431,
+-32.33675489,
+19.15439267,
 ""
 ],
 [
--32.33951463,
-19.05715916,
+-32.28531687,
+19.14781307,
 ""
 ],
 [
--32.32137712,
-19.12402882,
+-32.272453,
+19.10382838,
 ""
 ],
 [
--32.35027992,
-19.12546108,
+-32.33606795,
+19.05279925,
 ""
 ],
 [
--32.35753188,
-19.07552947,
+-32.40671733,
+19.1226425,
 ""
 ],
 [
--32.2567635,
-19.09882483,
+-32.32292255,
+19.1965966,
 ""
 ],
 [
--32.26120332,
-19.13596777,
+-32.26666522,
+19.12202364,
 ""
 ] 
 ];
@@ -1061,13 +1061,13 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartMapID97646fc946() {
-var data = gvisDataMapID97646fc946();
+function drawChartMapID16bb34e6b69() {
+var data = gvisDataMapID16bb34e6b69();
 var options = {};
 options["showTip"] = true;
 
     var chart = new google.visualization.Map(
-    document.getElementById('MapID97646fc946')
+    document.getElementById('MapID16bb34e6b69')
     );
     chart.draw(data,options);
     
@@ -1091,9 +1091,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartMapID97646fc946);
+callbacks.push(drawChartMapID16bb34e6b69);
 })();
-function displayChartMapID97646fc946() {
+function displayChartMapID16bb34e6b69() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -1116,9 +1116,9 @@ callbacks.shift()();
 // jsFooter
 </script>
 <!-- jsChart -->
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapID97646fc946"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapID16bb34e6b69"></script>
 <!-- divChart -->
-<div id="MapID97646fc946" style="width: 500; height: automatic;">
+<div id="MapID16bb34e6b69" style="width: 500; height: automatic;">
 
 </div>
 <pre class="r"><code>options(op) # Reset gvis options to default</code></pre>

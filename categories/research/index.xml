@@ -19,14 +19,18 @@
 &lt;img src=&#34;/img/scienceinprogress/sip1.jpg&#34; /&gt;
 &lt;/center&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;This is a study recently completed by one of my MSc students, Annabelle Rogers, which we’re busy writing up for publication. It was inspired by &lt;a href=&#34;https://researchspace.csir.co.za/dspace/handle/10204/2045&#34;&gt;&lt;strong&gt;this great paper&lt;/strong&gt;&lt;/a&gt; published by Dr Coert Geldenhuys in 1994, explaining how fire determines the distribution of forests in the Southern Cape. You can also read about it, and get a nice intro to our forests, in this interesting &lt;a href=&#34;http://saforestryonline.co.za/articles/southern-cape-forests-survive-largely-unchanged-for-centuries/&#34;&gt;&lt;strong&gt;SA Forestry Online article&lt;/strong&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This is a study recently completed by one of my MSc students, Annabelle Rogers, who I co-supervised with Prof &lt;a href=&#34;http://www.biologicalsciences.uct.ac.za/bio/staff/academic/february&#34;&gt;&lt;strong&gt;Ed February&lt;/strong&gt;&lt;/a&gt; and &lt;a href=&#34;https://scholar.google.co.za/citations?user=_FFdaCUAAAAJ&amp;amp;hl=en&#34;&gt;&lt;strong&gt;Glenn Moncrieff&lt;/strong&gt;&lt;/a&gt;. We’re busy writing it up for publication, but here’s a little preview.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;The premise of the Geldenhuys study is that certain parts of the landscape are protected from fire due to topographic features interacting with the prevailing winds to create “fire shadows”, where fires will rarely occur. Forests establish and expand in these areas, but are periodically “trimmed back” when severe conditions allow fires to burn into the otherwise non-flammable forest edge.&lt;/p&gt;
+&lt;p&gt;The study was inspired by &lt;a href=&#34;https://researchspace.csir.co.za/dspace/handle/10204/2045&#34;&gt;&lt;strong&gt;this great paper&lt;/strong&gt;&lt;/a&gt; published by Dr Coert Geldenhuys in 1994, explaining how fire determines the distribution of forests in the Southern Cape. You can also read about it, and get a nice intro to our forests, in this interesting &lt;a href=&#34;http://saforestryonline.co.za/articles/southern-cape-forests-survive-largely-unchanged-for-centuries/&#34;&gt;&lt;strong&gt;SA Forestry Online article&lt;/strong&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;The premise of the Geldenhuys study was that certain parts of the landscape are protected from fire due to topographic features interacting with the prevailing winds to create “fire shadows”, where fires will rarely occur. Forests establish and expand in these areas, but are periodically “trimmed back” when severe conditions allow fires to burn into the otherwise non-flammable forest edge.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Our hypothesis, beyond confirming the work by Geldenhuys, was that land cover transformation (e.g. urban expansion) is altering the flow of fire through the landscape and creating new or larger fire shadows.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;The footprint of the City of Cape Town has expanded quite drastically since the 1940s, providing a good site for this study.&lt;/p&gt;
+&lt;p&gt;The footprint of the City of Cape Town has expanded quite drastically since the 1940s, providing a good site for this study. Here’s a little Youtube clip I put together using the 1:50 000 topo maps of the City made available by OpenStreetMaps &lt;a href=&#34;http://htonl.dev.openstreetmap.org/50k-ct/#11/-34.1232/18.7066/c2010&#34;&gt;&lt;strong&gt;here&lt;/strong&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://youtu.be/qmscq6-25z0&#34;&gt;&lt;img src=&#34;https://i.ytimg.com/vi/qmscq6-25z0/0.jpg&#34; alt=&#34;city of cape town&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Another advantage is that &lt;a href=&#34;https://www.researchgate.net/profile/Zoe_Poulsen/publication/279234745_Changes_in_the_distribution_of_indigenous_forest_in_Table_Mountain_National_Park_during_the_20th_Century/links/57a9c7b508aef300152aa8b3.pdf&#34;&gt;&lt;strong&gt;Zoë Poulsen and Timm Hoffman&lt;/strong&gt;&lt;/a&gt; mapped the change in indigenous forest extent in Table Mountain National Park over the period 1944 to 2008, providing the perfect dataset to validate our models and test our hypothesis.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;So, we set Annabelle the task of modelling fire on the Cape Peninsula with and without (i.e. pre-settlement) transformation, to identify areas where the probability of burning may have been affected. This gives us a map of “change in burn probability” and highlights areas that have become fire shadows, which we can compare to the change in forest extent.&lt;/p&gt;
@@ -34,6 +38,7 @@
 &lt;p&gt;I’m not going to go into the details of the fire modelling, including topographic features, developing a fuel model, wind fields and iterations of random ignitions. If you’d like to know more, you’ll have to wait for the paper. Here I present the burn probability maps and quantify the change in burn probability in relation to forest expansion.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;First, let’s look at the reduction in burn probabilities when we “disrupt” the fire catchments by making the transformed areas non-flammable. I’ll only present the simple case where we use a homogenous fuel model - i.e. all vegetation burns on the Peninsula in the same way. In reality the vegetation types can differ in flammability quite considerably, especially fynbos vs forest.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Here we present the burn probabilities with transformation, the burn probabilities without transformation, and the difference between the two.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;NOTE&lt;/strong&gt;: I present the code from the R statistical programming language used to do the analysis. Just skip these if you are only interested in the story. I’ve tried to write this so that it makes sense without the code, but include the code for Annabelle and other students interested in performing this kind of analysis. Send me a comment below or &lt;a href=&#34;http://www.ecologi.st/contact/&#34;&gt;&lt;strong&gt;email&lt;/strong&gt;&lt;/a&gt; if you feel I haven’t got this right. The code appears in grey boxes, and the output of the code appears either as the images or grey boxes with all lines preceeded by “##”.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
@@ -63,6 +68,7 @@ plot(bp)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Apologies for the funny names, but that’s what Annabelle called them. “untrans_homog_clip” = the outputs based on the untransformed landscape using a homogenous fuel model, as opposed to the transformed landscape “trans…” and the difference between the two “change…”&lt;/p&gt;
 &lt;p&gt;Now let’s get the forest change layers from Poulsen and Hoffman 2015 and plot forest change around Table Mountain.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;f1944 &amp;lt;- readOGR(paste0(datwd, &amp;quot;forest/forestUTM1944.shp&amp;quot;), &amp;quot;forestUTM1944&amp;quot;) #Get the layers&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## OGR data source with driver: ESRI Shapefile 
 ## Source: &amp;quot;/Users/jasper/Dropbox/SAEON/Projects/Cape Peninsula/FireShadow/forest/forestUTM1944.shp&amp;quot;, layer: &amp;quot;forestUTM1944&amp;quot;
@@ -99,7 +105,8 @@ plot(f1944, add = T, col = &amp;quot;forestgreen&amp;quot;)&lt;/code&gt;&lt;/pre
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Here the dark green is the forest extent in 1944, while the light green indicates the additional forest extent in 2008 - lots of expansion!&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;Now I’d like to overlay the burn probabilities with the areas that were “stable fynbos” vs “stable forest” vs “forest expansion” over the 1944 to 2008 period and show you the difference as boxplots, but to work with them we’ll need them as raster data (i.e. gridded as opposed to polygons). So first I rasterize each layer to a 90m grid, sum them and plot fynbos (0), stable forest (2) and areas of forest expansion (1).&lt;/p&gt;
+&lt;p&gt;Now I’d like to overlay the burn probabilities with the areas that were “stable fynbos” vs “stable forest” vs “forest expansion” over the 1944 to 2008 period and show you the difference as boxplots, but to work with them we’ll need them as raster data (i.e. gridded as opposed to polygons). So first I rasterize each layer to a 90m grid and plot fynbos (0), stable forest (2) and areas of forest expansion (1).&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fr1944 &amp;lt;- rasterize(f1944, bp, fun = &amp;quot;count&amp;quot;, field = 1, background = 0) #create a raster with &amp;quot;1&amp;quot; where forest occurred
 fr2008 &amp;lt;- rasterize(f2008, bp, fun = &amp;quot;count&amp;quot;, field = 1, background = 0) #create a raster with &amp;quot;1&amp;quot; where forest occurred
 
@@ -109,6 +116,7 @@ plot(crop(frDelta, extent(255000, 270000, 6230000, 6240000)))&lt;/code&gt;&lt;/p
 &lt;p&gt;&lt;img src=&#34;/post/2017-06-13-fire-shadows_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Now we can extract them into one dataframe (i.e. a table of data) and bin them into vegetation change classes…&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dat &amp;lt;- as.data.frame(na.omit(rasterToPoints(stack(bp, frDelta))))
 
 dat$layer[which(dat$layer == 0)] &amp;lt;- &amp;quot;Stable Fynbos&amp;quot;
@@ -133,7 +141,8 @@ head(dat)&lt;/code&gt;&lt;/pre&gt;
 ## 5 Stable Fynbos
 ## 6 Stable Fynbos&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;…and draw a box and whisker plot of the reduction in burn probability by class.&lt;/p&gt;
+&lt;p&gt;So there’s the top few lines of the table above. Now we use these data to draw a box and whisker plot of the reduction in burn probability by class.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;g &amp;lt;- ggplot(dat)
 g &amp;lt;- g + stat_boxplot(aes(y = changeHomog_clip, x = layer, group = layer), position = &amp;quot;dodge&amp;quot;) + 
   ylab(&amp;quot;Reduction in burn probability&amp;quot;) + 
@@ -145,9 +154,10 @@ g #to plot&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=-VRBWLpYCPY&#34;&gt;&lt;img src=&#34;http://img.youtube.com/vi/-VRBWLpYCPY/0.jpg&#34; alt=&#34;journal reviewer number three&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;They’ll argue there’s spatial autocorrelation and will want to see some fancy spatially explicit statistics that don’t tell you any more than this boxplot.&lt;/p&gt;
-&lt;p&gt;So here are some convolutedly fancy stats for those of you who are interested :)&lt;/p&gt;
+&lt;p&gt;They’ll argue there’s spatial autocorrelation (i.e. things that are close in space are likely to be similar anyway) and will want to see some fancy spatially explicit statistics that don’t tell you any more than this boxplot.&lt;/p&gt;
+&lt;p&gt;So here are some convolutedly fancy stats for those of you who are interested. Skip to the brief discussion at the end if you’re not interested in the stats :)&lt;/p&gt;
 &lt;p&gt;We’ll start by thinning the data a little by subsampling. Running a spatially explicit Bayesian model on the ~34000 data points (i.e. 90m grid cells) we have requires a very very big computer, and this is just a blog post. Let’s try 10% of the data and plot it to check that it’s representative of the full dataset (as plotted above).&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;set.seed(1) #Pick a string of random numbers so that we can replicate the sampling
 
 sdat &amp;lt;- dat[sample(1:nrow(dat), nrow(dat)/10),] #Take a 10% sample
@@ -160,7 +170,7 @@ g #Plot the sample to see if it is representative of the whole&lt;/code&gt;&lt;/
 &lt;p&gt;&lt;img src=&#34;/post/2017-06-13-fire-shadows_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Looks pretty good.&lt;/p&gt;
-&lt;p&gt;It turns out it takes ~12 hours to run the following code on the 10% subset of the data on a x86_64-apple-darwin13.4.0 MacBook Pro (so I’ve commented out the next code chunk). We’ll need to run the full dataset on a cluster…&lt;/p&gt;
+&lt;p&gt;It turns out it takes ~12 hours to run the following code on the 10% subset of the data on a x86_64-apple-darwin13.4.0 MacBook Pro (so I’ve commented out the next code chunk so I don’t have to run it each time I compile this blog post). I think we’ll need to run the full dataset on a cluster…&lt;/p&gt;
 &lt;p&gt;Skip this section if you’re more interested in the results.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# ### Set up a convolutedly long set of model inputs which I won&amp;#39;t eplain
@@ -231,7 +241,7 @@ round(summary(m.1$p.beta.recover.samples)$quantiles,3)&lt;/code&gt;&lt;/pre&gt;
 ## layerStable Forest -0.015 -0.005  0.000  0.004  0.013
 ## layerStable Fynbos -0.031 -0.023 -0.019 -0.015 -0.008&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;Which confirms what we knew already! Although it’s a little difficult to interpret. Let’s try a boxplot.&lt;/p&gt;
+&lt;p&gt;So this gives us the median (50%) and quantiles (0.025, 0.25, 0.75, 0.975) of the posterior probability distributions for each class. “Forest Gain” is the intercept, which is all positive (i.e. lower probability of burning), and overlaps with “Stable Forest”, but does not overlap with “Stable Fynbos”, which confirms what we knew already! Although it’s a little difficult to interpret. Let’s try a boxplot to illustrate this more clearly.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;x &amp;lt;- as.data.frame(round(summary(m.1$p.beta.recover.samples)$quantiles,3))
 
