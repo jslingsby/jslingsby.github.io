@@ -1,7 +1,7 @@
 ---
-title: "A Primer for Handling Spatial Data in R"
+title: "A Primer for Handling Spatial Data in R (Updated)"
 author: "Jasper Slingsby - South African Environmental Observation Network (SAEON)"
-date: 2016-11-18
+date: 2017-06-29
 image: "/img/kogelberg_map.jpg"
 categories: ["R Tutorials", "All"]
 tags: ["spatial", "All"]
@@ -11,23 +11,28 @@ output:
     toc: true
 ---
 
-Points, lines, polygons and rasters - R can handle them all. My aim for this session is to give you the basics required to teach yourself spatial data analysis in R. 
+Points, lines, polygons and rasters - R can handle them all. My aim for this tutorial is to give you the basics required to teach yourself spatial data analysis in R. 
 
 <!--more-->
 
-I'll start by briefly covering CRAN Task Views and how to install them (using the 'Spatial' task view as an example), followed by some pointers for useful DIY resources for handling and analyzing spatial data, and then work through a practical example exploring fire history layers (polygon), topographic (raster) and locality (point) data using the libraries 'rgdal', 'raster' and 'sp' and a few others. The example will cover setting and changing projections and extents, subseting polygons, raster calculations, rasterizing polygons and extracting data with a few neat tricks and visualisations along the way. 
+I'll start by briefly covering installing R, CRAN Task Views and how to install them (using the 'Spatial' task view as an example), followed by some pointers for useful DIY resources for handling and analyzing spatial data, and then work through a practical example exploring fire history layers (polygon), topographic (raster) and locality (point) data using the libraries 'rgdal', 'raster' and 'sp' and a few others. The example will cover setting and changing projections and extents, subseting polygons, raster calculations, rasterizing polygons and extracting data with a few neat tricks and visualisations along the way. 
 
 <br>
 
-##CRAN Task Views <https://cran.r-project.org/>
+###Installing R (and RStudio)
 
-Some great fellas have taken the time to sift through all the R libraries and make some sense of them for different focal topics and created "Task Views" which allow easy download and installation of all packages in a Task View using library(ctv) - see highlighted code below.
+You can download R for Windows, Mac or Linux from [**The Comprehensive R Archive Network (CRAN) at https://cran.r-project.org/**](https://cran.r-project.org/) and install.
 
-![](/img/CRAN_taskviews.jpg)
+Base R can be quite clunky to deal with, so there is a range of additional software packages designed to help you manage your R code, plots, projects etc. One of the better ones (i.e. the one that I use and I'm clearly not bias) is [**RStudio (www.rstudio.com)**](https://www.rstudio.com/products/RStudio/). You want to download the Open Source version of RStudio Desktop. When you open RStudio after installing you'll see that it has opened R in the "Console" window.
+
+Note that the base version of R is as small as possible, trimmed down to only the essential functions etc. More advanced and user specific functions are available as "Contributed Extension Packages" or "libraries". You can access the list of packages from <https://cran.r-project.org/>. At the time of writing there were almost 11 000 packages and growing!!! This can be quite bewildering if you're not sure what you need, but fortunately there are...
 
 <br>
+
+##CRAN Task Views!!! (see link from <https://cran.r-project.org/>)
+
+Some great fellas have taken the time to sift through all the R libraries and make some sense of them for different focal topics and created "Task Views"
 <br>
-But beware! It can take a while to download and install if it is a big Task View!!!
 
 Each Task View has a landing page with an overview highlighting what you can do with the different packages and their respective strengths, weaknesses etc., e.g.
 <br>
@@ -35,8 +40,6 @@ Each Task View has a landing page with an overview highlighting what you can do 
 
 ![](/img/CRAN_spatial.jpg)
   
-<br> 
-
 ###Topics covered by the *Spatial* Task View, which focuses on "Analysis of Spatial Data":
 - Classes for spatial data
 - Handling spatial data
@@ -48,6 +51,14 @@ Each Task View has a landing page with an overview highlighting what you can do 
 - Disease mapping and areal data analysis
 - Spatial regression
 - Ecological analysis
+
+<br>
+
+Task Views also allow easy download and installation of all packages in a Task View using library(ctv) - see highlighted code below. But beware! It can take a while to download and install if it is a big Task View and the the Spatial one is BIG!!! You don’t need it for this tutorial, so don't bother downloading it for now.
+
+![](/img/CRAN_taskviews.jpg)
+
+<br> 
 
 ***
 
@@ -74,6 +85,18 @@ A very good book!
 
 <br>
 
+###A quick note on the structure of this tutorial
+From here this tutorial will include embedded chunks of R code and the output that R returns in little grey boxes. The R code I call starts at the beginning of the line, while each line of R's output starts with "##", e.g.
+```{r}
+1+1
+```
+
+<br>
+
+Note that I occassionally include comments in the R chunks. Comments are preceded by "#". Hopefully this will all make sense as you get into the tutorial...
+
+<br>
+
 ###Data Description
 For this exercise we'll play with fine-scale locality (point) data for the critically endangered Clanwilliam cedar (*Widdringtonia cedarbergensis*) mapped by my father for the new Cederberg hiking map (check out <http://www.slingsbymaps.com/>; data for 1000 trees downloadable at <https://dl.dropboxusercontent.com/u/47937308/Cedars.kml>), a 90m (raster) digital elevation model (DEM) that I will show you how to download directly with R, and two "polygon" data sets consisting of mapped burn scars for CapeNature reserves (available at <http://bgis.sanbi.org/Projects/Detail/168>) and the National Vegetation Map (available at <http://bgis.sanbi.org/SpatialDataset/Detail/18>). You will need to download the cedar dataset into your chosen local data directory (see "datwd" below) and download the other data into your chosen GIS data directory (see "giswd" below) and unzip them. *datwd* and *giswd* can be the same for the purposes of this tutorial. You can download the R code (with the RMarkdown content commented out) at <https://dl.dropboxusercontent.com/u/47937308/PrimerSpatialData.R>.
 
@@ -84,7 +107,7 @@ For this exercise we'll play with fine-scale locality (point) data for the criti
 
 ###Housekeeping
 Let's start by setting our working directories. I usually work from a "Project" in RStudio linked to a GIT repository (see <https://git-scm.com/> and <https://github.com/>) for version control and easy code sharing/collaboration. I'm not going to go there with this tutorial, but it is worth exploring if you intend to do big projects in R. R projects set the working directory to a good place automatically. Alternatively you can use the setwd() function. 
-If I'm not in a GIT repo or I am working with large data sets that I don't want to replicate in every GIT repo on my hard drive I usually set separate "data", "GIS data" (i.e. biggish data) and "results" working directories by making each path an object and inserting as appropriate for different read and write functions using paste() or paste0(). These would look something like: 
+If I'm not in a repo or I am working with large data sets that I don't want to replicate in every GIT repo on my hard drive I usually set separate "data", "GIS data" (i.e. biggish data) and "results" working directories by making each path an object and inserting as appropriate for different read and write functions using paste() or paste0(). These would look something like: 
 
 ```
 datwd = "/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/"  
@@ -655,7 +678,7 @@ Current theories around the cedar's decline include increased fire frequency and
 
 ```{r}
 # Here's an easy way to get all data and fiddle.
-dat = as.data.frame(topo)
+dat = as.data.frame(topo) #check out ?rasterToPoints too
 
 par(mfrow=c(2,2))
 plot(dens ~ fire, data=dat)

@@ -10,18 +10,20 @@
     <atom:link href="/tags/spatial/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>A Primer for Handling Spatial Data in R</title>
+      <title>A Primer for Handling Spatial Data in R (Updated)</title>
       <link>/post/2017-04-01-PrimerSpatialData/</link>
-      <pubDate>Fri, 18 Nov 2016 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 29 Jun 2017 00:00:00 +0000</pubDate>
       
       <guid>/post/2017-04-01-PrimerSpatialData/</guid>
       <description>&lt;div id=&#34;TOC&#34;&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;#cran-task-views-httpscran.r-project.org&#34;&gt;CRAN Task Views &lt;a href=&#34;https://cran.r-project.org/&#34; class=&#34;uri&#34;&gt;https://cran.r-project.org/&lt;/a&gt;&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#installing-r-and-rstudio&#34;&gt;Installing R (and RStudio)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#cran-task-views-see-link-from-httpscran.r-project.org&#34;&gt;CRAN Task Views!!! (see link from &lt;a href=&#34;https://cran.r-project.org/&#34; class=&#34;uri&#34;&gt;https://cran.r-project.org/&lt;/a&gt;)&lt;/a&gt;&lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;#topics-covered-by-the-spatial-task-view-which-focuses-on-analysis-of-spatial-data&#34;&gt;Topics covered by the &lt;em&gt;Spatial&lt;/em&gt; Task View, which focuses on “Analysis of Spatial Data”:&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;#useful-diy-resources&#34;&gt;Useful DIY resources&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;#a-practical-example&#34;&gt;A Practical Example!!!&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#a-quick-note-on-the-structure-of-this-tutorial&#34;&gt;A quick note on the structure of this tutorial&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;#data-description&#34;&gt;Data Description&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;#housekeeping&#34;&gt;Housekeeping&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;#getting-and-cleaning-the-data-but-first-and-foremost-projection&#34;&gt;Getting and cleaning the data, but first and foremost, &lt;em&gt;projection!!!&lt;/em&gt;&lt;/a&gt;&lt;/li&gt;
@@ -36,24 +38,26 @@
 &lt;/ul&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/div&gt;
-&lt;p&gt;Points, lines, polygons and rasters - R can handle them all. My aim for this session is to give you the basics required to teach yourself spatial data analysis in R.&lt;/p&gt;
-&lt;!--more--&gt;
-&lt;p&gt;I’ll start by briefly covering CRAN Task Views and how to install them (using the ‘Spatial’ task view as an example), followed by some pointers for useful DIY resources for handling and analyzing spatial data, and then work through a practical example exploring fire history layers (polygon), topographic (raster) and locality (point) data using the libraries ‘rgdal’, ‘raster’ and ‘sp’ and a few others. The example will cover setting and changing projections and extents, subseting polygons, raster calculations, rasterizing polygons and extracting data with a few neat tricks and visualisations along the way.&lt;/p&gt;
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;div id=&#34;cran-task-views-httpscran.r-project.org&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;CRAN Task Views &lt;a href=&#34;https://cran.r-project.org/&#34; class=&#34;uri&#34;&gt;https://cran.r-project.org/&lt;/a&gt;&lt;/h2&gt;
-&lt;p&gt;Some great fellas have taken the time to sift through all the R libraries and make some sense of them for different focal topics and created “Task Views” which allow easy download and installation of all packages in a Task View using library(ctv) - see highlighted code below.&lt;/p&gt;
-&lt;div class=&#34;figure&#34;&gt;
-&lt;img src=&#34;/img/CRAN_taskviews.jpg&#34; /&gt;
 
+&lt;p&gt;Points, lines, polygons and rasters - R can handle them all. My aim for this tutorial is to give you the basics required to teach yourself spatial data analysis in R.&lt;/p&gt;
+&lt;!--more--&gt;
+&lt;p&gt;I’ll start by briefly covering installing R, CRAN Task Views and how to install them (using the ‘Spatial’ task view as an example), followed by some pointers for useful DIY resources for handling and analyzing spatial data, and then work through a practical example exploring fire history layers (polygon), topographic (raster) and locality (point) data using the libraries ‘rgdal’, ‘raster’ and ‘sp’ and a few others. The example will cover setting and changing projections and extents, subseting polygons, raster calculations, rasterizing polygons and extracting data with a few neat tricks and visualisations along the way.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;div id=&#34;installing-r-and-rstudio&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Installing R (and RStudio)&lt;/h3&gt;
+&lt;p&gt;You can download R for Windows, Mac or Linux from &lt;a href=&#34;https://cran.r-project.org/&#34;&gt;&lt;strong&gt;The Comprehensive R Archive Network (CRAN) at https://cran.r-project.org/&lt;/strong&gt;&lt;/a&gt; and install.&lt;/p&gt;
+&lt;p&gt;Base R can be quite clunky to deal with, so there is a range of additional software packages designed to help you manage your R code, plots, projects etc. One of the better ones (i.e. the one that I use and I’m clearly not bias) is &lt;a href=&#34;https://www.rstudio.com/products/RStudio/&#34;&gt;&lt;strong&gt;RStudio (www.rstudio.com)&lt;/strong&gt;&lt;/a&gt;. You want to download the Open Source version of RStudio Desktop. When you open RStudio after installing you’ll see that it has opened R in the “Console” window.&lt;/p&gt;
+&lt;p&gt;Note that the base version of R is as small as possible, trimmed down to only the essential functions etc. More advanced and user specific functions are available as “Contributed Extension Packages” or “libraries”. You can access the list of packages from &lt;a href=&#34;https://cran.r-project.org/&#34; class=&#34;uri&#34;&gt;https://cran.r-project.org/&lt;/a&gt;. At the time of writing there were almost 11 000 packages and growing!!! This can be quite bewildering if you’re not sure what you need, but fortunately there are…&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;/div&gt;
-&lt;p&gt;&lt;br&gt; &lt;br&gt; But beware! It can take a while to download and install if it is a big Task View!!!&lt;/p&gt;
+&lt;div id=&#34;cran-task-views-see-link-from-httpscran.r-project.org&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;CRAN Task Views!!! (see link from &lt;a href=&#34;https://cran.r-project.org/&#34; class=&#34;uri&#34;&gt;https://cran.r-project.org/&lt;/a&gt;)&lt;/h2&gt;
+&lt;p&gt;Some great fellas have taken the time to sift through all the R libraries and make some sense of them for different focal topics and created “Task Views” &lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Each Task View has a landing page with an overview highlighting what you can do with the different packages and their respective strengths, weaknesses etc., e.g. &lt;br&gt; &lt;br&gt;&lt;/p&gt;
 &lt;div class=&#34;figure&#34;&gt;
 &lt;img src=&#34;/img/CRAN_spatial.jpg&#34; /&gt;
 
 &lt;/div&gt;
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;div id=&#34;topics-covered-by-the-spatial-task-view-which-focuses-on-analysis-of-spatial-data&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Topics covered by the &lt;em&gt;Spatial&lt;/em&gt; Task View, which focuses on “Analysis of Spatial Data”:&lt;/h3&gt;
 &lt;ul&gt;
@@ -68,6 +72,13 @@
 &lt;li&gt;Spatial regression&lt;/li&gt;
 &lt;li&gt;Ecological analysis&lt;/li&gt;
 &lt;/ul&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Task Views also allow easy download and installation of all packages in a Task View using library(ctv) - see highlighted code below. But beware! It can take a while to download and install if it is a big Task View and the the Spatial one is BIG!!! You don’t need it for this tutorial, so don’t bother downloading it for now.&lt;/p&gt;
+&lt;div class=&#34;figure&#34;&gt;
+&lt;img src=&#34;/img/CRAN_taskviews.jpg&#34; /&gt;
+
+&lt;/div&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;hr /&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;/div&gt;
@@ -92,6 +103,15 @@
 &lt;div id=&#34;a-practical-example&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;A Practical Example!!!&lt;/h2&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;div id=&#34;a-quick-note-on-the-structure-of-this-tutorial&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;A quick note on the structure of this tutorial&lt;/h3&gt;
+&lt;p&gt;From here this tutorial will include embedded chunks of R code and the output that R returns in little grey boxes. The R code I call starts at the beginning of the line, while each line of R’s output starts with “##”, e.g.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;1+1&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 2&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Note that I occassionally include comments in the R chunks. Comments are preceded by “#”. Hopefully this will all make sense as you get into the tutorial…&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;/div&gt;
 &lt;div id=&#34;data-description&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Data Description&lt;/h3&gt;
 &lt;p&gt;For this exercise we’ll play with fine-scale locality (point) data for the critically endangered Clanwilliam cedar (&lt;em&gt;Widdringtonia cedarbergensis&lt;/em&gt;) mapped by my father for the new Cederberg hiking map (check out &lt;a href=&#34;http://www.slingsbymaps.com/&#34; class=&#34;uri&#34;&gt;http://www.slingsbymaps.com/&lt;/a&gt;; data for 1000 trees downloadable at &lt;a href=&#34;https://dl.dropboxusercontent.com/u/47937308/Cedars.kml&#34; class=&#34;uri&#34;&gt;https://dl.dropboxusercontent.com/u/47937308/Cedars.kml&lt;/a&gt;), a 90m (raster) digital elevation model (DEM) that I will show you how to download directly with R, and two “polygon” data sets consisting of mapped burn scars for CapeNature reserves (available at &lt;a href=&#34;http://bgis.sanbi.org/Projects/Detail/168&#34; class=&#34;uri&#34;&gt;http://bgis.sanbi.org/Projects/Detail/168&lt;/a&gt;) and the National Vegetation Map (available at &lt;a href=&#34;http://bgis.sanbi.org/SpatialDataset/Detail/18&#34; class=&#34;uri&#34;&gt;http://bgis.sanbi.org/SpatialDataset/Detail/18&lt;/a&gt;). You will need to download the cedar dataset into your chosen local data directory (see “datwd” below) and download the other data into your chosen GIS data directory (see “giswd” below) and unzip them. &lt;em&gt;datwd&lt;/em&gt; and &lt;em&gt;giswd&lt;/em&gt; can be the same for the purposes of this tutorial. You can download the R code (with the RMarkdown content commented out) at &lt;a href=&#34;https://dl.dropboxusercontent.com/u/47937308/PrimerSpatialData.R&#34; class=&#34;uri&#34;&gt;https://dl.dropboxusercontent.com/u/47937308/PrimerSpatialData.R&lt;/a&gt;.&lt;/p&gt;
@@ -100,7 +120,7 @@
 &lt;/div&gt;
 &lt;div id=&#34;housekeeping&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Housekeeping&lt;/h3&gt;
-&lt;p&gt;Let’s start by setting our working directories. I usually work from a “Project” in RStudio linked to a GIT repository (see &lt;a href=&#34;https://git-scm.com/&#34; class=&#34;uri&#34;&gt;https://git-scm.com/&lt;/a&gt; and &lt;a href=&#34;https://github.com/&#34; class=&#34;uri&#34;&gt;https://github.com/&lt;/a&gt;) for version control and easy code sharing/collaboration. I’m not going to go there with this tutorial, but it is worth exploring if you intend to do big projects in R. R projects set the working directory to a good place automatically. Alternatively you can use the setwd() function. If I’m not in a GIT repo or I am working with large data sets that I don’t want to replicate in every GIT repo on my hard drive I usually set separate “data”, “GIS data” (i.e. biggish data) and “results” working directories by making each path an object and inserting as appropriate for different read and write functions using paste() or paste0(). These would look something like:&lt;/p&gt;
+&lt;p&gt;Let’s start by setting our working directories. I usually work from a “Project” in RStudio linked to a GIT repository (see &lt;a href=&#34;https://git-scm.com/&#34; class=&#34;uri&#34;&gt;https://git-scm.com/&lt;/a&gt; and &lt;a href=&#34;https://github.com/&#34; class=&#34;uri&#34;&gt;https://github.com/&lt;/a&gt;) for version control and easy code sharing/collaboration. I’m not going to go there with this tutorial, but it is worth exploring if you intend to do big projects in R. R projects set the working directory to a good place automatically. Alternatively you can use the setwd() function. If I’m not in a repo or I am working with large data sets that I don’t want to replicate in every GIT repo on my hard drive I usually set separate “data”, “GIS data” (i.e. biggish data) and “results” working directories by making each path an object and inserting as appropriate for different read and write functions using paste() or paste0(). These would look something like:&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;datwd = &amp;quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/&amp;quot;  
 giswd = &amp;quot;/Users/jasper/Documents/GIS/&amp;quot;   
 reswd = &amp;quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Results/&amp;quot;&lt;/code&gt;&lt;/pre&gt;
@@ -120,13 +140,13 @@ if (Sys.getenv(&amp;quot;USERNAME&amp;quot;)==&amp;#39;WINDOZEUseR&amp;#39;) {da
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(raster, quietly = T) # To handle rasters
 library(rasterVis, quietly = T) # For fancy raster visualisations
 library(rgdal, quietly = T) # To communicate with GDAL and handle shape files&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## rgdal: version: 1.1-10, (SVN revision 622)
+&lt;pre&gt;&lt;code&gt;## rgdal: version: 1.2-7, (SVN revision 660)
 ##  Geospatial Data Abstraction Library extensions to R successfully loaded
-##  Loaded GDAL runtime: GDAL 1.11.4, released 2016/01/25
-##  Path to GDAL shared files: /Library/Frameworks/R.framework/Versions/3.3/Resources/library/rgdal/gdal
-##  Loaded PROJ.4 runtime: Rel. 4.9.1, 04 March 2015, [PJ_VERSION: 491]
-##  Path to PROJ.4 shared files: /Library/Frameworks/R.framework/Versions/3.3/Resources/library/rgdal/proj
-##  Linking to sp version: 1.2-3&lt;/code&gt;&lt;/pre&gt;
+##  Loaded GDAL runtime: GDAL 2.1.3, released 2017/20/01
+##  Path to GDAL shared files: /Library/Frameworks/R.framework/Versions/3.4/Resources/library/rgdal/gdal
+##  Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
+##  Path to PROJ.4 shared files: /Library/Frameworks/R.framework/Versions/3.4/Resources/library/rgdal/proj
+##  Linking to sp version: 1.2-4&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(sp, quietly = T) # To handle shapefiles
 library(doMC, quietly = T) # To run code in parallel
 library(animation, quietly = T) # To make fancy animations...
@@ -134,9 +154,9 @@ library(dismo, quietly = T) # For fancy tricks in Google Earth
 library(googleVis, quietly = T) # For even more fancy tricks in Google Earth&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Creating a generic function for &amp;#39;toJSON&amp;#39; from package &amp;#39;jsonlite&amp;#39; in package &amp;#39;googleVis&amp;#39;&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## 
-## Welcome to googleVis version 0.6.1
+## Welcome to googleVis version 0.6.2
 ## 
-## Please read the Google API Terms of Use
+## Please read Google&amp;#39;s Terms of Use
 ## before you start using the package:
 ## https://developers.google.com/terms/
 ## 
@@ -175,7 +195,7 @@ stdCRS &amp;lt;- &amp;quot;+proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +
 ## with 1000 features
 ## It has 2 fields&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;proj4string(rawpts) # Check projection&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0&amp;quot;&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pts &amp;lt;- spTransform(rawpts, CRS(stdCRS)) # Do spatial transform to set projection&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Note the strange &lt;em&gt;dsn=/layer=&lt;/em&gt; syntax. This will mess with you at first!!! This syntax is used to allow the function to read in many different file formats (type “ogrDrivers()” into the console to see a list). Different drivers often require different inputs for &lt;em&gt;dsn=&lt;/em&gt; and &lt;em&gt;layer=&lt;/em&gt;. I often have to play around or ask Google before I get it right for a new file…&lt;/p&gt;
@@ -269,7 +289,7 @@ dem &amp;lt;- crop(dem, E) # Crop DEM to the buffered extent&lt;/code&gt;&lt;/pr
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(dem)
 points(pts, pch=20, cex=.1)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Now that we have the DEM cleaned up for our study let’s use the terrain() function to calculate/extract some topographic information. Note that terrain() is based on the more versatile focal() function, should you want to design your own indices etc. Also see rasterEngine() in library(spatial.tools) which is an equivalent, but with easy parallel processing capability.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
@@ -303,9 +323,9 @@ topo&lt;/code&gt;&lt;/pre&gt;
 ## resolution  : 78.3, 92.4  (x, y)
 ## extent      : 314587.6, 334710.7, 6409924, 6435056  (xmin, xmax, ymin, ymax)
 ## coord. ref. : +proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs +towgs84=0,0,0 
-## names       :           dem,         slope,      eastwest,    northsouth,           tpi,           tri,     roughness,       flowdir 
-## min values  :  2.963651e+02,  6.550045e-04, -1.000000e+00, -1.000000e+00, -7.051673e+01,  2.752027e-01,  8.269885e-01,  1.000000e+00 
-## max values  :   1956.993132,      1.122555,      1.000000,      1.000000,     91.158215,    140.499435,    438.960084,    128.000000&lt;/code&gt;&lt;/pre&gt;
+## names       :         dem,       slope,    eastwest,  northsouth,         tpi,         tri,   roughness,     flowdir 
+## min values  : 296.3650828,   0.0006550,  -1.0000000,  -1.0000000, -70.5164504,   0.2751995,   0.8269874,   1.0000000 
+## max values  : 1956.993141,    1.122555,    1.000000,    1.000000,   91.157818,  140.499398,  438.959923,  128.000000&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Another way to rename rasters in a stack
 # names(topo) &amp;lt;- c(&amp;quot;name1&amp;quot;, &amp;quot;name2&amp;quot;&amp;quot;, etc)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
@@ -313,11 +333,11 @@ topo&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dens &amp;lt;- rasterize(pts, dem, field=&amp;quot;Name&amp;quot;, fun=&amp;quot;count&amp;quot;)
 plot(dens) # See anything? Probably not, these are 90m pixels in a large landscape...&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(aggregate(dens, fact=3, fun=&amp;quot;sum&amp;quot;))  # Aggregate the 90m cells into larger 210m cells - better?&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-12-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-13-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(dens&amp;gt;10, col=&amp;quot;red&amp;quot;)  # Use raster calculations to subset&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-12-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-13-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Note that you can add, subtract, multiply and divide rasters allowing you to easily do some quite complicated calculations. Explore calc() for designing and implementing more complicated functions.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
@@ -387,7 +407,7 @@ vegmap &amp;lt;- crop(vegmap, E) # Note that extent (E) was created earlier&lt;/
 plot(vegmap, col = cols[as.factor(as.character(vegmap$NAME))]) # Plot the map coloured by veg type
 legend(&amp;quot;bottomleft&amp;quot;, legend = levels(as.factor(as.character(vegmap$NAME))), text.col = cols, cex=.6) # Add a legend
 points(pts, pch=20, cex=.1) # Add the trees&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Looks like our cedars are restricted to “Cederberg Sandstone Fynbos”, but we can test that by extracting the veg type for each tree location.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
@@ -451,7 +471,8 @@ firelayers &amp;lt;- readOGR(dsn=paste0(giswd, &amp;quot;CFR/All_fires_15_16_gw&
 &lt;pre&gt;&lt;code&gt;## OGR data source with driver: ESRI Shapefile 
 ## Source: &amp;quot;/Users/jasper/Documents/GIS/CFR/All_fires_15_16_gw&amp;quot;, layer: &amp;quot;All_fires_15_16_gw&amp;quot;
 ## with 3719 features
-## It has 16 fields&lt;/code&gt;&lt;/pre&gt;
+## It has 16 fields
+## Integer64 fields read as strings:  ID&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;proj4string(firelayers)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## [1] &amp;quot;+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0&amp;quot;&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;firelayers &amp;lt;- spTransform(firelayers, CRS(stdCRS))
@@ -471,9 +492,9 @@ firelayers # Better&lt;/code&gt;&lt;/pre&gt;
 ## extent      : 250253.7, 733752.2, 6150231, 6453673  (xmin, xmax, ymin, ymax)
 ## coord. ref. : +proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs +towgs84=0,0,0 
 ## variables   : 16
-## names       :   ID,       FIRE_CODE, Res_code,  Region, Month, Year, Res_centre,                Res_name,                   Local_desc,  Datestart, DateExting, DateWithdr,     Report_off,    Polic_case,                    IgnitionCa, ... 
-## min values  :    0, ANYS/00/1986/01,     ANYS, Central,     0, 1927,   Anysberg,            Anysberg MCA,                            ?, 1927/05/28, 1940/06/27, 1944/01/16,             ??,             -, Fire operations - Block burns, ... 
-## max values  : 3718, WBAY/12/2015/01,     WBAY, Western,    12, 2016,   Waterval, Zuurberg Nature Reserve, Zwartnek - west of Bergplaas, 2016/07/05, 7197/07/31, 2915/09/18, Zibele Blekiwe, yb285/11/2000,             Unknown - Unknown, ...&lt;/code&gt;&lt;/pre&gt;
+## names       :  ID,       FIRE_CODE, Res_code,  Region, Month, Year, Res_centre,                Res_name,                   Local_desc,  Datestart, DateExting, DateWithdr,     Report_off,    Polic_case,                    IgnitionCa, ... 
+## min values  :   0, ANYS/00/1986/01,     ANYS, Central,     0, 1927,   Anysberg,            Anysberg MCA,                            ?, 1927/05/28, 1940/06/27, 1944/01/16,             ??,             -, Fire operations - Block burns, ... 
+## max values  : 999, WBAY/12/2015/01,     WBAY, Western,    12, 2016,   Waterval, Zuurberg Nature Reserve, Zwartnek - west of Bergplaas, 2016/07/05, 7197/07/31, 2915/09/18, Zibele Blekiwe, yb285/11/2000,             Unknown - Unknown, ...&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;head(firelayers)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##     ID       FIRE_CODE Res_code  Region Month Year Res_centre
 ## 0 1340 OUTE/05/1927/01     OUTE Eastern     5 1927  Outeniqua
@@ -540,7 +561,7 @@ firelayers$Res_centre &amp;lt;- droplevels(firelayers$Res_centre) # Remove unwan
 levels(firelayers$Res_centre)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Cederberg&amp;quot;&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(firelayers) # Plot (without colours)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-18-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-19-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Let’s use rasterize() to create a raster of the number of fires in each 90m pixel.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
@@ -548,7 +569,7 @@ levels(firelayers$Res_centre)&lt;/code&gt;&lt;/pre&gt;
 firecount &amp;lt;- rasterize(firelayers, dem, field=&amp;quot;ID&amp;quot;, fun=&amp;quot;count&amp;quot;) # A count of all fires in each pixel
 plot(firecount) # Note that the extent of our firelayers is larger than the DEM, but R trims it to the smaller extent automatically
 points(pts, pch=20, cex=.1) # Add the trees&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-19-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-20-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Now lets rasterize() each fire (date) into it’s own raster, but first we need to look at the underlying data and see if this will work…&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
@@ -657,7 +678,7 @@ writeRaster(rfi,file=rfifile) # Write out rasters to one file
 } # End if() statement
 ) # End timing&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##    user  system elapsed 
-##   0.000   0.000   0.001&lt;/code&gt;&lt;/pre&gt;
+##       0       0       0&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Now lets try it in parallel using the &lt;em&gt;foreach/%dopar%&lt;/em&gt; loop in library(doMC)…&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
@@ -703,7 +724,7 @@ rfi # Look at the stack&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;names(rfi)=paste0(&amp;quot;Fire_&amp;quot;,years) # Add year as name for each raster
 rfi &amp;lt;- crop(rfi, E) # Crop to just our area of interest (speeds things up)
 plot(rfi) # Plot all layers&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-23-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-24-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Pretty messy… there must be a sexier way?&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
@@ -754,19 +775,19 @@ plot(rfi) # Plot all layers&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Plotting functions in library(rasterVis)
 levelplot(dem)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-26-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-27-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;contourplot(dem)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-26-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-27-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;persp(dem)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-26-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-27-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Some fancy tricks with Google Earth…&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;gbmap &amp;lt;- gmap(Mercator(rawpts), type = &amp;quot;satellite&amp;quot;)
 plot(gbmap)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-27-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-28-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;points(Mercator(rawpts), pch = 20, col = &amp;quot;red&amp;quot;, cex=.3)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-27-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-28-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;If you thought that was fancy, check this out! (Note that this only works for embedding into RMarkdown or an html page)&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
@@ -776,114 +797,114 @@ points.gb &amp;lt;- as.data.frame(rawpts[sample(1:1000, 20),]) # Just select a f
 points.gb$latlon &amp;lt;- paste(points.gb$coords.x2, points.gb$coords.x1, sep=&amp;quot;:&amp;quot;)
 map.gb &amp;lt;- gvisMap(points.gb, locationvar=&amp;quot;latlon&amp;quot;, tipvar=&amp;quot;Name&amp;quot;)
 plot(map.gb)&lt;/code&gt;&lt;/pre&gt;
-&lt;!-- Map generated in R 3.3.2 by googleVis 0.6.1 package --&gt;
-&lt;!-- Fri Apr  7 21:38:38 2017 --&gt;
+&lt;!-- Map generated in R 3.4.0 by googleVis 0.6.2 package --&gt;
+&lt;!-- Thu Jun 29 09:38:05 2017 --&gt;
 &lt;!-- jsHeader --&gt;
 &lt;script type=&#34;text/javascript&#34;&gt;
  
 // jsData 
-function gvisDataMapID4a8257b1a95 () {
+function gvisDataMapID97646fc946 () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
  [
--32.21705753,
-19.07624945,
+-32.32895638,
+19.13263525,
 &#34;&#34;
 ],
 [
--32.22123746,
-19.08465073,
+-32.33576239,
+19.17605099,
 &#34;&#34;
 ],
 [
--32.37125328,
-19.09075697,
+-32.25526767,
+19.10369737,
 &#34;&#34;
 ],
 [
--32.27262508,
-19.11887719,
+-32.25379668,
+19.09995477,
 &#34;&#34;
 ],
 [
--32.32846065,
-19.17213367,
+-32.34949643,
+19.13227819,
 &#34;&#34;
 ],
 [
--32.35957022,
-19.13214821,
+-32.33297824,
+19.17444348,
 &#34;&#34;
 ],
 [
--32.34617253,
-19.09800858,
+-32.24217522,
+19.09339992,
 &#34;&#34;
 ],
 [
--32.2480314,
-19.0921355,
+-32.32533112,
+19.13554602,
 &#34;&#34;
 ],
 [
--32.23473583,
-19.08750048,
+-32.32282123,
+19.17455279,
 &#34;&#34;
 ],
 [
--32.21715281,
-19.07549098,
+-32.41672387,
+19.14110275,
 &#34;&#34;
 ],
 [
--32.32496011,
-19.10314975,
+-32.40863478,
+19.17928187,
 &#34;&#34;
 ],
 [
--32.22946292,
-19.09688965,
+-32.29132662,
+19.11474482,
 &#34;&#34;
 ],
 [
--32.35562325,
-19.13415585,
+-32.3432987,
+19.06358107,
 &#34;&#34;
 ],
 [
--32.21691198,
-19.07589986,
+-32.21653158,
+19.06304431,
 &#34;&#34;
 ],
 [
--32.23603258,
-19.0918143,
+-32.33951463,
+19.05715916,
 &#34;&#34;
 ],
 [
--32.28442124,
-19.11987604,
+-32.32137712,
+19.12402882,
 &#34;&#34;
 ],
 [
--32.28875089,
-19.11938289,
+-32.35027992,
+19.12546108,
 &#34;&#34;
 ],
 [
--32.29555942,
-19.10333819,
+-32.35753188,
+19.07552947,
 &#34;&#34;
 ],
 [
--32.35732017,
-19.07740725,
+-32.2567635,
+19.09882483,
 &#34;&#34;
 ],
 [
--32.32487539,
-19.102618,
+-32.26120332,
+19.13596777,
 &#34;&#34;
 ] 
 ];
@@ -895,13 +916,13 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartMapID4a8257b1a95() {
-var data = gvisDataMapID4a8257b1a95();
+function drawChartMapID97646fc946() {
+var data = gvisDataMapID97646fc946();
 var options = {};
 options[&#34;showTip&#34;] = true;
 
     var chart = new google.visualization.Map(
-    document.getElementById(&#39;MapID4a8257b1a95&#39;)
+    document.getElementById(&#39;MapID97646fc946&#39;)
     );
     chart.draw(data,options);
     
@@ -925,9 +946,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartMapID4a8257b1a95);
+callbacks.push(drawChartMapID97646fc946);
 })();
-function displayChartMapID4a8257b1a95() {
+function displayChartMapID97646fc946() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -950,9 +971,9 @@ callbacks.shift()();
 // jsFooter
 &lt;/script&gt;
 &lt;!-- jsChart --&gt;
-&lt;script type=&#34;text/javascript&#34; src=&#34;https://www.google.com/jsapi?callback=displayChartMapID4a8257b1a95&#34;&gt;&lt;/script&gt;
+&lt;script type=&#34;text/javascript&#34; src=&#34;https://www.google.com/jsapi?callback=displayChartMapID97646fc946&#34;&gt;&lt;/script&gt;
 &lt;!-- divChart --&gt;
-&lt;div id=&#34;MapID4a8257b1a95&#34; style=&#34;width: 500; height: automatic;&#34;&gt;
+&lt;div id=&#34;MapID97646fc946&#34; style=&#34;width: 500; height: automatic;&#34;&gt;
 
 &lt;/div&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;options(op) # Reset gvis options to default&lt;/code&gt;&lt;/pre&gt;
@@ -967,7 +988,7 @@ callbacks.shift()();
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;topo$fire &amp;lt;- firecount
 topo$dens &amp;lt;- dens
 plot(topo)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-30-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-30-2.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-30-3.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-30-4.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-30-5.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-30-6.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-30-7.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-30-8.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-30-9.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-30-10.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-31-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-31-2.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-31-3.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-31-4.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-31-5.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-31-6.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-31-7.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-31-8.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-31-9.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-31-10.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Current theories around the cedar’s decline include increased fire frequency and climate change. Here are a couple of basic hypotheses we could test:&lt;/p&gt;
 &lt;ul&gt;
@@ -976,14 +997,14 @@ plot(topo)&lt;/code&gt;&lt;/pre&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Here&amp;#39;s an easy way to get all data and fiddle.
-dat = as.data.frame(topo)
+dat = as.data.frame(topo) #check out ?rasterToPoints too
 
 par(mfrow=c(2,2))
 plot(dens ~ fire, data=dat)
 plot(dens ~ tri, data=dat)
 plot(dens ~ dem, data=dat)
 plot(dens ~ northsouth, data=dat)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-31-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-32-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;par(mfrow=c(1,1))
 
 # Or just extract the locations we want (note that there&amp;#39;ll be repetition of cells with multiple cedars)
@@ -994,7 +1015,7 @@ plot(dens ~ fire, data=dat)
 plot(dens ~ tri, data=dat)
 plot(dens ~ dem, data=dat)
 plot(dens ~ northsouth, data=dat)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-31-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-32-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;par(mfrow=c(1,1))&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;We can also model the species’ distribution based on these variables using functions in the package &lt;em&gt;dismo&lt;/em&gt;. Here I just do a BioClim model, but you can run many other models too. Even MaxEnt is available if you install it separately and tell R where it is on your machine.&lt;/p&gt;
@@ -1004,7 +1025,7 @@ plot(dens ~ northsouth, data=dat)&lt;/code&gt;&lt;/pre&gt;
 p &amp;lt;- predict(topo, bc) # Predict potential distribution back onto base data
 plot(p)
 points(pts, pch=20, cex=.1)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-32-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-33-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Type vignette(“sdm”) to get a tutorial on Species Distribution Modelling in R with dismo.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
@@ -1021,9 +1042,13 @@ points(pts, pch=20, cex=.1)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;If you try this code and have issues the session info is below. Also note that all kinds of weird settings to Flash etc are required to do the gvisMap plot and it only works if embedded in an HTML webpage or similar.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;sessionInfo()&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## R version 3.3.2 (2016-10-31)
-## Platform: x86_64-apple-darwin13.4.0 (64-bit)
+&lt;pre&gt;&lt;code&gt;## R version 3.4.0 (2017-04-21)
+## Platform: x86_64-apple-darwin15.6.0 (64-bit)
 ## Running under: macOS Sierra 10.12.4
+## 
+## Matrix products: default
+## BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRlapack.dylib
 ## 
 ## locale:
 ## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
@@ -1033,21 +1058,21 @@ points(pts, pch=20, cex=.1)&lt;/code&gt;&lt;/pre&gt;
 ## [8] base     
 ## 
 ## other attached packages:
-##  [1] googleVis_0.6.1     dismo_1.1-1         animation_2.4      
+##  [1] googleVis_0.6.2     dismo_1.1-4         animation_2.5      
 ##  [4] doMC_1.3.4          iterators_1.0.8     foreach_1.4.3      
-##  [7] rgdal_1.1-10        rasterVis_0.40      latticeExtra_0.6-28
-## [10] RColorBrewer_1.1-2  lattice_0.20-34     raster_2.5-8       
+##  [7] rgdal_1.2-7         rasterVis_0.41      latticeExtra_0.6-28
+## [10] RColorBrewer_1.1-2  lattice_0.20-35     raster_2.5-8       
 ## [13] sp_1.2-4           
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.12.8       knitr_1.15.1      magrittr_1.5     
-##  [4] viridisLite_0.1.3 stringr_1.2.0     tools_3.3.2      
-##  [7] grid_3.3.2        rgeos_0.3-22      htmltools_0.3.5  
+##  [1] Rcpp_0.12.11      knitr_1.16        magrittr_1.5     
+##  [4] viridisLite_0.2.0 stringr_1.2.0     tools_3.4.0      
+##  [7] grid_3.4.0        rgeos_0.3-23      htmltools_0.3.6  
 ## [10] yaml_2.1.14       rprojroot_1.2     digest_0.6.12    
-## [13] bookdown_0.3.16   codetools_0.2-15  evaluate_0.10    
-## [16] rmarkdown_1.4     blogdown_0.0.25   stringi_1.1.3    
-## [19] backports_1.0.5   jsonlite_1.3      hexbin_1.27.1    
-## [22] zoo_1.7-13&lt;/code&gt;&lt;/pre&gt;
+## [13] bookdown_0.4      codetools_0.2-15  evaluate_0.10    
+## [16] rmarkdown_1.6     blogdown_0.0.44   stringi_1.1.5    
+## [19] compiler_3.4.0    backports_1.1.0   jsonlite_1.5     
+## [22] hexbin_1.27.1     zoo_1.8-0&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;

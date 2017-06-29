@@ -2,6 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>/post/2017-04-01-PrimerSpatialData/</loc>
+    <lastmod>2017-06-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/fire-shadows/</loc>
+    <lastmod>2017-06-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/post/2017-04-01-Langrivier/</loc>
     <lastmod>2017-06-01T00:00:00+00:00</lastmod>
   </url>
@@ -32,11 +42,6 @@
   </url>
   
   <url>
-    <loc>/post/2017-04-01-PrimerSpatialData/</loc>
-    <lastmod>2016-11-18T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/contact/</loc>
     <lastmod>2016-11-06T13:00:25+05:30</lastmod>
   </url>
@@ -54,13 +59,13 @@
   
   <url>
     <loc>/tags/all/</loc>
-    <lastmod>2017-06-01T00:00:00+00:00</lastmod>
+    <lastmod>2017-06-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/all/</loc>
-    <lastmod>2017-06-01T00:00:00+00:00</lastmod>
+    <lastmod>2017-06-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -83,13 +88,13 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2017-06-01T00:00:00+00:00</lastmod>
+    <lastmod>2017-06-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/post/</loc>
-    <lastmod>2017-06-01T00:00:00+00:00</lastmod>
+    <lastmod>2017-06-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -101,7 +106,7 @@
   
   <url>
     <loc>/categories/r-tutorials/</loc>
-    <lastmod>2017-04-04T00:00:00+00:00</lastmod>
+    <lastmod>2017-06-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -113,13 +118,13 @@
   
   <url>
     <loc>/categories/research/</loc>
-    <lastmod>2017-04-21T00:00:00+00:00</lastmod>
+    <lastmod>2017-06-28T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/spatial/</loc>
-    <lastmod>2016-11-18T00:00:00+00:00</lastmod>
+    <lastmod>2017-06-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
