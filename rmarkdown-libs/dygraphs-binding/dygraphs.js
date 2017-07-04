@@ -131,6 +131,16 @@ HTMLWidgets.widget({
             }
           }
         }
+
+        // custom plotter
+        if (x.plotter) {
+          attrs.plotter = Dygraph.Plotters[x.plotter];
+        }
+
+        // custom data handler
+        if (x.dataHandler) {
+          attrs.dataHandler = Dygraph.DataHandlers[x.dataHandler];
+        }
     
         // if there is no existing dygraph perform initialization
         if (!dygraph) {
@@ -202,10 +212,13 @@ HTMLWidgets.widget({
         dygraph.userDateWindow = attrs.dateWindow;
         if (x.group != null)
           groups[x.group].push(dygraph);
-        
-        // add shiny input for date window
-        if (HTMLWidgets.shinyMode)
-          this.addDateWindowShinyInput(el.id, x);
+   	
+        // add shiny inputs for date window and click
+        if (HTMLWidgets.shinyMode) {
+          var isDate = x.format == "date";
+          this.addClickShinyInput(el.id, isDate);
+          this.addDateWindowShinyInput(el.id, isDate);
+        }
         
         // set annotations
         if (x.annotations != null) {
@@ -378,9 +391,11 @@ HTMLWidgets.widget({
                        
         return function(millis) {
           var mmnt = moment(millis).tz(tz);
-            if (scale == "yearly")
-              return mmnt.format('YYYY') + ' (' + mmnt.zoneAbbr() + ')';
-            else if (scale == "monthly" || scale == "quarterly")
+          if (scale == "yearly")
+            return mmnt.format('YYYY') + ' (' + mmnt.zoneAbbr() + ')';
+          else if (scale == "quarterly")
+            return mmnt.fquarter(1) + ' (' + mmnt.zoneAbbr() + ')';
+            else if (scale == "monthly")
               return mmnt.format('MMM, YYYY')+ ' (' + mmnt.zoneAbbr() + ')';
             else if (scale == "daily" || scale == "weekly")
               return mmnt.format('MMM, DD, YYYY')+ ' (' + mmnt.zoneAbbr() + ')';
@@ -396,16 +411,18 @@ HTMLWidgets.widget({
                           
         return function(millis) {
           var date = new Date(millis);
-            if (scale == "yearly")
-              return date.getFullYear();
-            else if (scale == "monthly" || scale == "quarterly")
-              return monthNames[date.getMonth()] + ', ' + date.getFullYear(); 
-            else if (scale == "daily" || scale == "weekly")
-              return monthNames[date.getMonth()] + ', ' + 
-                               date.getDate() + ', ' + 
-                               date.getFullYear();
-            else
-              return date.toLocaleString();
+          if (scale == "yearly")
+            return date.getFullYear();
+          else if (scale == "quarterly")
+            return moment(millis).fquarter(1);
+          else if (scale == "monthly")
+            return monthNames[date.getMonth()] + ', ' + date.getFullYear(); 
+          else if (scale == "daily" || scale == "weekly")
+            return monthNames[date.getMonth()] + ', ' + 
+                              date.getDate() + ', ' + 
+                              date.getFullYear();
+          else
+            return date.toLocaleString();
         }
       },
       
@@ -616,23 +633,50 @@ HTMLWidgets.widget({
         };
       },
       
-      addDateWindowShinyInput: function(id, x) {
+      addDateWindowShinyInput: function(id, isDate) {
           
         // check for an existing drawCallback
-        var prevDrawCallback = x.attrs["drawCallback"];
+        var prevDrawCallback = dygraph.getOption("drawCallback");
         
         // install the callback
-        x.attrs.drawCallback = function(me, initial) {
-          
-          // call existing
-          if (prevDrawCallback)
-            prevDrawCallback(me, initial);
+        dygraph.updateOptions({
+          drawCallback: function(me, initial) {
+            // call existing
+            if (prevDrawCallback)
+              prevDrawCallback(me, initial);
+            // fire input change
+            var range = dygraph.xAxisRange();
+            if (isDate)
+              range = [new Date(range[0]), new Date(range[1])];
+            if (Shiny.onInputChange) // may note be ready yet in case of static render
+              Shiny.onInputChange(id + "_date_window", range); 
+          }
+        });
+      },
+      
+      addClickShinyInput: function(id, isDate) {
+        
+        var prevClickCallback = dygraph.getOption("clickCallback")
+        
+        dygraph.updateOptions({
+          clickCallback: function(e, x, points) {
             
-          // fire input change
-          var range = dygraph.xAxisRange();
-          var dateWindow = [new Date(range[0]), new Date(range[1])];
-          Shiny.onInputChange(id + "_date_window", dateWindow); 
-        };
+            // call existing
+            if (prevClickCallback)
+              prevClickCallback(e, x, points);
+              
+			      // fire input change
+			      if (Shiny.onInputChange) { // may note be ready yet in case of static render
+              Shiny.onInputChange(el.id + "_click", {
+        				x: isDate ? new Date(x) : x,
+        				x_closest_point: isDate ? new Date(points[0].xval) : points[0].xval,
+        				y_closest_point: points[0].yval,
+        				series_name: points[0].name,
+        				'.nonce': Math.random() // Force reactivity if click hasn't changed
+  			      }); 
+			      }
+          }
+        });
       },
       
       // Add dashed line support to canvas rendering context

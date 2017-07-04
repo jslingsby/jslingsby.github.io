@@ -184,7 +184,7 @@ ga('send', 'pageview');
 <p><br></p>
 <p>First, let’s look at the reduction in burn probabilities when we “disrupt” the fire catchments by making the transformed areas non-flammable. I’ll only present the simple case where we use a homogenous fuel model - i.e. all vegetation burns on the Peninsula in the same way. In reality the vegetation types can differ in flammability quite considerably, especially fynbos vs forest.</p>
 <p><br></p>
-<p>Here we present the burn probabilities with transformation, the burn probabilities without transformation, and the difference between the two.</p>
+<p>Here we present the burn probabilities without transformation, the burn probabilities with transformation, and the difference between the two.</p>
 <p><strong>NOTE</strong>: I present the code from the R statistical programming language used to do the analysis. Just skip these if you are only interested in the story. I’ve tried to write this so that it makes sense without the code, but include the code for Annabelle and other students interested in performing this kind of analysis. Send me a comment below or <a href="http://www.ecologi.st/contact/"><strong>email</strong></a> if you feel I haven’t got this right. The code appears in grey boxes, and the output of the code appears either as the images or grey boxes with all lines preceeded by “##”.</p>
 <p><br></p>
 <pre class="r"><code>library(raster)
@@ -208,10 +208,15 @@ untransformed &lt;- projectRaster(untransformed, transformed)
 
 bp &lt;- stack(untransformed, transformed, change)
 
-plot(bp)</code></pre>
+par(mfrow=c(1,3))
+plot(bp[[1]], main = &quot;Untransformed&quot;, col = rev(heat.colors(100)))
+plot(bp[[2]], main = &quot;Transformed&quot;, col = rev(heat.colors(100)))
+plot(bp[[3]], main = &quot;Change (U - T)&quot;, col = rev(heat.colors(100)))</code></pre>
 <p><img src="/post/2017-06-13-fire-shadows_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow=c(1,1))</code></pre>
 <p><br></p>
-<p>Apologies for the funny names, but that’s what Annabelle called them. “untrans_homog_clip” = the outputs based on the untransformed landscape using a homogenous fuel model, as opposed to the transformed landscape “trans…” and the difference between the two “change…”</p>
+<p>So higher, “redder” values represent a greater probability of burning, but note that positive values in the “change” layer represent reduced burn probability, because it represents the difference <em>Untransformed - Transformed</em>. Also note that the funny numbers around the border are metres from the South Pole (y-axis) and from the Greenwich Meridian (x-axis), because the data are projected with the <a href="https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system"><strong>UTM 34S coordinate reference system</strong></a>.</p>
+<p>Where’s your house?</p>
 <p>Now let’s get the forest change layers from Poulsen and Hoffman 2015 and plot forest change around Table Mountain.</p>
 <p><br></p>
 <pre class="r"><code>f1944 &lt;- readOGR(paste0(datwd, &quot;forest/forestUTM1944.shp&quot;), &quot;forestUTM1944&quot;) #Get the layers</code></pre>
@@ -250,7 +255,7 @@ plot(f1944, add = T, col = &quot;forestgreen&quot;)</code></pre>
 <p><br></p>
 <p>Here the dark green is the forest extent in 1944, while the light green indicates the additional forest extent in 2008 - lots of expansion!</p>
 <p><br></p>
-<p>Now I’d like to overlay the burn probabilities with the areas that were “stable fynbos” vs “stable forest” vs “forest expansion” over the 1944 to 2008 period and show you the difference as boxplots, but to work with them we’ll need them as raster data (i.e. gridded as opposed to polygons). So first I rasterize each layer to a 90m grid and plot fynbos (0), stable forest (2) and areas of forest expansion (1).</p>
+<p>Now I’d like to overlay the burn probabilities with the areas that were “stable fynbos” vs “stable forest” vs “forest expansion” over the 1944 to 2008 period and show you the difference as boxplots, but to work with them we’ll need them as raster data (i.e. gridded as opposed to polygons). So first I rasterize each layer to a 90m grid and plot fynbos (0 - grey), stable forest (2 - green) and areas of forest expansion (1 - yellow). Please ignore the confusing scale bar.</p>
 <p><br></p>
 <pre class="r"><code>fr1944 &lt;- rasterize(f1944, bp, fun = &quot;count&quot;, field = 1, background = 0) #create a raster with &quot;1&quot; where forest occurred
 fr2008 &lt;- rasterize(f2008, bp, fun = &quot;count&quot;, field = 1, background = 0) #create a raster with &quot;1&quot; where forest occurred
@@ -286,7 +291,7 @@ head(dat)</code></pre>
 ## 5 Stable Fynbos
 ## 6 Stable Fynbos</code></pre>
 <p><br></p>
-<p>So there’s the top few lines of the table above. Now we use these data to draw a box and whisker plot of the reduction in burn probability by class.</p>
+<p>So there’s the top few lines of the table above. Now we use these data to draw a box and whisker plot of the reduction in burn probability by class. Here the horizontal mid-line represents the midpoint of the observed values for each class (the median), the box represents the upper and lower quartiles (i.e. 50% of the records for each class fall inside the box), the “whiskers” represent ~75% of the data in each class, and the points (i.e. the black smudge above “Stable Fynbos”) represent outliers that are further from the rest of the data than we would expect.</p>
 <p><br></p>
 <pre class="r"><code>g &lt;- ggplot(dat)
 g &lt;- g + stat_boxplot(aes(y = changeHomog_clip, x = layer, group = layer), position = &quot;dodge&quot;) + 
@@ -295,7 +300,8 @@ g &lt;- g + stat_boxplot(aes(y = changeHomog_clip, x = layer, group = layer), po
 g #to plot</code></pre>
 <p><img src="/post/2017-06-13-fire-shadows_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p><br></p>
-<p>Clearly forest has remained stable and/or expanded in the areas where there has been a reduction in burn probability, but this plot wouldn’t ever fool journal reviewer number three…</p>
+<p>That “Forest Gain” and “Stable Forest” have much higher medians and “boxes” clearly indicates that forest has remained stable and/or expanded in the areas where there has been a reduction in burn probability. There are many possible reasons for the “outliers” in the “Stable Fynbos” class, but the two main reasons are likely to be that a) not all fynbos sites that have suffered a reduction in burn probability are able to sustain forest (e.g. too dry), and b) these sites may well be transitioning to forest, but more time is needed for them to do so.</p>
+<p>While this plot looks very convincing, unfortunately it would never fool journal reviewer number three…</p>
 <p><br></p>
 <p><a href="https://www.youtube.com/watch?v=-VRBWLpYCPY"><img src="http://img.youtube.com/vi/-VRBWLpYCPY/0.jpg" alt="journal reviewer number three" /></a></p>
 <p><br></p>
@@ -314,7 +320,7 @@ g &lt;- g + stat_boxplot(aes(y = changeHomog_clip, x = layer, group = layer), po
 g #Plot the sample to see if it is representative of the whole</code></pre>
 <p><img src="/post/2017-06-13-fire-shadows_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p><br></p>
-<p>Looks pretty good.</p>
+<p>Looks pretty representative.</p>
 <p>It turns out it takes ~12 hours to run the following code on the 10% subset of the data on a x86_64-apple-darwin13.4.0 MacBook Pro (so I’ve commented out the next code chunk so I don’t have to run it each time I compile this blog post). I think we’ll need to run the full dataset on a cluster…</p>
 <p>Skip this section if you’re more interested in the results.</p>
 <p><br></p>
@@ -386,7 +392,7 @@ round(summary(m.1$p.beta.recover.samples)$quantiles,3)</code></pre>
 ## layerStable Forest -0.015 -0.005  0.000  0.004  0.013
 ## layerStable Fynbos -0.031 -0.023 -0.019 -0.015 -0.008</code></pre>
 <p><br></p>
-<p>So this gives us the median (50%) and quantiles (0.025, 0.25, 0.75, 0.975) of the posterior probability distributions for each class. “Forest Gain” is the intercept, which is all positive (i.e. lower probability of burning), and overlaps with “Stable Forest”, but does not overlap with “Stable Fynbos”, which confirms what we knew already! Although it’s a little difficult to interpret. Let’s try a boxplot to illustrate this more clearly.</p>
+<p>So this gives us the median (50%) and quantiles (0.025, 0.25, 0.75, 0.975) of the posterior probability distributions of the estimated average values for each class. “Forest Gain” is the intercept, which is all positive (i.e. lower probability of burning), and overlaps with “Stable Forest”, but does not overlap with “Stable Fynbos”, which confirms what we knew already! Although it’s a little difficult to interpret. Let’s try a boxplot to illustrate this more clearly.</p>
 <p><br></p>
 <pre class="r"><code>x &lt;- as.data.frame(round(summary(m.1$p.beta.recover.samples)$quantiles,3))
 
@@ -404,7 +410,7 @@ Pa</code></pre>
 <p><img src="/post/2017-06-13-fire-shadows_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p><br></p>
 <p>So the forest expanded at sites where the probability of burning has been reduced, because land cover transformation has created new “fire shadows”. Null hypothesis accepted?</p>
-<p>Note that there are a bunch of assumptions etc that I haven’t included here. E.g. having more people usually increases ignitions, resulting in more fires. This may also have I biased spatial pattern, like fires are most likely to start along the wildland-urban interface, etc.</p>
+<p>Note that there are a bunch of assumptions etc that I haven’t included here. E.g. having more people usually increases ignitions, resulting in more fires. This may also have a biased spatial pattern, like fires are most likely to start along the wildland-urban interface, etc.</p>
 <p>Either way, I think there are many reasons why this analysis is interesting despite it’s flaws, and I suspect the story is at least partially true. The real question is how can we manage this? Do we allow these areas to succeed to forest, despite the loss of fynbos biodiversity at these sites? And the risk of catestrophically big fires if a fire is started in the ~50-100 year period while the fynbos is being invaded by forest and is incredibly flammable?</p>
 <p><br></p>
 <p>For the reviewer #3’s among you - here are the model diagnostics:</p>
