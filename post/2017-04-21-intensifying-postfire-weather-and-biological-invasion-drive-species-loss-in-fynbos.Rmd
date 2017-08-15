@@ -5,11 +5,7 @@ author: Jasper
 image: /img/capepoint1.jpg
 date: '2017-04-21'
 slug: intensifying-postfire-weather-and-biological-invasion-drive-species-loss-in-fynbos
-categories:
-  - All
-  - Climate
-  - Vegetation
-  - Research
+categories: ["All","Research"]
 tags: []
 ---
 
