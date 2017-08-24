@@ -95,6 +95,8 @@ mmeans$Month <- reorder(mmeans$Month, c(4,8,12,2,1,7,6,3,5,11,10,9)) #c(5,4,8,1,
 mmeans <- mmeans[order(mmeans$Month),]
 
 #summarise(group_by(x, months(Date, abbreviate=T)), min(Streamflow.Volume, na.rm=T)) #Minimum by month
+#test <- subset(x, months(Date, abbreviate=T) == "Jul") #Select a month
+#test[order(test$Streamflow.Volume),]
 
 #Calculate confidence intervals
 sds <- summarise(group_by(x, months(Date, abbreviate=T)), sd(Streamflow.Volume, na.rm=T)) #Standard deviation
