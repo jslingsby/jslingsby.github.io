@@ -1,6 +1,6 @@
 ---
 title: "Drought Monitor for the Jonkershoek Valley, Western Cape, South Africa"
-date: '2017-08-15'
+date: '2017-09-04'
 image: /img/jonkershoek2.png
 tags: ["All"]
 categories: ["All"]
@@ -17,7 +17,7 @@ knitr::include_graphics("/img/SAEON_DST.png")
 
 *This analysis was prepared by the [**Fynbos Node**](http://www.saeon-fynbos.org) of [the **South African Environmental Observation Network (SAEON)**](http://www.saeon.ac.za).*
 
-Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of July 2017. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams.
+Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of August 2017. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams.
 
 <!--more-->
 
@@ -95,7 +95,7 @@ mmeans$Month <- reorder(mmeans$Month, c(4,8,12,2,1,7,6,3,5,11,10,9)) #c(5,4,8,1,
 mmeans <- mmeans[order(mmeans$Month),]
 
 #summarise(group_by(x, months(Date, abbreviate=T)), min(Streamflow.Volume, na.rm=T)) #Minimum by month
-#test <- subset(x, months(Date, abbreviate=T) == "Jul") #Select a month
+#test <- subset(x, months(Date, abbreviate=T) == "Aug") #Select a month
 #test[order(test$Streamflow.Volume),]
 
 #Calculate confidence intervals
@@ -202,7 +202,10 @@ sumsR$Month <- as.factor(sumsR$Month)
 sumsR$Month <- reorder(sumsR$Month, c(4,8,12,2,1,7,6,3,5,11,10,9)) #c(5,4,8,1,9,7,6,2,12,11,10,3)) 
 sumsR <- sumsR[order(sumsR$Month),]
 
-#summarise(group_by(xR, months(Date, abbreviate=T)), min(Summed.rainfall, na.rm=T)) #Minimum by month
+#summarise(group_by(xR, months(Date, abbreviate=T)), min(Summed.rainfall, na.rm=T))
+#Minimum by month
+#test <- subset(xR, months(Date, abbreviate=T) == "Aug") #Select a month
+#test[order(test$Summed.rainfall),]
 
 #Calculate confidence intervals
 sds <- summarise(group_by(xR, months(Date, abbreviate=T)), sd(Summed.rainfall, na.rm=T)) #Standard deviation
@@ -284,10 +287,6 @@ ar <- ggplot(dat, aes(Year, y = Summed.rainfall, fill=as.factor(Season))) +
 ##Streamflow record
 
 ***
-
-<br>
-
-**PLEASE NOTE THAT JULY'S STREAMFLOW IS YET TO BE ADDED! PLEASE BEAR WITH US...**
 
 <br>
 
