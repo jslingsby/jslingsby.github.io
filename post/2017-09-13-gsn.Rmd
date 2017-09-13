@@ -1,0 +1,174 @@
+---
+title: Testing a citizen science App with the SAEON Graduate Student Network
+author: Jasper Slingsby
+date: '2017-09-13'
+slug: gsn
+image: /img/GSN2013.jpg
+categories: ["R Tutorials", "All"]
+tags: []
+---
+
+This is an incomplete post that I hope to come back to. Tomorrow morning I'm taking students from [*SAEON's Graduate Student Network*](http://gsn.dirisa.org/) into the field to introduce them to Fynbos and to show them a bit of the science I'm working on. My plan is (was) to get them to help me test a model I've been working on (with others!) that identifies anomalous changes in vegetation greeness using satellite data, and use a citizen science smartphone app I've been developing ("VeldWatch") to groundtruth the model by mapping any impacts we notice. If that's not setting the bar high enough, I thought I'd use this blog post to both show them the results of our field trip and provide a little tutorial on mapping in R. Here goes...
+
+<br>
+
+We'll start by calling the R libraries we need.
+
+```{r}
+#If you don't have the necessary packages installed use the function install.packages() as below
+#install.packages("googlesheets") #Don't forget the the ""!
+library(googlesheets)
+suppressMessages(library(dplyr))
+suppressMessages(library(tidyr))
+suppressMessages(library(raster))
+suppressMessages(library(RColorBrewer))
+suppressMessages(library(leaflet))
+suppressPackageStartupMessages(library(ggmap))
+```
+
+<br>
+
+The VeldWatch App uploads the observation data directly into a Google Sheet in my GDrive (and the labeled photos into a folder), so it's easiest if we can call the data directly from the online sheet rather than manually sharing and downloading the sheet every time. To do this, I use library(googlesheets) developed by Jenny Bryan and Joanna Zhao. Check out their [**tutorial**](https://rawgit.com/jennybc/googlesheets/master/vignettes/basic-usage.html) for more of the basics. 
+
+I've shared the sheet publically so you should just be able to access it, but you may get asked to authenticate R accessing your Google Sheets the first time you use this code. If googlesheets doesn't work for you, you can access the spreadsheet [**here**](https://docs.google.com/spreadsheets/d/1dDOo-nizXC1XDECPkXts2VloDaObTuNwxPBhYJFNLdo/edit?usp=sharing), download as .xlsx or .csv and read into R as you normally would.
+
+<br>
+
+Here we extract the google sheet key from the shared URL link, "register the key" (needed for accessing the spreadsheet), download the data and take a quick look at it.
+
+<br>
+
+```{r}
+key <- extract_key_from_url("https://docs.google.com/spreadsheets/d/1dDOo-nizXC1XDECPkXts2VloDaObTuNwxPBhYJFNLdo/edit?usp=sharing") #extract the google sheet key from a shared URL
+
+dat <- key %>% gs_key() %>% gs_read(ws=1) #register the key and download the data in the first worksheet
+
+dat
+```
+
+<br>
+
+Now we want to extract the latitude and longitude stored in the "Geolocation" column into separate columns. This requires splitting the value in each row of "Geolocation" by the fixed divider ", " and assigning the first value from each split to lattitude and the second to longitude. We'll use the function [**separate() from library(tidyr)**](http://tidyr.tidyverse.org/reference/separate.html) to do this.
+
+<br>
+
+```{r}
+(dat <- dat %>% separate(Geolocation, sep = ", ", c("Lat", "Lon"), remove = FALSE, convert = TRUE)) #"remove = FALSE" keeps the column "Geolocation", while "convert = TRUE" coerces the new columns to class "numeric" from "character" if possible
+```
+
+<br>
+
+Putting brackets () around the function allows you to both assign the output (to the object "dat" in this case) and view it using the same line of code. Note the new columns "Lat" and "Lon".
+
+<br>
+
+We can then make the data frame a spatial object of class "SpatialPointsDataFrame" using the function coordinates().
+
+<br>
+
+```{r}
+sdat <- dat
+
+coordinates(sdat) <- ~Lon+Lat
+
+class(sdat)
+```
+
+<br>
+
+Note that if we are working with spatial data we need to assign a coordinate reference system (CRS). In this case the coordinates are geographic (unprojected) with the geodetic datum WGS84. We can tell R this by assigning a "proj4string". I'm not going to go into the details of CRSs, but they differ in terms of whether they represent locations, distances or areas correctly, and can differ depending on where you are on the planet. You need to choose the correct CRS for the analysis you are doing. You can read more about them [**here**](http://desktop.arcgis.com/en/arcmap/10.3/guide-books/map-projections/what-are-map-projections.htm). In all cases, you want to make sure that all your spatial objects have the same CRS!!!
+
+<br>
+
+```{r}
+proj4string(sdat) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+```
+
+<br>
+
+Note that this merely assigns a CRS, it does not transform the data from one CRS to another. If you don't know the original CRS your data are in they are useless for spatial analyses until you find out...
+
+<br>
+
+Ok, let's see where our points land...
+
+```{r}
+b <- bbox(extent(sdat)+.25)
+
+smap <- ggmap(get_map(location = b, source = "stamen", maptype = "watercolor", 
+    crop = T, zoom = 11))
+
+smap + geom_point(data = dat, aes(x = Lon, y = Lat, col = "red2"), alpha = 1)
+```
+
+<br>
+
+Looks like we have points all over the place, but this is not unexpected - ideally people will be using the app to collect data from across the country! 
+
+We can trim the records to our area of interest by setting our desired extent and cropping the data.
+
+<br>
+
+```{r}
+fdat <- crop(sdat, y = extent(18.38, 18.51, -34.15, -34.06)) #crop points to extent
+
+fb <- bbox(extent(fdat)+.125)
+fmap <- ggmap(get_map(location = fb, source = "stamen", maptype = "watercolor", 
+    crop = T, zoom = 11))
+fmap + geom_point(data = dat, aes(x = Lon, y = Lat, col = "red2"), alpha = 1)
+```
+
+<br>
+
+Much better!
+
+Now let's look at them interactively!
+
+<br>
+
+```{r}
+fdat@data <- fdat@data %>% separate(Geolocation, sep = ", ", c("Lat", "Lon"), remove = FALSE, convert = TRUE)
+leaflet(fdat) %>% addProviderTiles(providers$Esri.WorldImagery) %>% addMarkers(~Lon, ~Lat)
+```
+
+<br>
+
+I need to add a bunch more context etc here, but for my and the students' sake we'd like to visualize the model outputs. First lets look at the sites that are less green than the model expects.
+
+<br>
+
+```{r}
+excbelow <- raster("/Users/jasper/Dropbox/Shared/Data4ClimateAction/PeninsulaData/exceedbelow")
+
+pal <- colorNumeric(c("#91bfdb","#ffffbf","#fc8d59"), values(excbelow),
+  na.color = "transparent")
+
+leaflet()  %>% addProviderTiles(providers$Esri.WorldImagery) %>%
+  addRasterImage(excbelow, colors = pal, opacity = 0.5) %>%
+  addLegend(pal = pal, values = values(excbelow),
+    title = "Exceedance Below")
+```
+
+<br>
+
+Now the sites that are more green than expected...
+
+<br>
+
+```{r}
+excabove <- raster("/Users/jasper/Dropbox/Shared/Data4ClimateAction/PeninsulaData/exceedabove")
+
+pal <- colorNumeric(c("#91bfdb","#ffffbf","#fc8d59"), values(excabove),
+  na.color = "transparent")
+
+leaflet()  %>% addProviderTiles(providers$Esri.WorldImagery) %>%
+  addRasterImage(excabove, colors = pal, opacity = 0.5) %>%
+  addLegend(pal = pal, values = values(excabove),
+    title = "Exceedance Below")
+```
+
+<br>
+
+You'll note that some sites are both above and below! These sites are just inherantly noisy. I still need to figure out why! One more item on the never-ending ToDo list!
+
+<br>

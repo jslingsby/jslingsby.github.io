@@ -279,6 +279,8 @@ ar <- ggplot(dat, aes(Year, y = Summed.rainfall, fill=as.factor(Season))) +
 #ar
 #dev.off()
 
+#write.csv(as.data.frame(dbgm), "/Users/jasper/Dropbox/Public/DwarsbergMonthlyRainfallSept2017.csv", row.names = T)
+#write.csv(as.data.frame(langIm), "/Users/jasper/Dropbox/Public/LangrivierMonthlyStreamflowSept2017.csv")
 
 ```
 
@@ -311,7 +313,7 @@ We can also view this cumulatively:
 ```{r, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE}
 monthvalsNA <- monthvals[!is.na(monthvals$Streamflow),]
 
-ggplot(monthvalsNA, aes(x = Month, y = Cumulative_Streamflow, colour=Time)) + geom_point() + scale_colour_manual(values = c("#4393C3","#D6604D","forestgreen","darkgrey"))
+ggplot(monthvalsNA, aes(x = Month, y = Cumulative_Streamflow, colour=Time)) + geom_point() + scale_colour_manual(values = c("#4393C3","#D6604D","forestgreen","darkgrey")) + ylab(bquote("Cumulative Streamflow (ML)"))
 ```
 
 ***
@@ -381,7 +383,7 @@ And if we view this cumulatively:
 ***
 
 ```{r, echo=FALSE, fig.align="center"}
-ggplot(monthvalsR, aes(x = Month, y = Cumulative_Rainfall, colour=Time)) + geom_point() + scale_colour_manual(values = c("#4393C3","#D6604D","forestgreen","darkgrey"))
+ggplot(monthvalsR, aes(x = Month, y = Cumulative_Rainfall, colour=Time)) + geom_point() + scale_colour_manual(values = c("#4393C3","#D6604D","forestgreen","darkgrey")) + ylab(bquote("Cumulative Rainfall (mm)"))
 ```
 
 ***
@@ -446,7 +448,9 @@ rscomp <- data.frame(Rainfall = as.numeric(rscomp$dbgm.Open),
 
 ggplot(rscomp, aes(x = Rainfall, y = Streamflow, colour=Month)) + 
   geom_point() + 
-  facet_wrap(facets = ~Month)
+  facet_wrap(facets = ~Month) + 
+  ylab(bquote("Streamflow (ML)")) +
+  xlab(bquote("Rainfall (mm)"))
 ```
 
 <br>
@@ -470,7 +474,9 @@ colnames(rsdat)[3:4] <- c("Rainfall", "Streamflow")
 ggplot(rsdat, aes(x = Rainfall, y = Streamflow, colour=Season)) + 
   geom_point() +
   xlim(0, NA) + 
-  ylim(0, NA)
+  ylim(0, NA) + 
+  ylab(bquote("Streamflow (ML)")) +
+  xlab(bquote("Rainfall (mm)"))
 ```
 
 A clear role for accumulated soil moisture throughout the season. Note that the lowest blue point was the winter of 2015. Interestingly the winter of 2016 had the next lowest rainfall, but higher streamflow than a few winters with higher rainfall. This could just be spatial variability in rainfall in the catchment, or the censoring created by our summer/winter divide. Ideally we'd look at different accumulation lags - 30, 60, 90 days etc, but we'll need to do some reading about the best way to do this. It seems like a good job for [**Wavelet analysis**](https://en.wikipedia.org/wiki/Wavelet).

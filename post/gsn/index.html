@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+ <title>Testing a citizen science App with the SAEON Graduate Student Network</title>
+
+
+
+<meta name="description" content="Describe your website">
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="all,follow">
+<meta name="googlebot" content="index,follow,snippet,archive">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<link rel="stylesheet" id="ct-tracks-google-fonts-css" href="//fonts.googleapis.com/css?family=Raleway%3A400%2C700&amp;subset=latin%2Clatin-ext&amp;ver=4.7.2" type="text/css" media="all">
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+<link href="/css/style.default.css" rel="stylesheet" id="theme-stylesheet">
+
+<link href="/css/custom.css" rel="stylesheet">
+<link rel="shortcut icon" href="/img/favicon.png">
+
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-97038958-1', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+</head>
+  <body>
+    <div id="root">
+      <div class="container-fluid">
+        <div class="row site-header">
+          <div class="col-md-12">
+            <div class="row">
+              <div class="col-md-12 top-navigation">
+                <div class="row">
+  <div class="col-sm-6">
+    <div class="categories-block">
+      <a href="" class="track-categories">//</a>
+      
+      <a href="/categories/all">all</a>
+      
+      <a href="/categories/r-tutorials">r-tutorials</a>
+      
+      <a href="/categories/research">research</a>
+      
+    </div>
+  </div>
+
+  <div class="col-sm-6">
+    <div class="social-media-block">
+
+      
+      
+      
+      <a href="https://twitter.com/JasperSlingsby" data-animate-hover="pulse" class="external twitter">
+        <i class="fa fa-twitter"></i>
+      </a>
+      
+      
+      
+      <a href="mailto:jslingsby@gmail.com" data-animate-hover="pulse" class="email">
+        <i class="fa fa-envelope"></i>
+      </a>
+      
+      
+      
+      
+
+    </div>
+  </div>
+</div>
+
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-10 header col-md-offset-1">
+                <div class="row">
+  <div class="col-md-6">
+    <div class="title-info">
+      
+      <a href=""> Jasper Slingsby </a>
+      
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="menu">
+      <a href="/">Home /</a>
+      
+      
+      <a href="/about">about / </a>
+      
+      
+      
+      <a href="/contact">contact / </a>
+      
+      
+      
+      
+      
+      <a href="/publications">publications / </a>
+      
+      
+      
+      <a href="/students">students / </a>
+      
+      
+    </div>
+  </div>
+
+</div>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-10 main-content col-md-offset-1">
+            
+
+<div class="col-md-12 entry">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="entry-meta">
+        13 September 2017
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="entry-header">
+       Testing a citizen science App with the SAEON Graduate Student Network
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2">
+      <div class="entry-sidebar">
+        CATEGORIES
+        <div class="entry-categories">
+          <a href="">All</a>
+        </div>
+
+        Tags
+        <div class="entry-tags">
+          <a href="">All</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-10">
+      <div class="entry-content">
+        <script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="/rmarkdown-libs/leaflet/leaflet.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/leaflet/leaflet.js"></script>
+<link href="/rmarkdown-libs/leafletfix/leafletfix.css" rel="stylesheet" />
+<link href="/rmarkdown-libs/leaflet-label/leaflet.label.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/leaflet-label/leaflet.label.js"></script>
+<script src="/rmarkdown-libs/Proj4Leaflet/proj4-compressed.js"></script>
+<script src="/rmarkdown-libs/Proj4Leaflet/proj4leaflet.js"></script>
+<script src="/rmarkdown-libs/leaflet-binding/leaflet.js"></script>
+<script src="/rmarkdown-libs/leaflet-providers/leaflet-providers.js"></script>
+<script src="/rmarkdown-libs/leaflet-providers-plugin/leaflet-providers-plugin.js"></script>
+
+
+<p>This is an incomplete post that I hope to come back to. Tomorrow morning I’m taking students from <a href="http://gsn.dirisa.org/"><em>SAEON’s Graduate Student Network</em></a> into the field to introduce them to Fynbos and to show them a bit of the science I’m working on. My plan is (was) to get them to help me test a model I’ve been working on (with others!) that identifies anomalous changes in vegetation greeness using satellite data, and use a citizen science smartphone app I’ve been developing (“VeldWatch”) to groundtruth the model by mapping any impacts we notice. If that’s not setting the bar high enough, I thought I’d use this blog post to both show them the results of our field trip and provide a little tutorial on mapping in R. Here goes…</p>
+<p><br></p>
+<p>We’ll start by calling the R libraries we need.</p>
+<pre class="r"><code>#If you don&#39;t have the necessary packages installed use the function install.packages() as below
+#install.packages(&quot;googlesheets&quot;) #Don&#39;t forget the the &quot;&quot;!
+library(googlesheets)
+suppressMessages(library(dplyr))
+suppressMessages(library(tidyr))
+suppressMessages(library(raster))</code></pre>
+<pre><code>## Warning: package &#39;sp&#39; was built under R version 3.4.1</code></pre>
+<pre class="r"><code>suppressMessages(library(RColorBrewer))
+suppressMessages(library(leaflet))
+suppressPackageStartupMessages(library(ggmap))</code></pre>
+<p><br></p>
+<p>The VeldWatch App uploads the observation data directly into a Google Sheet in my GDrive (and the labeled photos into a folder), so it’s easiest if we can call the data directly from the online sheet rather than manually sharing and downloading the sheet every time. To do this, I use library(googlesheets) developed by Jenny Bryan and Joanna Zhao. Check out their <a href="https://rawgit.com/jennybc/googlesheets/master/vignettes/basic-usage.html"><strong>tutorial</strong></a> for more of the basics.</p>
+<p>I’ve shared the sheet publically so you should just be able to access it, but you may get asked to authenticate R accessing your Google Sheets the first time you use this code. If googlesheets doesn’t work for you, you can access the spreadsheet <a href="https://docs.google.com/spreadsheets/d/1dDOo-nizXC1XDECPkXts2VloDaObTuNwxPBhYJFNLdo/edit?usp=sharing"><strong>here</strong></a>, download as .xlsx or .csv and read into R as you normally would.</p>
+<p><br></p>
+<p>Here we extract the google sheet key from the shared URL link, “register the key” (needed for accessing the spreadsheet), download the data and take a quick look at it.</p>
+<p><br></p>
+<pre class="r"><code>key &lt;- extract_key_from_url(&quot;https://docs.google.com/spreadsheets/d/1dDOo-nizXC1XDECPkXts2VloDaObTuNwxPBhYJFNLdo/edit?usp=sharing&quot;) #extract the google sheet key from a shared URL
+
+dat &lt;- key %&gt;% gs_key() %&gt;% gs_read(ws=1) #register the key and download the data in the first worksheet</code></pre>
+<pre><code>## Worksheets feed constructed with public visibility</code></pre>
+<pre><code>## Accessing worksheet titled &#39;Sheet1&#39;.</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   TimeStamp = col_time(format = &quot;&quot;),
+##   Time = col_time(format = &quot;&quot;)
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code>dat</code></pre>
+<pre><code>## # A tibble: 6 x 21
+##   TimeStamp `Radius assessed` `Land cover`             Impact
+##      &lt;time&gt;             &lt;chr&gt;        &lt;chr&gt;              &lt;chr&gt;
+## 1  10:05:22               15m      Natural  No obvious impact
+## 2  10:39:13               15m      Natural Alien woody plants
+## 3  10:41:53               15m      Natural        Recent fire
+## 4  10:44:12               15m      Natural Alien woody plants
+## 5  09:03:30              100m Near natural        Dead plants
+## 6  10:41:05               15m      Natural        Dead plants
+## # ... with 17 more variables: `Alien grass density` &lt;lgl&gt;, `No of alien
+## #   plants in search radius` &lt;chr&gt;, `Clearing intensity` &lt;lgl&gt;, `No of
+## #   dead plants in search radius` &lt;chr&gt;, `Size of land/rock slide` &lt;lgl&gt;,
+## #   `Vegetation removal` &lt;lgl&gt;, `Suggested species or common name` &lt;chr&gt;,
+## #   Comment &lt;chr&gt;, `Phone location` &lt;chr&gt;, `Photo A` &lt;chr&gt;, `Photo
+## #   B` &lt;chr&gt;, `Photo C` &lt;chr&gt;, `Photo D` &lt;chr&gt;, Geolocation &lt;chr&gt;,
+## #   Date &lt;chr&gt;, Time &lt;time&gt;, Test &lt;lgl&gt;</code></pre>
+<p><br></p>
+<p>Now we want to extract the latitude and longitude stored in the “Geolocation” column into separate columns. This requires splitting the value in each row of “Geolocation” by the fixed divider “,” and assigning the first value from each split to lattitude and the second to longitude. We’ll use the function <a href="http://tidyr.tidyverse.org/reference/separate.html"><strong>separate() from library(tidyr)</strong></a> to do this.</p>
+<p><br></p>
+<pre class="r"><code>(dat &lt;- dat %&gt;% separate(Geolocation, sep = &quot;, &quot;, c(&quot;Lat&quot;, &quot;Lon&quot;), remove = FALSE, convert = TRUE)) #&quot;remove = FALSE&quot; keeps the column &quot;Geolocation&quot;, while &quot;convert = TRUE&quot; coerces the new columns to class &quot;numeric&quot; from &quot;character&quot; if possible</code></pre>
+<pre><code>## # A tibble: 6 x 23
+##   TimeStamp `Radius assessed` `Land cover`             Impact
+## *    &lt;time&gt;             &lt;chr&gt;        &lt;chr&gt;              &lt;chr&gt;
+## 1  10:05:22               15m      Natural  No obvious impact
+## 2  10:39:13               15m      Natural Alien woody plants
+## 3  10:41:53               15m      Natural        Recent fire
+## 4  10:44:12               15m      Natural Alien woody plants
+## 5  09:03:30              100m Near natural        Dead plants
+## 6  10:41:05               15m      Natural        Dead plants
+## # ... with 19 more variables: `Alien grass density` &lt;lgl&gt;, `No of alien
+## #   plants in search radius` &lt;chr&gt;, `Clearing intensity` &lt;lgl&gt;, `No of
+## #   dead plants in search radius` &lt;chr&gt;, `Size of land/rock slide` &lt;lgl&gt;,
+## #   `Vegetation removal` &lt;lgl&gt;, `Suggested species or common name` &lt;chr&gt;,
+## #   Comment &lt;chr&gt;, `Phone location` &lt;chr&gt;, `Photo A` &lt;chr&gt;, `Photo
+## #   B` &lt;chr&gt;, `Photo C` &lt;chr&gt;, `Photo D` &lt;chr&gt;, Geolocation &lt;chr&gt;,
+## #   Lat &lt;dbl&gt;, Lon &lt;dbl&gt;, Date &lt;chr&gt;, Time &lt;time&gt;, Test &lt;lgl&gt;</code></pre>
+<p><br></p>
+<p>Putting brackets () around the function allows you to both assign the output (to the object “dat” in this case) and view it using the same line of code. Note the new columns “Lat” and “Lon”.</p>
+<p><br></p>
+<p>We can then make the data frame a spatial object of class “SpatialPointsDataFrame” using the function coordinates().</p>
+<p><br></p>
+<pre class="r"><code>sdat &lt;- dat
+
+coordinates(sdat) &lt;- ~Lon+Lat
+
+class(sdat)</code></pre>
+<pre><code>## [1] &quot;SpatialPointsDataFrame&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;sp&quot;</code></pre>
+<p><br></p>
+<p>Note that if we are working with spatial data we need to assign a coordinate reference system (CRS). In this case the coordinates are geographic (unprojected) with the geodetic datum WGS84. We can tell R this by assigning a “proj4string”. I’m not going to go into the details of CRSs, but they differ in terms of whether they represent locations, distances or areas correctly, and can differ depending on where you are on the planet. You need to choose the correct CRS for the analysis you are doing. You can read more about them <a href="http://desktop.arcgis.com/en/arcmap/10.3/guide-books/map-projections/what-are-map-projections.htm"><strong>here</strong></a>. In all cases, you want to make sure that all your spatial objects have the same CRS!!!</p>
+<p><br></p>
+<pre class="r"><code>proj4string(sdat) &lt;- &quot;+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0&quot;</code></pre>
+<p><br></p>
+<p>Note that this merely assigns a CRS, it does not transform the data from one CRS to another. If you don’t know the original CRS your data are in they are useless for spatial analyses until you find out…</p>
+<p><br></p>
+<p>Ok, let’s see where our points land…</p>
+<pre class="r"><code>b &lt;- bbox(extent(sdat)+.25)
+
+smap &lt;- ggmap(get_map(location = b, source = &quot;stamen&quot;, maptype = &quot;watercolor&quot;, 
+    crop = T, zoom = 11))</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1225.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1225.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1130/1225.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1226.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1226.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1130/1226.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1227.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1227.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1130/1227.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1228.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1228.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1130/1228.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1229.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1229.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1130/1229.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1230.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1230.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1130/1230.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1231.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1231.jpg</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1130/1231.jpg</code></pre>
+<pre class="r"><code>smap + geom_point(data = dat, aes(x = Lon, y = Lat, col = &quot;red2&quot;), alpha = 1)</code></pre>
+<p><img src="/post/2017-09-13-gsn_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><br></p>
+<p>Looks like we have points all over the place, but this is not unexpected - ideally people will be using the app to collect data from across the country!</p>
+<p>We can trim the records to our area of interest by setting our desired extent and cropping the data.</p>
+<p><br></p>
+<pre class="r"><code>fdat &lt;- crop(sdat, y = extent(18.38, 18.51, -34.15, -34.06)) #crop points to extent
+
+fb &lt;- bbox(extent(fdat)+.125)
+fmap &lt;- ggmap(get_map(location = fb, source = &quot;stamen&quot;, maptype = &quot;watercolor&quot;, 
+    crop = T, zoom = 11))</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1230.jpg</code></pre>
+<pre><code>## Warning in file.remove(index[[url]]): cannot remove file
+## &#39;09c28ccf22eaa5b7e912d354dab736a4.rds&#39;, reason &#39;No such file or directory&#39;</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1230.jpg</code></pre>
+<pre><code>## Warning in file.remove(index[[url]]): cannot remove file
+## &#39;6ab8f713b950c9449e2999ce47190516.rds&#39;, reason &#39;No such file or directory&#39;</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1231.jpg</code></pre>
+<pre><code>## Warning in file.remove(index[[url]]): cannot remove file
+## &#39;e82dfe54b9ba22e58eeef0c3b1e06839.rds&#39;, reason &#39;No such file or directory&#39;</code></pre>
+<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1231.jpg</code></pre>
+<pre><code>## Warning in file.remove(index[[url]]): cannot remove file
+## &#39;122a21318bb4d3f3fa89bcbb8fd6a7e4.rds&#39;, reason &#39;No such file or directory&#39;</code></pre>
+<pre class="r"><code>fmap + geom_point(data = dat, aes(x = Lon, y = Lat, col = &quot;red2&quot;), alpha = 1)</code></pre>
+<pre><code>## Warning: Removed 4 rows containing missing values (geom_point).</code></pre>
+<p><img src="/post/2017-09-13-gsn_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><br></p>
+<p>Much better!</p>
+<p>Now let’s look at them interactively!</p>
+<p><br></p>
+<pre class="r"><code>fdat@data &lt;- fdat@data %&gt;% separate(Geolocation, sep = &quot;, &quot;, c(&quot;Lat&quot;, &quot;Lon&quot;), remove = FALSE, convert = TRUE)
+leaflet(fdat) %&gt;% addProviderTiles(providers$Esri.WorldImagery) %&gt;% addMarkers(~Lon, ~Lat)</code></pre>
+<div id="htmlwidget-1" style="width:672px;height:480px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldImagery",null,null,{"errorTileUrl":"","noWrap":false,"zIndex":null,"unloadInvisibleTiles":null,"updateWhenIdle":null,"detectRetina":false,"reuseTiles":false}]},{"method":"addMarkers","args":[[-34.107525,-34.104865],[18.464325,18.453626],null,null,null,{"clickable":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},null,null,null,null,null,null,null]}],"limits":{"lat":[-34.107525,-34.104865],"lng":[18.453626,18.464325]}},"evals":[],"jsHooks":[]}</script>
+<p><br></p>
+<p>I need to add a bunch more context etc here, but for my and the students’ sake we’d like to visualize the model outputs. First lets look at the sites that are less green than the model expects.</p>
+<p><br></p>
+<pre class="r"><code>excbelow &lt;- raster(&quot;/Users/jasper/Dropbox/Shared/Data4ClimateAction/PeninsulaData/exceedbelow&quot;)
+
+pal &lt;- colorNumeric(c(&quot;#91bfdb&quot;,&quot;#ffffbf&quot;,&quot;#fc8d59&quot;), values(excbelow),
+  na.color = &quot;transparent&quot;)
+
+leaflet()  %&gt;% addProviderTiles(providers$Esri.WorldImagery) %&gt;%
+  addRasterImage(excbelow, colors = pal, opacity = 0.5) %&gt;%
+  addLegend(pal = pal, values = values(excbelow),
+    title = &quot;Exceedance Below&quot;)</code></pre>
+<div id="htmlwidget-2" style="width:672px;height:480px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldImagery",null,null,{"errorTileUrl":"","noWrap":false,"zIndex":null,"unloadInvisibleTiles":null,"updateWhenIdle":null,"detectRetina":false,"reuseTiles":false}]},{"method":"addRasterImage","args":["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAbCAYAAAAdx42aAAACDklEQVRIie2WzWoTYRSGn++bmUwTYhu00ApFERrEjd0KheLOm/AG3Og1eAlm5w+4EXoHLjWoFal0oSDVJAsRkUqgpJ06yfx9x007TVKIM2lMN313w8yc9zk/c+ZTIsJZSgPU6i2p1VtnQqL7L/ohnm00pgJkpyQKZmzD03cN6caakjMN+8MKFCzhylzI1UqQ3vAjzTTaogFcS9g5sNluF+nGA1357xA2gBfqkQ89f98QxzJ4gcW9taqaJIDOkqEXauJkor7HANcqAZeKMY4ezbEfTj57ALW+uS3lQsJez2K3Z5NnL92/vXxqIPXodVMAirYhNorIjBdzXBglIhOb9HEg1NG/4PHbpkRGUS4khIkmNiCAMYosdDcXfT7vlHKDpN+frQWlhMVyxKybUHIMZcegMoRSwK/9QlbPwXePKlCrt8TRQiwq1yD2QygFc25CwRKWKgGr1ZV/4g9soMsXIm7Md/O7c9gugU5g4YU6kzn0VQDgy88t8XoWPzounZ5NEGfr/7DyzIAaPpBsND+JH1r4kWbXtzCisLWwF1gTNwfQInXBvBK+PpHv7U1Zra6o3wc2F4sxC+WYWTdheb6XJ2YupRUIojfS9lyWPr6EOw/TLGr1lvRn9eLDN/FjTS8+TvQ0GzEdQtdZUzNOAn98WH+Q9mU4+N1b19VCORrX74ROzMC0NfogcA5wDjAF/QV4gebLS2ueXwAAAABJRU5ErkJggg==",[[-34.069353582093,18.3956798712789],[-34.1370586315544,18.4913842952524]],0.5,null,null,null]},{"method":"addLegend","args":[{"colors":["#91BFDB , #91BFDB 0%, #B4D1D4 14.2857142857143%, #D4E3CC 28.5714285714286%, #F1F6C4 42.8571428571429%, #FFEFB0 57.1428571428571%, #FFCF92 71.4285714285714%, #FFAE75 85.7142857142857%, #FC8D59 100%, #FC8D59 "],"labels":["0","2","4","6","8","10","12","14"],"na_color":null,"na_label":"NA","opacity":0.5,"position":"topright","type":"numeric","title":"Exceedance Below","extra":{"p_1":0,"p_n":1},"layerId":null,"className":"info legend"}]}],"limits":{"lat":[-34.1370586315544,-34.069353582093],"lng":[18.3956798712789,18.4913842952524]}},"evals":[],"jsHooks":[]}</script>
+<p><br></p>
+<p>Now the sites that are more green than expected…</p>
+<p><br></p>
+<pre class="r"><code>excabove &lt;- raster(&quot;/Users/jasper/Dropbox/Shared/Data4ClimateAction/PeninsulaData/exceedabove&quot;)
+
+pal &lt;- colorNumeric(c(&quot;#91bfdb&quot;,&quot;#ffffbf&quot;,&quot;#fc8d59&quot;), values(excabove),
+  na.color = &quot;transparent&quot;)
+
+leaflet()  %&gt;% addProviderTiles(providers$Esri.WorldImagery) %&gt;%
+  addRasterImage(excabove, colors = pal, opacity = 0.5) %&gt;%
+  addLegend(pal = pal, values = values(excabove),
+    title = &quot;Exceedance Below&quot;)</code></pre>
+<div id="htmlwidget-3" style="width:672px;height:480px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldImagery",null,null,{"errorTileUrl":"","noWrap":false,"zIndex":null,"unloadInvisibleTiles":null,"updateWhenIdle":null,"detectRetina":false,"reuseTiles":false}]},{"method":"addRasterImage","args":["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAbCAYAAAAdx42aAAACsklEQVRIie2WvW/UWBTFf/f5eT6smZ1kBoQCpAhiAdGAtmAlIiEqeioKOkQFEn8MChXFFghptX/CColdEBGIDoqNgGgFiG+YASYx9th+l8KL4yHZkOFjaLidffV8zj333Pssqsr3DANw7u+7evave9+FiQGwBiqeUiYxLkIWIM6keDFuJcx6yXGQWZfAOEjY9ZLNigNyk2aat+nM4Z2y3plRw5QrNALlr/cHhv7AMFnPqNlvI8SQAnXrSJ0MmRJgW2uAFWV2176vWv0qAokT3BqFCqCs9sPXaMeQCVVBBKqe4ntatOPJW59uaBGByVpGp57Sqadw4bRevLHwRUtMVPMFZE0OWLXKpiAlc/A89MkczEzG9GOPfuxhjWKNEqWGrT8NWOzWCtU+RxH5cBf8Nn9HRZQwMYjkfhBgph2zb7rP/GKLf3tVTukf3N19hEt3JkidUC498POpOTm7a8NECg/0Byvd2NpM6AQpoBzadA8edpnp7Gcp9phbPoZbgG3NhF7kESb5OQFq1hGln1wtayvwqj+vf/7T5kVoObB9iapVEiccmOnxsBtw61GDKDE8XvL5vwtUBDxRphoJAEd/2ftJJQq6E+fnmJ6IAdgztcztpwHXHzSYuzLN1cUWmRN6kbcKvIygCqkTni/7GwIfUgBWxuznTsT911UyJ1Q8x1QzoffO8ib2AArTiUC7lgIQpYaKp/QibyQzysc/JOWRalUznAo72hGvI8uzJf8/MCmqD3xH4DtU811x/Nc9I02CxV1WJ4bfb27hZWg5c3infCDRqDra9YRuaHn1zhbAK/TBGmVzI+Fpv7I6P4oC5crLEr4Jr2krmC2eL95Y0DAxxFlun8B3nDi48bH7OAoTlkGH2lACh1ziqWZC1XOIKDXPfS42sIYHxh2jbY0fBH4Q+AbxHkD4OzFalZmTAAAAAElFTkSuQmCC",[[-34.069353582093,18.3956798712789],[-34.1370586315544,18.4913842952524]],0.5,null,null,null]},{"method":"addLegend","args":[{"colors":["#91BFDB , #91BFDB 0%, #BFD7D1 19.2307692307692%, #E8F0C6 38.4615384615385%, #FFEEAF 57.6923076923077%, #FFC387 76.9230769230769%, #FD9660 96.1538461538462%, #FC8D59 "],"labels":["0","5","10","15","20","25"],"na_color":null,"na_label":"NA","opacity":0.5,"position":"topright","type":"numeric","title":"Exceedance Below","extra":{"p_1":0,"p_n":0.961538461538462},"layerId":null,"className":"info legend"}]}],"limits":{"lat":[-34.1370586315544,-34.069353582093],"lng":[18.3956798712789,18.4913842952524]}},"evals":[],"jsHooks":[]}</script>
+<p><br></p>
+<p>You’ll note that some sites are both above and below! These sites are just inherantly noisy. I still need to figure out why! One more item on the never-ending ToDo list!</p>
+<p><br></p>
+
+      </div>
+    </div>
+  </div>
+
+  <hr/>
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'https-jslingsby-github-io';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  
+
+</div>
+
+          </div>
+        </div>
+        <div class="row site-footer">
+          <div class="col-md-12">
+            <div class="row">
+  <div class="col-md-12 footer-title">
+    <h2>
+      
+      <a href=""> Jasper Slingsby </a>
+      
+    </h2>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12 footer-menu">
+      <a href="/">Home /</a>
+      
+      
+      <a href="/about">about / </a>
+      
+      
+      
+      <a href="/contact">contact / </a>
+      
+      
+      
+      
+      
+      <a href="/publications">publications / </a>
+      
+      
+      
+      <a href="/students">students / </a>
+      
+      
+
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="social-media-block-footer">
+      
+      
+      
+      <a href="https://twitter.com/JasperSlingsby" data-animate-hover="pulse" class="external twitter">
+        <i class="fa fa-twitter"></i>
+      </a>
+      
+      
+      
+      <a href="mailto:jslingsby@gmail.com" data-animate-hover="pulse" class="email">
+        <i class="fa fa-envelope"></i>
+      </a>
+      
+      
+      
+      
+
+    </div>
+  </div>
+</div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.cookie.js"> </script>
+<script src="/js/ekko-lightbox.js"></script>
+<script src="/js/jquery.scrollTo.min.js"></script>
+<script src="/js/masonry.pkgd.min.js"></script>
+<script src="/js/imagesloaded.pkgd.min.js"></script>
+<script src="/js/owl.carousel.min.js"></script>
+<script src="/js/front.js"></script>
+
+  </body>
+</html>
