@@ -129,7 +129,7 @@ ga('send', 'pageview');
   <div class="row">
     <div class="col-md-12">
       <div class="entry-meta">
-        13 September 2017
+        14 September 2017
       </div>
     </div>
   </div>
@@ -170,7 +170,9 @@ ga('send', 'pageview');
 <script src="/rmarkdown-libs/leaflet-providers-plugin/leaflet-providers-plugin.js"></script>
 
 
-<p>This is an incomplete post that I hope to come back to. Tomorrow morning I’m taking students from <a href="http://gsn.dirisa.org/"><em>SAEON’s Graduate Student Network</em></a> into the field to introduce them to Fynbos and to show them a bit of the science I’m working on. My plan is (was) to get them to help me test a model I’ve been working on (with others!) that identifies anomalous changes in vegetation greeness using satellite data, and use a citizen science smartphone app I’ve been developing (“VeldWatch”) to groundtruth the model by mapping any impacts we notice. If that’s not setting the bar high enough, I thought I’d use this blog post to both show them the results of our field trip and provide a little tutorial on mapping in R. Here goes…</p>
+<p>This is based on data collected when I took students from <a href="http://gsn.dirisa.org/"><em>SAEON’s Graduate Student Network</em></a> into the field to introduce them to Fynbos and to show them a bit of the science I’m working on. To make things more interesting, I got them to help me test a smartphone app I’ve been developing (“VeldWatch”) that can be used to map any impacts on natural ecosystems observed in the field, like invasive species, plant mortality, etc.</p>
+<p>The aim behind developing VeldWatch is to provide a platform whereby citizen scientists can contribute these observations, but also help groundtruth a model I’ve been working on (with others!) that identifies anomalous changes in vegetation greeness using satellite data.</p>
+<p>If that’s not setting the bar high enough, I thought I’d use this blog post to both show them the results of our field trip and provide a little tutorial on mapping in R. Here goes…</p>
 <p><br></p>
 <p>We’ll start by calling the R libraries we need.</p>
 <pre class="r"><code>#If you don&#39;t have the necessary packages installed use the function install.packages() as below
@@ -180,70 +182,52 @@ suppressMessages(library(dplyr))
 suppressMessages(library(tidyr))
 suppressMessages(library(raster))</code></pre>
 <pre><code>## Warning: package &#39;sp&#39; was built under R version 3.4.1</code></pre>
+<pre class="r"><code>suppressMessages(library(rgdal))</code></pre>
+<pre><code>## Warning: package &#39;rgdal&#39; was built under R version 3.4.1</code></pre>
 <pre class="r"><code>suppressMessages(library(RColorBrewer))
 suppressMessages(library(leaflet))
 suppressPackageStartupMessages(library(ggmap))</code></pre>
 <p><br></p>
 <p>The VeldWatch App uploads the observation data directly into a Google Sheet in my GDrive (and the labeled photos into a folder), so it’s easiest if we can call the data directly from the online sheet rather than manually sharing and downloading the sheet every time. To do this, I use library(googlesheets) developed by Jenny Bryan and Joanna Zhao. Check out their <a href="https://rawgit.com/jennybc/googlesheets/master/vignettes/basic-usage.html"><strong>tutorial</strong></a> for more of the basics.</p>
 <p>I’ve shared the sheet publically so you should just be able to access it, but you may get asked to authenticate R accessing your Google Sheets the first time you use this code. If googlesheets doesn’t work for you, you can access the spreadsheet <a href="https://docs.google.com/spreadsheets/d/1dDOo-nizXC1XDECPkXts2VloDaObTuNwxPBhYJFNLdo/edit?usp=sharing"><strong>here</strong></a>, download as .xlsx or .csv and read into R as you normally would.</p>
-<p><br></p>
 <p>Here we extract the google sheet key from the shared URL link, “register the key” (needed for accessing the spreadsheet), download the data and take a quick look at it.</p>
 <p><br></p>
 <pre class="r"><code>key &lt;- extract_key_from_url(&quot;https://docs.google.com/spreadsheets/d/1dDOo-nizXC1XDECPkXts2VloDaObTuNwxPBhYJFNLdo/edit?usp=sharing&quot;) #extract the google sheet key from a shared URL
 
-dat &lt;- key %&gt;% gs_key() %&gt;% gs_read(ws=1) #register the key and download the data in the first worksheet</code></pre>
-<pre><code>## Worksheets feed constructed with public visibility</code></pre>
-<pre><code>## Accessing worksheet titled &#39;Sheet1&#39;.</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   .default = col_character(),
-##   TimeStamp = col_time(format = &quot;&quot;),
-##   Time = col_time(format = &quot;&quot;)
-## )</code></pre>
-<pre><code>## See spec(...) for full column specifications.</code></pre>
-<pre class="r"><code>dat</code></pre>
-<pre><code>## # A tibble: 6 x 21
-##   TimeStamp `Radius assessed` `Land cover`             Impact
-##      &lt;time&gt;             &lt;chr&gt;        &lt;chr&gt;              &lt;chr&gt;
-## 1  10:05:22               15m      Natural  No obvious impact
-## 2  10:39:13               15m      Natural Alien woody plants
-## 3  10:41:53               15m      Natural        Recent fire
-## 4  10:44:12               15m      Natural Alien woody plants
-## 5  09:03:30              100m Near natural        Dead plants
-## 6  10:41:05               15m      Natural        Dead plants
-## # ... with 17 more variables: `Alien grass density` &lt;lgl&gt;, `No of alien
-## #   plants in search radius` &lt;chr&gt;, `Clearing intensity` &lt;lgl&gt;, `No of
-## #   dead plants in search radius` &lt;chr&gt;, `Size of land/rock slide` &lt;lgl&gt;,
-## #   `Vegetation removal` &lt;lgl&gt;, `Suggested species or common name` &lt;chr&gt;,
-## #   Comment &lt;chr&gt;, `Phone location` &lt;chr&gt;, `Photo A` &lt;chr&gt;, `Photo
-## #   B` &lt;chr&gt;, `Photo C` &lt;chr&gt;, `Photo D` &lt;chr&gt;, Geolocation &lt;chr&gt;,
-## #   Date &lt;chr&gt;, Time &lt;time&gt;, Test &lt;lgl&gt;</code></pre>
+dat &lt;- key %&gt;% gs_key(verbose = FALSE) %&gt;% gs_read(ws=1, verbose = FALSE) #register the key and download the data in the first worksheet
+
+dat</code></pre>
+<pre><code>## # A tibble: 36 x 21
+##    TimeStamp `Radius assessed` `Land cover`
+##       &lt;time&gt;             &lt;chr&gt;        &lt;chr&gt;
+##  1  10:05:22               15m      Natural
+##  2  10:39:13               15m      Natural
+##  3  10:41:53               15m      Natural
+##  4  10:44:12               15m      Natural
+##  5  09:03:30              100m Near natural
+##  6  10:41:05               15m      Natural
+##  7  08:33:09              100m Near natural
+##  8  08:34:33              100m Near natural
+##  9  08:42:10                5m Near natural
+## 10  08:49:09              100m Near natural
+## # ... with 26 more rows, and 18 more variables: Impact &lt;chr&gt;, `Alien grass
+## #   density` &lt;chr&gt;, `No of alien plants in search radius` &lt;chr&gt;, `Clearing
+## #   intensity` &lt;lgl&gt;, `No of dead plants in search radius` &lt;chr&gt;, `Size of
+## #   land/rock slide` &lt;lgl&gt;, `Vegetation removal` &lt;chr&gt;, `Suggested species
+## #   or common name` &lt;chr&gt;, Comment &lt;chr&gt;, `Phone location` &lt;chr&gt;, `Photo
+## #   A` &lt;chr&gt;, `Photo B` &lt;chr&gt;, `Photo C` &lt;chr&gt;, `Photo D` &lt;chr&gt;,
+## #   Geolocation &lt;chr&gt;, Date &lt;chr&gt;, Time &lt;time&gt;, Test &lt;lgl&gt;</code></pre>
 <p><br></p>
-<p>Now we want to extract the latitude and longitude stored in the “Geolocation” column into separate columns. This requires splitting the value in each row of “Geolocation” by the fixed divider “,” and assigning the first value from each split to lattitude and the second to longitude. We’ll use the function <a href="http://tidyr.tidyverse.org/reference/separate.html"><strong>separate() from library(tidyr)</strong></a> to do this.</p>
+<p>Now we want to extract the latitude and longitude stored in the “Geolocation” column into separate columns. This requires splitting the value in each row of “Geolocation” by the fixed divider “,” and assigning the first value from each split to latitude and the second to longitude. We’ll use the function <a href="http://tidyr.tidyverse.org/reference/separate.html"><em>separate()</em> from <strong>library(tidyr)</strong></a> to do this.</p>
 <p><br></p>
-<pre class="r"><code>(dat &lt;- dat %&gt;% separate(Geolocation, sep = &quot;, &quot;, c(&quot;Lat&quot;, &quot;Lon&quot;), remove = FALSE, convert = TRUE)) #&quot;remove = FALSE&quot; keeps the column &quot;Geolocation&quot;, while &quot;convert = TRUE&quot; coerces the new columns to class &quot;numeric&quot; from &quot;character&quot; if possible</code></pre>
-<pre><code>## # A tibble: 6 x 23
-##   TimeStamp `Radius assessed` `Land cover`             Impact
-## *    &lt;time&gt;             &lt;chr&gt;        &lt;chr&gt;              &lt;chr&gt;
-## 1  10:05:22               15m      Natural  No obvious impact
-## 2  10:39:13               15m      Natural Alien woody plants
-## 3  10:41:53               15m      Natural        Recent fire
-## 4  10:44:12               15m      Natural Alien woody plants
-## 5  09:03:30              100m Near natural        Dead plants
-## 6  10:41:05               15m      Natural        Dead plants
-## # ... with 19 more variables: `Alien grass density` &lt;lgl&gt;, `No of alien
-## #   plants in search radius` &lt;chr&gt;, `Clearing intensity` &lt;lgl&gt;, `No of
-## #   dead plants in search radius` &lt;chr&gt;, `Size of land/rock slide` &lt;lgl&gt;,
-## #   `Vegetation removal` &lt;lgl&gt;, `Suggested species or common name` &lt;chr&gt;,
-## #   Comment &lt;chr&gt;, `Phone location` &lt;chr&gt;, `Photo A` &lt;chr&gt;, `Photo
-## #   B` &lt;chr&gt;, `Photo C` &lt;chr&gt;, `Photo D` &lt;chr&gt;, Geolocation &lt;chr&gt;,
-## #   Lat &lt;dbl&gt;, Lon &lt;dbl&gt;, Date &lt;chr&gt;, Time &lt;time&gt;, Test &lt;lgl&gt;</code></pre>
+<pre class="r"><code>dat &lt;- dat %&gt;% separate(Geolocation, sep = &quot;, &quot;, c(&quot;Lat&quot;, &quot;Lon&quot;), remove = FALSE, convert = TRUE)</code></pre>
 <p><br></p>
-<p>Putting brackets () around the function allows you to both assign the output (to the object “dat” in this case) and view it using the same line of code. Note the new columns “Lat” and “Lon”.</p>
+<p>This has added new columns “Lat” and “Lon”. Setting “remove = FALSE” keeps the column “Geolocation”, while “convert = TRUE” coerces the new columns to class “numeric” from “character” if possible.</p>
+<p>We can then make the data frame a <em>spatial</em> object of class “SpatialPointsDataFrame” using the function coordinates(). This is essentially like converting the table to a shapefile with point locations and an attribute table.</p>
 <p><br></p>
-<p>We can then make the data frame a spatial object of class “SpatialPointsDataFrame” using the function coordinates().</p>
-<p><br></p>
-<pre class="r"><code>sdat &lt;- dat
+<pre class="r"><code>class(dat)</code></pre>
+<pre><code>## [1] &quot;tbl_df&quot;     &quot;tbl&quot;        &quot;data.frame&quot;</code></pre>
+<pre class="r"><code>sdat &lt;- dat #Make a new data frame &quot;sdat&quot; that we&#39;ll convert to a spatial object
 
 coordinates(sdat) &lt;- ~Lon+Lat
 
@@ -257,35 +241,15 @@ class(sdat)</code></pre>
 <pre class="r"><code>proj4string(sdat) &lt;- &quot;+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0&quot;</code></pre>
 <p><br></p>
 <p>Note that this merely assigns a CRS, it does not transform the data from one CRS to another. If you don’t know the original CRS your data are in they are useless for spatial analyses until you find out…</p>
-<p><br></p>
 <p>Ok, let’s see where our points land…</p>
+<p><br></p>
 <pre class="r"><code>b &lt;- bbox(extent(sdat)+.25)
 
 smap &lt;- ggmap(get_map(location = b, source = &quot;stamen&quot;, maptype = &quot;watercolor&quot;, 
-    crop = T, zoom = 11))</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1225.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1225.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1130/1225.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1226.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1226.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1130/1226.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1227.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1227.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1130/1227.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1228.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1228.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1130/1228.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1229.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1229.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1130/1229.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1230.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1230.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1130/1230.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1231.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1231.jpg</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1130/1231.jpg</code></pre>
-<pre class="r"><code>smap + geom_point(data = dat, aes(x = Lon, y = Lat, col = &quot;red2&quot;), alpha = 1)</code></pre>
-<p><img src="/post/2017-09-13-gsn_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+    crop = T, zoom = 11))
+
+smap + geom_point(data = dat, aes(x = Lon, y = Lat, col = &quot;red2&quot;), alpha = 1)</code></pre>
+<p><img src="/post/2017-09-13-gsn_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p><br></p>
 <p>Looks like we have points all over the place, but this is not unexpected - ideally people will be using the app to collect data from across the country!</p>
 <p>We can trim the records to our area of interest by setting our desired extent and cropping the data.</p>
@@ -294,30 +258,48 @@ smap &lt;- ggmap(get_map(location = b, source = &quot;stamen&quot;, maptype = &q
 
 fb &lt;- bbox(extent(fdat)+.125)
 fmap &lt;- ggmap(get_map(location = fb, source = &quot;stamen&quot;, maptype = &quot;watercolor&quot;, 
-    crop = T, zoom = 11))</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1230.jpg</code></pre>
-<pre><code>## Warning in file.remove(index[[url]]): cannot remove file
-## &#39;09c28ccf22eaa5b7e912d354dab736a4.rds&#39;, reason &#39;No such file or directory&#39;</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1230.jpg</code></pre>
-<pre><code>## Warning in file.remove(index[[url]]): cannot remove file
-## &#39;6ab8f713b950c9449e2999ce47190516.rds&#39;, reason &#39;No such file or directory&#39;</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1128/1231.jpg</code></pre>
-<pre><code>## Warning in file.remove(index[[url]]): cannot remove file
-## &#39;e82dfe54b9ba22e58eeef0c3b1e06839.rds&#39;, reason &#39;No such file or directory&#39;</code></pre>
-<pre><code>## Map from URL : http://tile.stamen.com/watercolor/11/1129/1231.jpg</code></pre>
-<pre><code>## Warning in file.remove(index[[url]]): cannot remove file
-## &#39;122a21318bb4d3f3fa89bcbb8fd6a7e4.rds&#39;, reason &#39;No such file or directory&#39;</code></pre>
-<pre class="r"><code>fmap + geom_point(data = dat, aes(x = Lon, y = Lat, col = &quot;red2&quot;), alpha = 1)</code></pre>
-<pre><code>## Warning: Removed 4 rows containing missing values (geom_point).</code></pre>
-<p><img src="/post/2017-09-13-gsn_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+    crop = T, zoom = 11))
+fmap + geom_point(data = dat, aes(x = Lon, y = Lat, col = &quot;red2&quot;), alpha = 1)</code></pre>
+<p><img src="/post/2017-09-13-gsn_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p><br></p>
 <p>Much better!</p>
-<p>Now let’s look at them interactively!</p>
+<p>BUT! Some of the points we logged with the app are FAR from where we were hiking?</p>
+<p>Let’s add a GPS track I took to see where we actually were. You can download the track <a href="https://www.dropbox.com/s/w2xplo4zkbi1kot/Track_14-SEP-17%20164823.gpx?dl=0"><strong>here</strong></a>.</p>
+<p><br></p>
+<pre class="r"><code>track &lt;- readOGR(dsn=&quot;/Users/jasper/Dropbox/SAEON/GSN/2017/Track_14-SEP-17 164823.gpx&quot;, layer=&quot;tracks&quot;)</code></pre>
+<pre><code>## OGR data source with driver: GPX 
+## Source: &quot;/Users/jasper/Dropbox/SAEON/GSN/2017/Track_14-SEP-17 164823.gpx&quot;, layer: &quot;tracks&quot;
+## with 1 features
+## It has 13 fields</code></pre>
+<p><br></p>
+<p>Now let’s add the track to our plot, but to do this with the plotting functions we’ve been using we need to use the function <em>fortify()</em> to arrange the track properly.</p>
+<p><br></p>
+<pre class="r"><code>track_f &lt;- fortify(track)
+
+head(track_f)</code></pre>
+<pre><code>##       long       lat order piece id group
+## 1 18.42222 -34.09084     1     1  0   0.1
+## 2 18.42232 -34.09088     2     1  0   0.1
+## 3 18.42241 -34.09093     3     1  0   0.1
+## 4 18.42250 -34.09099     4     1  0   0.1
+## 5 18.42259 -34.09106     5     1  0   0.1
+## 6 18.42267 -34.09111     6     1  0   0.1</code></pre>
+<p><br></p>
+<p>Now we can just add it to our existing plot with <em>geom_path()</em>.</p>
+<p><br></p>
+<pre class="r"><code>fmap + geom_point(data = dat, aes(x = Lon, y = Lat, col = &quot;red2&quot;), alpha = 1) + 
+  geom_path(data = track_f, aes(x=long, y=lat, group=group, col = &quot;royalblue&quot;))</code></pre>
+<p><img src="/post/2017-09-13-gsn_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><br></p>
+<p>Oh dear…</p>
+<p>Another “oh dear” is that it’s my 6-month old’s bath time, so I’ll have to stop here and come back to this. My plan is to identify the “errant” points by calculating the distance to the GPS track, and then see if it’s the same phone.</p>
+<p><br></p>
+<p>But first, let’s look at some of the data interactively!</p>
 <p><br></p>
 <pre class="r"><code>fdat@data &lt;- fdat@data %&gt;% separate(Geolocation, sep = &quot;, &quot;, c(&quot;Lat&quot;, &quot;Lon&quot;), remove = FALSE, convert = TRUE)
 leaflet(fdat) %&gt;% addProviderTiles(providers$Esri.WorldImagery) %&gt;% addMarkers(~Lon, ~Lat)</code></pre>
 <div id="htmlwidget-1" style="width:672px;height:480px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldImagery",null,null,{"errorTileUrl":"","noWrap":false,"zIndex":null,"unloadInvisibleTiles":null,"updateWhenIdle":null,"detectRetina":false,"reuseTiles":false}]},{"method":"addMarkers","args":[[-34.107525,-34.104865],[18.464325,18.453626],null,null,null,{"clickable":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},null,null,null,null,null,null,null]}],"limits":{"lat":[-34.107525,-34.104865],"lng":[18.453626,18.464325]}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldImagery",null,null,{"errorTileUrl":"","noWrap":false,"zIndex":null,"unloadInvisibleTiles":null,"updateWhenIdle":null,"detectRetina":false,"reuseTiles":false}]},{"method":"addMarkers","args":[[-34.107525,-34.104865,-34.091183,-34.091335,-34.092598,-34.093139,-34.093235,-34.09334,-34.13148,-34.122318,-34.098236,-34.099404,-34.099134,-34.100586,-34.101758,-34.105327,-34.103921,-34.091323,-34.093187,-34.093479,-34.093469,-34.100652,-34.091167,-34.101747,-34.093149,-34.101943,-34.105596,-34.10403,-34.10067,-34.100351,-34.097461],[18.464325,18.453626,18.422787,18.422804,18.423293,18.423523,18.42336,18.423487,18.388847,18.382913,18.416309,18.430032,18.42829,18.430966,18.385509,18.435118,18.444904,18.422835,18.423419,18.434371,18.434318,18.447805,18.422852,18.385832,18.423384,18.433125,18.435332,18.444854,18.447974,18.447814,18.441546],null,null,null,{"clickable":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},null,null,null,null,null,null,null]}],"limits":{"lat":[-34.13148,-34.091167],"lng":[18.382913,18.464325]}},"evals":[],"jsHooks":[]}</script>
 <p><br></p>
 <p>I need to add a bunch more context etc here, but for my and the students’ sake we’d like to visualize the model outputs. First lets look at the sites that are less green than the model expects.</p>
 <p><br></p>

@@ -1,14 +1,18 @@
 ---
 title: Testing a citizen science App with the SAEON Graduate Student Network
 author: Jasper Slingsby
-date: '2017-09-13'
+date: '2017-09-14'
 slug: gsn
-image: /img/GSN2013.jpg
+image: /img/GSN2017.jpg
 categories: ["R Tutorials", "All"]
 tags: []
 ---
 
-This is an incomplete post that I hope to come back to. Tomorrow morning I'm taking students from [*SAEON's Graduate Student Network*](http://gsn.dirisa.org/) into the field to introduce them to Fynbos and to show them a bit of the science I'm working on. My plan is (was) to get them to help me test a model I've been working on (with others!) that identifies anomalous changes in vegetation greeness using satellite data, and use a citizen science smartphone app I've been developing ("VeldWatch") to groundtruth the model by mapping any impacts we notice. If that's not setting the bar high enough, I thought I'd use this blog post to both show them the results of our field trip and provide a little tutorial on mapping in R. Here goes...
+This is based on data collected when I took students from [*SAEON's Graduate Student Network*](http://gsn.dirisa.org/) into the field to introduce them to Fynbos and to show them a bit of the science I'm working on. To make things more interesting, I got them to help me test a smartphone app I've been developing ("VeldWatch") that can be used to map any impacts on natural ecosystems observed in the field, like invasive species, plant mortality, etc.
+
+The aim behind developing VeldWatch is to provide a platform whereby citizen scientists can contribute these observations, but also help groundtruth a model I've been working on (with others!) that identifies anomalous changes in vegetation greeness using satellite data.
+
+If that's not setting the bar high enough, I thought I'd use this blog post to both show them the results of our field trip and provide a little tutorial on mapping in R. Here goes...
 
 <br>
 
@@ -21,6 +25,7 @@ library(googlesheets)
 suppressMessages(library(dplyr))
 suppressMessages(library(tidyr))
 suppressMessages(library(raster))
+suppressMessages(library(rgdal))
 suppressMessages(library(RColorBrewer))
 suppressMessages(library(leaflet))
 suppressPackageStartupMessages(library(ggmap))
@@ -32,42 +37,42 @@ The VeldWatch App uploads the observation data directly into a Google Sheet in m
 
 I've shared the sheet publically so you should just be able to access it, but you may get asked to authenticate R accessing your Google Sheets the first time you use this code. If googlesheets doesn't work for you, you can access the spreadsheet [**here**](https://docs.google.com/spreadsheets/d/1dDOo-nizXC1XDECPkXts2VloDaObTuNwxPBhYJFNLdo/edit?usp=sharing), download as .xlsx or .csv and read into R as you normally would.
 
-<br>
-
 Here we extract the google sheet key from the shared URL link, "register the key" (needed for accessing the spreadsheet), download the data and take a quick look at it.
 
 <br>
 
-```{r}
+```{r, message = FALSE}
 key <- extract_key_from_url("https://docs.google.com/spreadsheets/d/1dDOo-nizXC1XDECPkXts2VloDaObTuNwxPBhYJFNLdo/edit?usp=sharing") #extract the google sheet key from a shared URL
 
-dat <- key %>% gs_key() %>% gs_read(ws=1) #register the key and download the data in the first worksheet
+dat <- key %>% gs_key(verbose = FALSE) %>% gs_read(ws=1, verbose = FALSE) #register the key and download the data in the first worksheet
 
 dat
 ```
 
 <br>
 
-Now we want to extract the latitude and longitude stored in the "Geolocation" column into separate columns. This requires splitting the value in each row of "Geolocation" by the fixed divider ", " and assigning the first value from each split to lattitude and the second to longitude. We'll use the function [**separate() from library(tidyr)**](http://tidyr.tidyverse.org/reference/separate.html) to do this.
+Now we want to extract the latitude and longitude stored in the "Geolocation" column into separate columns. This requires splitting the value in each row of "Geolocation" by the fixed divider ", " and assigning the first value from each split to latitude and the second to longitude. We'll use the function [*separate()* from **library(tidyr)**](http://tidyr.tidyverse.org/reference/separate.html) to do this.
 
 <br>
 
 ```{r}
-(dat <- dat %>% separate(Geolocation, sep = ", ", c("Lat", "Lon"), remove = FALSE, convert = TRUE)) #"remove = FALSE" keeps the column "Geolocation", while "convert = TRUE" coerces the new columns to class "numeric" from "character" if possible
+dat <- dat %>% separate(Geolocation, sep = ", ", c("Lat", "Lon"), remove = FALSE, convert = TRUE)
 ```
 
 <br>
 
-Putting brackets () around the function allows you to both assign the output (to the object "dat" in this case) and view it using the same line of code. Note the new columns "Lat" and "Lon".
+This has added new columns "Lat" and "Lon". Setting "remove = FALSE" keeps the column "Geolocation", while "convert = TRUE" coerces the new columns to class "numeric" from "character" if possible.
 
-<br>
-
-We can then make the data frame a spatial object of class "SpatialPointsDataFrame" using the function coordinates().
+We can then make the data frame a *spatial* object of class "SpatialPointsDataFrame" using the function coordinates(). This is essentially like converting the table to a shapefile with point locations and an attribute table.
 
 <br>
 
 ```{r}
-sdat <- dat
+class(dat)
+```
+
+```{r}
+sdat <- dat #Make a new data frame "sdat" that we'll convert to a spatial object
 
 coordinates(sdat) <- ~Lon+Lat
 
@@ -88,11 +93,11 @@ proj4string(sdat) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=
 
 Note that this merely assigns a CRS, it does not transform the data from one CRS to another. If you don't know the original CRS your data are in they are useless for spatial analyses until you find out...
 
-<br>
-
 Ok, let's see where our points land...
 
-```{r}
+<br>
+
+```{r, message = FALSE}
 b <- bbox(extent(sdat)+.25)
 
 smap <- ggmap(get_map(location = b, source = "stamen", maptype = "watercolor", 
@@ -109,7 +114,7 @@ We can trim the records to our area of interest by setting our desired extent an
 
 <br>
 
-```{r}
+```{r, warning=FALSE, message=FALSE, error=FALSE}
 fdat <- crop(sdat, y = extent(18.38, 18.51, -34.15, -34.06)) #crop points to extent
 
 fb <- bbox(extent(fdat)+.125)
@@ -122,7 +127,48 @@ fmap + geom_point(data = dat, aes(x = Lon, y = Lat, col = "red2"), alpha = 1)
 
 Much better!
 
-Now let's look at them interactively!
+BUT! Some of the points we logged with the app are FAR from where we were hiking?
+
+Let's add a GPS track I took to see where we actually were. You can download the track [**here**](https://www.dropbox.com/s/w2xplo4zkbi1kot/Track_14-SEP-17%20164823.gpx?dl=0).
+
+<br>
+
+```{r}
+track <- readOGR(dsn="/Users/jasper/Dropbox/SAEON/GSN/2017/Track_14-SEP-17 164823.gpx", layer="tracks")
+```
+
+<br>
+
+Now let's add the track to our plot, but to do this with the plotting functions we've been using we need to use the function *fortify()* to arrange the track properly.
+
+<br>
+
+```{r}
+track_f <- fortify(track)
+
+head(track_f)
+```
+
+<br>
+
+Now we can just add it to our existing plot with *geom_path()*.
+
+<br>
+
+```{r, warning=FALSE, message=FALSE, error=FALSE}
+fmap + geom_point(data = dat, aes(x = Lon, y = Lat, col = "red2"), alpha = 1) + 
+  geom_path(data = track_f, aes(x=long, y=lat, group=group, col = "royalblue"))
+```
+
+<br>
+
+Oh dear...
+
+Another "oh dear" is that it's my 6-month old's bath time, so I'll have to stop here and come back to this. My plan is to identify the "errant" points by calculating the distance to the GPS track, and then see if it's the same phone.
+
+<br>
+
+But first, let's look at some of the data interactively!
 
 <br>
 

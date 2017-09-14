@@ -7,13 +7,13 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy;2016 Your name or company</copyright>
-    <lastBuildDate>Wed, 13 Sep 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 14 Sep 2017 00:00:00 +0000</lastBuildDate>
     <atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Testing a citizen science App with the SAEON Graduate Student Network</title>
       <link>/post/gsn/</link>
-      <pubDate>Wed, 13 Sep 2017 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 14 Sep 2017 00:00:00 +0000</pubDate>
       
       <guid>/post/gsn/</guid>
       <description>&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
@@ -30,7 +30,9 @@
 &lt;script src=&#34;/rmarkdown-libs/leaflet-providers-plugin/leaflet-providers-plugin.js&#34;&gt;&lt;/script&gt;
 
 
-&lt;p&gt;This is an incomplete post that I hope to come back to. Tomorrow morning I’m taking students from &lt;a href=&#34;http://gsn.dirisa.org/&#34;&gt;&lt;em&gt;SAEON’s Graduate Student Network&lt;/em&gt;&lt;/a&gt; into the field to introduce them to Fynbos and to show them a bit of the science I’m working on. My plan is (was) to get them to help me test a model I’ve been working on (with others!) that identifies anomalous changes in vegetation greeness using satellite data, and use a citizen science smartphone app I’ve been developing (“VeldWatch”) to groundtruth the model by mapping any impacts we notice. If that’s not setting the bar high enough, I thought I’d use this blog post to both show them the results of our field trip and provide a little tutorial on mapping in R. Here goes…&lt;/p&gt;
+&lt;p&gt;This is based on data collected when I took students from &lt;a href=&#34;http://gsn.dirisa.org/&#34;&gt;&lt;em&gt;SAEON’s Graduate Student Network&lt;/em&gt;&lt;/a&gt; into the field to introduce them to Fynbos and to show them a bit of the science I’m working on. To make things more interesting, I got them to help me test a smartphone app I’ve been developing (“VeldWatch”) that can be used to map any impacts on natural ecosystems observed in the field, like invasive species, plant mortality, etc.&lt;/p&gt;
+&lt;p&gt;The aim behind developing VeldWatch is to provide a platform whereby citizen scientists can contribute these observations, but also help groundtruth a model I’ve been working on (with others!) that identifies anomalous changes in vegetation greeness using satellite data.&lt;/p&gt;
+&lt;p&gt;If that’s not setting the bar high enough, I thought I’d use this blog post to both show them the results of our field trip and provide a little tutorial on mapping in R. Here goes…&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;We’ll start by calling the R libraries we need.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#If you don&amp;#39;t have the necessary packages installed use the function install.packages() as below
@@ -40,70 +42,52 @@ suppressMessages(library(dplyr))
 suppressMessages(library(tidyr))
 suppressMessages(library(raster))&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Warning: package &amp;#39;sp&amp;#39; was built under R version 3.4.1&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;suppressMessages(library(rgdal))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: package &amp;#39;rgdal&amp;#39; was built under R version 3.4.1&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;suppressMessages(library(RColorBrewer))
 suppressMessages(library(leaflet))
 suppressPackageStartupMessages(library(ggmap))&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;The VeldWatch App uploads the observation data directly into a Google Sheet in my GDrive (and the labeled photos into a folder), so it’s easiest if we can call the data directly from the online sheet rather than manually sharing and downloading the sheet every time. To do this, I use library(googlesheets) developed by Jenny Bryan and Joanna Zhao. Check out their &lt;a href=&#34;https://rawgit.com/jennybc/googlesheets/master/vignettes/basic-usage.html&#34;&gt;&lt;strong&gt;tutorial&lt;/strong&gt;&lt;/a&gt; for more of the basics.&lt;/p&gt;
 &lt;p&gt;I’ve shared the sheet publically so you should just be able to access it, but you may get asked to authenticate R accessing your Google Sheets the first time you use this code. If googlesheets doesn’t work for you, you can access the spreadsheet &lt;a href=&#34;https://docs.google.com/spreadsheets/d/1dDOo-nizXC1XDECPkXts2VloDaObTuNwxPBhYJFNLdo/edit?usp=sharing&#34;&gt;&lt;strong&gt;here&lt;/strong&gt;&lt;/a&gt;, download as .xlsx or .csv and read into R as you normally would.&lt;/p&gt;
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Here we extract the google sheet key from the shared URL link, “register the key” (needed for accessing the spreadsheet), download the data and take a quick look at it.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;key &amp;lt;- extract_key_from_url(&amp;quot;https://docs.google.com/spreadsheets/d/1dDOo-nizXC1XDECPkXts2VloDaObTuNwxPBhYJFNLdo/edit?usp=sharing&amp;quot;) #extract the google sheet key from a shared URL
 
-dat &amp;lt;- key %&amp;gt;% gs_key() %&amp;gt;% gs_read(ws=1) #register the key and download the data in the first worksheet&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Worksheets feed constructed with public visibility&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Accessing worksheet titled &amp;#39;Sheet1&amp;#39;.&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Parsed with column specification:
-## cols(
-##   .default = col_character(),
-##   TimeStamp = col_time(format = &amp;quot;&amp;quot;),
-##   Time = col_time(format = &amp;quot;&amp;quot;)
-## )&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## See spec(...) for full column specifications.&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dat&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## # A tibble: 6 x 21
-##   TimeStamp `Radius assessed` `Land cover`             Impact
-##      &amp;lt;time&amp;gt;             &amp;lt;chr&amp;gt;        &amp;lt;chr&amp;gt;              &amp;lt;chr&amp;gt;
-## 1  10:05:22               15m      Natural  No obvious impact
-## 2  10:39:13               15m      Natural Alien woody plants
-## 3  10:41:53               15m      Natural        Recent fire
-## 4  10:44:12               15m      Natural Alien woody plants
-## 5  09:03:30              100m Near natural        Dead plants
-## 6  10:41:05               15m      Natural        Dead plants
-## # ... with 17 more variables: `Alien grass density` &amp;lt;lgl&amp;gt;, `No of alien
-## #   plants in search radius` &amp;lt;chr&amp;gt;, `Clearing intensity` &amp;lt;lgl&amp;gt;, `No of
-## #   dead plants in search radius` &amp;lt;chr&amp;gt;, `Size of land/rock slide` &amp;lt;lgl&amp;gt;,
-## #   `Vegetation removal` &amp;lt;lgl&amp;gt;, `Suggested species or common name` &amp;lt;chr&amp;gt;,
-## #   Comment &amp;lt;chr&amp;gt;, `Phone location` &amp;lt;chr&amp;gt;, `Photo A` &amp;lt;chr&amp;gt;, `Photo
-## #   B` &amp;lt;chr&amp;gt;, `Photo C` &amp;lt;chr&amp;gt;, `Photo D` &amp;lt;chr&amp;gt;, Geolocation &amp;lt;chr&amp;gt;,
-## #   Date &amp;lt;chr&amp;gt;, Time &amp;lt;time&amp;gt;, Test &amp;lt;lgl&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+dat &amp;lt;- key %&amp;gt;% gs_key(verbose = FALSE) %&amp;gt;% gs_read(ws=1, verbose = FALSE) #register the key and download the data in the first worksheet
+
+dat&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 36 x 21
+##    TimeStamp `Radius assessed` `Land cover`
+##       &amp;lt;time&amp;gt;             &amp;lt;chr&amp;gt;        &amp;lt;chr&amp;gt;
+##  1  10:05:22               15m      Natural
+##  2  10:39:13               15m      Natural
+##  3  10:41:53               15m      Natural
+##  4  10:44:12               15m      Natural
+##  5  09:03:30              100m Near natural
+##  6  10:41:05               15m      Natural
+##  7  08:33:09              100m Near natural
+##  8  08:34:33              100m Near natural
+##  9  08:42:10                5m Near natural
+## 10  08:49:09              100m Near natural
+## # ... with 26 more rows, and 18 more variables: Impact &amp;lt;chr&amp;gt;, `Alien grass
+## #   density` &amp;lt;chr&amp;gt;, `No of alien plants in search radius` &amp;lt;chr&amp;gt;, `Clearing
+## #   intensity` &amp;lt;lgl&amp;gt;, `No of dead plants in search radius` &amp;lt;chr&amp;gt;, `Size of
+## #   land/rock slide` &amp;lt;lgl&amp;gt;, `Vegetation removal` &amp;lt;chr&amp;gt;, `Suggested species
+## #   or common name` &amp;lt;chr&amp;gt;, Comment &amp;lt;chr&amp;gt;, `Phone location` &amp;lt;chr&amp;gt;, `Photo
+## #   A` &amp;lt;chr&amp;gt;, `Photo B` &amp;lt;chr&amp;gt;, `Photo C` &amp;lt;chr&amp;gt;, `Photo D` &amp;lt;chr&amp;gt;,
+## #   Geolocation &amp;lt;chr&amp;gt;, Date &amp;lt;chr&amp;gt;, Time &amp;lt;time&amp;gt;, Test &amp;lt;lgl&amp;gt;&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;Now we want to extract the latitude and longitude stored in the “Geolocation” column into separate columns. This requires splitting the value in each row of “Geolocation” by the fixed divider “,” and assigning the first value from each split to lattitude and the second to longitude. We’ll use the function &lt;a href=&#34;http://tidyr.tidyverse.org/reference/separate.html&#34;&gt;&lt;strong&gt;separate() from library(tidyr)&lt;/strong&gt;&lt;/a&gt; to do this.&lt;/p&gt;
+&lt;p&gt;Now we want to extract the latitude and longitude stored in the “Geolocation” column into separate columns. This requires splitting the value in each row of “Geolocation” by the fixed divider “,” and assigning the first value from each split to latitude and the second to longitude. We’ll use the function &lt;a href=&#34;http://tidyr.tidyverse.org/reference/separate.html&#34;&gt;&lt;em&gt;separate()&lt;/em&gt; from &lt;strong&gt;library(tidyr)&lt;/strong&gt;&lt;/a&gt; to do this.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;(dat &amp;lt;- dat %&amp;gt;% separate(Geolocation, sep = &amp;quot;, &amp;quot;, c(&amp;quot;Lat&amp;quot;, &amp;quot;Lon&amp;quot;), remove = FALSE, convert = TRUE)) #&amp;quot;remove = FALSE&amp;quot; keeps the column &amp;quot;Geolocation&amp;quot;, while &amp;quot;convert = TRUE&amp;quot; coerces the new columns to class &amp;quot;numeric&amp;quot; from &amp;quot;character&amp;quot; if possible&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## # A tibble: 6 x 23
-##   TimeStamp `Radius assessed` `Land cover`             Impact
-## *    &amp;lt;time&amp;gt;             &amp;lt;chr&amp;gt;        &amp;lt;chr&amp;gt;              &amp;lt;chr&amp;gt;
-## 1  10:05:22               15m      Natural  No obvious impact
-## 2  10:39:13               15m      Natural Alien woody plants
-## 3  10:41:53               15m      Natural        Recent fire
-## 4  10:44:12               15m      Natural Alien woody plants
-## 5  09:03:30              100m Near natural        Dead plants
-## 6  10:41:05               15m      Natural        Dead plants
-## # ... with 19 more variables: `Alien grass density` &amp;lt;lgl&amp;gt;, `No of alien
-## #   plants in search radius` &amp;lt;chr&amp;gt;, `Clearing intensity` &amp;lt;lgl&amp;gt;, `No of
-## #   dead plants in search radius` &amp;lt;chr&amp;gt;, `Size of land/rock slide` &amp;lt;lgl&amp;gt;,
-## #   `Vegetation removal` &amp;lt;lgl&amp;gt;, `Suggested species or common name` &amp;lt;chr&amp;gt;,
-## #   Comment &amp;lt;chr&amp;gt;, `Phone location` &amp;lt;chr&amp;gt;, `Photo A` &amp;lt;chr&amp;gt;, `Photo
-## #   B` &amp;lt;chr&amp;gt;, `Photo C` &amp;lt;chr&amp;gt;, `Photo D` &amp;lt;chr&amp;gt;, Geolocation &amp;lt;chr&amp;gt;,
-## #   Lat &amp;lt;dbl&amp;gt;, Lon &amp;lt;dbl&amp;gt;, Date &amp;lt;chr&amp;gt;, Time &amp;lt;time&amp;gt;, Test &amp;lt;lgl&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dat &amp;lt;- dat %&amp;gt;% separate(Geolocation, sep = &amp;quot;, &amp;quot;, c(&amp;quot;Lat&amp;quot;, &amp;quot;Lon&amp;quot;), remove = FALSE, convert = TRUE)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;Putting brackets () around the function allows you to both assign the output (to the object “dat” in this case) and view it using the same line of code. Note the new columns “Lat” and “Lon”.&lt;/p&gt;
+&lt;p&gt;This has added new columns “Lat” and “Lon”. Setting “remove = FALSE” keeps the column “Geolocation”, while “convert = TRUE” coerces the new columns to class “numeric” from “character” if possible.&lt;/p&gt;
+&lt;p&gt;We can then make the data frame a &lt;em&gt;spatial&lt;/em&gt; object of class “SpatialPointsDataFrame” using the function coordinates(). This is essentially like converting the table to a shapefile with point locations and an attribute table.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;We can then make the data frame a spatial object of class “SpatialPointsDataFrame” using the function coordinates().&lt;/p&gt;
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;sdat &amp;lt;- dat
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;class(dat)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;tbl_df&amp;quot;     &amp;quot;tbl&amp;quot;        &amp;quot;data.frame&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;sdat &amp;lt;- dat #Make a new data frame &amp;quot;sdat&amp;quot; that we&amp;#39;ll convert to a spatial object
 
 coordinates(sdat) &amp;lt;- ~Lon+Lat
 
@@ -117,35 +101,15 @@ class(sdat)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;proj4string(sdat) &amp;lt;- &amp;quot;+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0&amp;quot;&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Note that this merely assigns a CRS, it does not transform the data from one CRS to another. If you don’t know the original CRS your data are in they are useless for spatial analyses until you find out…&lt;/p&gt;
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Ok, let’s see where our points land…&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;b &amp;lt;- bbox(extent(sdat)+.25)
 
 smap &amp;lt;- ggmap(get_map(location = b, source = &amp;quot;stamen&amp;quot;, maptype = &amp;quot;watercolor&amp;quot;, 
-    crop = T, zoom = 11))&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1128/1225.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1129/1225.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1130/1225.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1128/1226.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1129/1226.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1130/1226.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1128/1227.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1129/1227.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1130/1227.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1128/1228.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1129/1228.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1130/1228.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1128/1229.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1129/1229.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1130/1229.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1128/1230.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1129/1230.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1130/1230.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1128/1231.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1129/1231.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1130/1231.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;smap + geom_point(data = dat, aes(x = Lon, y = Lat, col = &amp;quot;red2&amp;quot;), alpha = 1)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-09-13-gsn_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+    crop = T, zoom = 11))
+
+smap + geom_point(data = dat, aes(x = Lon, y = Lat, col = &amp;quot;red2&amp;quot;), alpha = 1)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-09-13-gsn_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Looks like we have points all over the place, but this is not unexpected - ideally people will be using the app to collect data from across the country!&lt;/p&gt;
 &lt;p&gt;We can trim the records to our area of interest by setting our desired extent and cropping the data.&lt;/p&gt;
@@ -154,30 +118,48 @@ smap &amp;lt;- ggmap(get_map(location = b, source = &amp;quot;stamen&amp;quot;, 
 
 fb &amp;lt;- bbox(extent(fdat)+.125)
 fmap &amp;lt;- ggmap(get_map(location = fb, source = &amp;quot;stamen&amp;quot;, maptype = &amp;quot;watercolor&amp;quot;, 
-    crop = T, zoom = 11))&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1128/1230.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Warning in file.remove(index[[url]]): cannot remove file
-## &amp;#39;09c28ccf22eaa5b7e912d354dab736a4.rds&amp;#39;, reason &amp;#39;No such file or directory&amp;#39;&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1129/1230.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Warning in file.remove(index[[url]]): cannot remove file
-## &amp;#39;6ab8f713b950c9449e2999ce47190516.rds&amp;#39;, reason &amp;#39;No such file or directory&amp;#39;&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1128/1231.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Warning in file.remove(index[[url]]): cannot remove file
-## &amp;#39;e82dfe54b9ba22e58eeef0c3b1e06839.rds&amp;#39;, reason &amp;#39;No such file or directory&amp;#39;&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Map from URL : http://tile.stamen.com/watercolor/11/1129/1231.jpg&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Warning in file.remove(index[[url]]): cannot remove file
-## &amp;#39;122a21318bb4d3f3fa89bcbb8fd6a7e4.rds&amp;#39;, reason &amp;#39;No such file or directory&amp;#39;&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fmap + geom_point(data = dat, aes(x = Lon, y = Lat, col = &amp;quot;red2&amp;quot;), alpha = 1)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Warning: Removed 4 rows containing missing values (geom_point).&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-09-13-gsn_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+    crop = T, zoom = 11))
+fmap + geom_point(data = dat, aes(x = Lon, y = Lat, col = &amp;quot;red2&amp;quot;), alpha = 1)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-09-13-gsn_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;Much better!&lt;/p&gt;
-&lt;p&gt;Now let’s look at them interactively!&lt;/p&gt;
+&lt;p&gt;BUT! Some of the points we logged with the app are FAR from where we were hiking?&lt;/p&gt;
+&lt;p&gt;Let’s add a GPS track I took to see where we actually were. You can download the track &lt;a href=&#34;https://www.dropbox.com/s/w2xplo4zkbi1kot/Track_14-SEP-17%20164823.gpx?dl=0&#34;&gt;&lt;strong&gt;here&lt;/strong&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;track &amp;lt;- readOGR(dsn=&amp;quot;/Users/jasper/Dropbox/SAEON/GSN/2017/Track_14-SEP-17 164823.gpx&amp;quot;, layer=&amp;quot;tracks&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## OGR data source with driver: GPX 
+## Source: &amp;quot;/Users/jasper/Dropbox/SAEON/GSN/2017/Track_14-SEP-17 164823.gpx&amp;quot;, layer: &amp;quot;tracks&amp;quot;
+## with 1 features
+## It has 13 fields&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Now let’s add the track to our plot, but to do this with the plotting functions we’ve been using we need to use the function &lt;em&gt;fortify()&lt;/em&gt; to arrange the track properly.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;track_f &amp;lt;- fortify(track)
+
+head(track_f)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##       long       lat order piece id group
+## 1 18.42222 -34.09084     1     1  0   0.1
+## 2 18.42232 -34.09088     2     1  0   0.1
+## 3 18.42241 -34.09093     3     1  0   0.1
+## 4 18.42250 -34.09099     4     1  0   0.1
+## 5 18.42259 -34.09106     5     1  0   0.1
+## 6 18.42267 -34.09111     6     1  0   0.1&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Now we can just add it to our existing plot with &lt;em&gt;geom_path()&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fmap + geom_point(data = dat, aes(x = Lon, y = Lat, col = &amp;quot;red2&amp;quot;), alpha = 1) + 
+  geom_path(data = track_f, aes(x=long, y=lat, group=group, col = &amp;quot;royalblue&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-09-13-gsn_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Oh dear…&lt;/p&gt;
+&lt;p&gt;Another “oh dear” is that it’s my 6-month old’s bath time, so I’ll have to stop here and come back to this. My plan is to identify the “errant” points by calculating the distance to the GPS track, and then see if it’s the same phone.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;But first, let’s look at some of the data interactively!&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fdat@data &amp;lt;- fdat@data %&amp;gt;% separate(Geolocation, sep = &amp;quot;, &amp;quot;, c(&amp;quot;Lat&amp;quot;, &amp;quot;Lon&amp;quot;), remove = FALSE, convert = TRUE)
 leaflet(fdat) %&amp;gt;% addProviderTiles(providers$Esri.WorldImagery) %&amp;gt;% addMarkers(~Lon, ~Lat)&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;leaflet html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;options&#34;:{&#34;crs&#34;:{&#34;crsClass&#34;:&#34;L.CRS.EPSG3857&#34;,&#34;code&#34;:null,&#34;proj4def&#34;:null,&#34;projectedBounds&#34;:null,&#34;options&#34;:{}}},&#34;calls&#34;:[{&#34;method&#34;:&#34;addProviderTiles&#34;,&#34;args&#34;:[&#34;Esri.WorldImagery&#34;,null,null,{&#34;errorTileUrl&#34;:&#34;&#34;,&#34;noWrap&#34;:false,&#34;zIndex&#34;:null,&#34;unloadInvisibleTiles&#34;:null,&#34;updateWhenIdle&#34;:null,&#34;detectRetina&#34;:false,&#34;reuseTiles&#34;:false}]},{&#34;method&#34;:&#34;addMarkers&#34;,&#34;args&#34;:[[-34.107525,-34.104865],[18.464325,18.453626],null,null,null,{&#34;clickable&#34;:true,&#34;draggable&#34;:false,&#34;keyboard&#34;:true,&#34;title&#34;:&#34;&#34;,&#34;alt&#34;:&#34;&#34;,&#34;zIndexOffset&#34;:0,&#34;opacity&#34;:1,&#34;riseOnHover&#34;:false,&#34;riseOffset&#34;:250},null,null,null,null,null,null,null]}],&#34;limits&#34;:{&#34;lat&#34;:[-34.107525,-34.104865],&#34;lng&#34;:[18.453626,18.464325]}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;options&#34;:{&#34;crs&#34;:{&#34;crsClass&#34;:&#34;L.CRS.EPSG3857&#34;,&#34;code&#34;:null,&#34;proj4def&#34;:null,&#34;projectedBounds&#34;:null,&#34;options&#34;:{}}},&#34;calls&#34;:[{&#34;method&#34;:&#34;addProviderTiles&#34;,&#34;args&#34;:[&#34;Esri.WorldImagery&#34;,null,null,{&#34;errorTileUrl&#34;:&#34;&#34;,&#34;noWrap&#34;:false,&#34;zIndex&#34;:null,&#34;unloadInvisibleTiles&#34;:null,&#34;updateWhenIdle&#34;:null,&#34;detectRetina&#34;:false,&#34;reuseTiles&#34;:false}]},{&#34;method&#34;:&#34;addMarkers&#34;,&#34;args&#34;:[[-34.107525,-34.104865,-34.091183,-34.091335,-34.092598,-34.093139,-34.093235,-34.09334,-34.13148,-34.122318,-34.098236,-34.099404,-34.099134,-34.100586,-34.101758,-34.105327,-34.103921,-34.091323,-34.093187,-34.093479,-34.093469,-34.100652,-34.091167,-34.101747,-34.093149,-34.101943,-34.105596,-34.10403,-34.10067,-34.100351,-34.097461],[18.464325,18.453626,18.422787,18.422804,18.423293,18.423523,18.42336,18.423487,18.388847,18.382913,18.416309,18.430032,18.42829,18.430966,18.385509,18.435118,18.444904,18.422835,18.423419,18.434371,18.434318,18.447805,18.422852,18.385832,18.423384,18.433125,18.435332,18.444854,18.447974,18.447814,18.441546],null,null,null,{&#34;clickable&#34;:true,&#34;draggable&#34;:false,&#34;keyboard&#34;:true,&#34;title&#34;:&#34;&#34;,&#34;alt&#34;:&#34;&#34;,&#34;zIndexOffset&#34;:0,&#34;opacity&#34;:1,&#34;riseOnHover&#34;:false,&#34;riseOffset&#34;:250},null,null,null,null,null,null,null]}],&#34;limits&#34;:{&#34;lat&#34;:[-34.13148,-34.091167],&#34;lng&#34;:[18.382913,18.464325]}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;I need to add a bunch more context etc here, but for my and the students’ sake we’d like to visualize the model outputs. First lets look at the sites that are less green than the model expects.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
