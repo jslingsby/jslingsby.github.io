@@ -186,8 +186,7 @@ I need to add a bunch more context etc here, but for my and the students' sake w
 ```{r}
 excbelow <- raster("/Users/jasper/Dropbox/Shared/Data4ClimateAction/PeninsulaData/exceedbelow")
 
-pal <- colorNumeric(c("#91bfdb","#ffffbf","#fc8d59"), values(excbelow),
-  na.color = "transparent")
+pal <- colorNumeric(brewer.pal(9, "Reds"), values(excbelow), na.color = "transparent")
 
 leaflet()  %>% addProviderTiles(providers$Esri.WorldImagery) %>%
   addRasterImage(excbelow, colors = pal, opacity = 0.5) %>%
@@ -204,13 +203,12 @@ Now the sites that are more green than expected...
 ```{r}
 excabove <- raster("/Users/jasper/Dropbox/Shared/Data4ClimateAction/PeninsulaData/exceedabove")
 
-pal <- colorNumeric(c("#91bfdb","#ffffbf","#fc8d59"), values(excabove),
-  na.color = "transparent")
+pal <- colorNumeric(brewer.pal(9, "Blues"), values(excabove), na.color = "transparent")
 
 leaflet()  %>% addProviderTiles(providers$Esri.WorldImagery) %>%
   addRasterImage(excabove, colors = pal, opacity = 0.5) %>%
   addLegend(pal = pal, values = values(excabove),
-    title = "Exceedance Below")
+    title = "Exceedance Above")
 ```
 
 <br>
