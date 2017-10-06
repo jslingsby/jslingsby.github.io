@@ -1,13 +1,13 @@
 ---
 title: "Drought Monitor for the Jonkershoek Valley, Western Cape, South Africa"
-date: '2017-09-04'
+date: '2017-10-06'
 image: /img/jonkershoek2.png
 tags: ["All"]
 categories: ["All"]
 ---
 
 
-```{r, out.width = "800px", echo=FALSE}
+```{r, out.width = "600px", echo=FALSE}
 knitr::include_graphics("/img/SAEON_DST.png")
 ```
 
@@ -17,7 +17,7 @@ knitr::include_graphics("/img/SAEON_DST.png")
 
 *This analysis was prepared by the [**Fynbos Node**](http://www.saeon-fynbos.org) of [the **South African Environmental Observation Network (SAEON)**](http://www.saeon.ac.za).*
 
-Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of August 2017. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams.
+Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of September 2017. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams.
 
 <!--more-->
 
@@ -138,7 +138,7 @@ Winter = apply.yearly(langIm[.indexmon(langIm) %in% c(3:8)], "sum", na.rm=F)
 Winter$Year <- format(index(Winter),"%Y")
 Winter <- as.data.frame(Winter)
 Winter$Season <- "Winter"
-Winter <- Winter[-which(Winter$Year == format(Sys.time(), "%Y")),] #DROP CURRENT YEAR!!!
+if (format(Sys.time(), "%m")<10) {Winter <- Winter[-which(Winter$Year == format(Sys.time(), "%Y")),]} #Drop current year if "winter" period is not complete
 
 #Highlight driest summers and winters
 Winter$Season[which(Winter$Streamflow.Volume < quantile(Winter$Streamflow.Volume, 0.1, na.rm = T))] <- "Winter (lowest 10%)"
@@ -250,7 +250,7 @@ Winter = apply.yearly(dbgm[.indexmon(dbgm) %in% c(3:8)], "sum", na.rm=F)
 Winter$Year <- format(index(Winter),"%Y")
 Winter <- as.data.frame(Winter)
 Winter$Season <- "Winter"
-Winter <- Winter[-which(Winter$Year == format(Sys.time(), "%Y")),] #DROP CURRENT YEAR!!!
+if (format(Sys.time(), "%m")<10) {Winter <- Winter[-which(Winter$Year == format(Sys.time(), "%Y")),]} #Drop current year if "winter" period is not complete
 
 #Highlight driest summers and winters
 Winter$Season[which(Winter$Summed.rainfall < quantile(Winter$Summed.rainfall, 0.1))] <- "Winter (lowest 10%)"
