@@ -10,6 +10,18 @@
     <atom:link href="/categories/all/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>VeldWatch!</title>
+      <link>/post/veldwatch/</link>
+      <pubDate>Mon, 09 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/veldwatch/</guid>
+      <description>&lt;p&gt;This is not a blog post yet. It’s just a quick link to a &lt;a href=&#34;https://goo.gl/forms/FPLxYT4dOzZjbwKt1&#34;&gt;&lt;strong&gt;Google Form&lt;/strong&gt;&lt;/a&gt; where you can sign up to be kept in the loop regarding the development and release of the VeldWatch Smartphone App. Please &lt;a href=&#34;https://goo.gl/forms/FPLxYT4dOzZjbwKt1&#34;&gt;&lt;strong&gt;Sign Up&lt;/strong&gt;&lt;/a&gt; and I hope to get back to you in the next month or so.&lt;/p&gt;
+&lt;p&gt;The aim of the App is to allow citizen scientists, field rangers and landowners to map threats to and impacts on biodiversity, such as invasive alien plants, plant mortality, landslides and illegal vegetation clearing, by marking a specific GPS location, taking images and adding notes. The app can work while offline (although one of the major snags I’m working on is caching the basemap information).&lt;/p&gt;
+&lt;p&gt;A major short term aim will be tracking the impacts of the current drought…&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Drought Monitor for the Jonkershoek Valley, Western Cape, South Africa</title>
       <link>/post/2017-04-01-Langrivier/</link>
       <pubDate>Fri, 06 Oct 2017 00:00:00 +0000</pubDate>
@@ -24,6 +36,13 @@
 &lt;script src=&#34;/rmarkdown-libs/moment-fquarter/moment-fquarter.min.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/dygraphs-binding/dygraphs.js&#34;&gt;&lt;/script&gt;
 
+&lt;div id=&#34;TOC&#34;&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#streamflow-record&#34;&gt;Streamflow record&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#rainfall-record&#34;&gt;Rainfall Record&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#streamflow-rainfall&#34;&gt;Streamflow ~ Rainfall&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
 
 &lt;p&gt;&lt;img src=&#34;/img/SAEON_DST.png&#34; width=&#34;600px&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;

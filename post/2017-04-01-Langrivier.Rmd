@@ -4,6 +4,9 @@ date: '2017-10-06'
 image: /img/jonkershoek2.png
 tags: ["All"]
 categories: ["All"]
+output:
+  blogdown::html_page:
+    toc: yes
 ---
 
 

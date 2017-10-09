@@ -1,0 +1,15 @@
+---
+title: VeldWatch!
+author: Jasper
+date: '2017-10-09'
+image: /img/veldwatch.png
+slug: veldwatch
+categories: ["All"]
+tags: ["All"]
+---
+
+This is not a blog post yet. It's just a quick link to a [**Google Form**](https://goo.gl/forms/FPLxYT4dOzZjbwKt1) where you can sign up to be kept in the loop regarding the development and release of the VeldWatch Smartphone App. Please [**Sign Up**](https://goo.gl/forms/FPLxYT4dOzZjbwKt1) and I hope to get back to you in the next month or so.
+
+The aim of the App is to allow citizen scientists, field rangers and landowners to map threats to and impacts on biodiversity, such as invasive alien plants, plant mortality, landslides and illegal vegetation clearing, by marking a specific GPS location, taking images and adding notes. The app can work while offline (although one of the major snags I'm working on is caching the basemap information).
+
+A major short term aim will be tracking the impacts of the current drought...
