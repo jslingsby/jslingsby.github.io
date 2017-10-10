@@ -42,6 +42,8 @@ suppressWarnings(suppressMessages(library(xts, quietly=T, warn.conflicts=F))) #W
 suppressWarnings(suppressMessages(library(dygraphs, quietly=T, warn.conflicts=F)))
 suppressWarnings(suppressMessages(library(dplyr, quietly=T, warn.conflicts=F)))
 suppressWarnings(suppressMessages(library(ggplot2, quietly=T, warn.conflicts=F)))
+suppressWarnings(suppressMessages(library(readxl, quietly=T, warn.conflicts=F)))
+suppressWarnings(suppressMessages(library(reshape2, quietly=T, warn.conflicts=F)))
 
 ### Get Langrivier stream flow from the different instruments
 #Orpheus Mini
@@ -173,28 +175,43 @@ as <- ggplot(sdat, aes(Year, y = Streamflow.Volume, fill=as.factor(Season))) +
 
 ###Fetch weather data
 
-#Historical
-dbgH <- read.csv("Weatherdata/Dwarsberg rainfall data_Jasper/Historic Dwarsberg rainfall 2_Allsopp2015.csv")
-dbgH$Comment <- rep("", nrow(dbgH))
+#Historical data from Cape Nature 17B
+cn <- read_excel("Weatherdata/Monthly high elevation rainfall_Cape Nature.xls", sheet = 4, skip = 1)
+mcn <- melt(cn[,1:13], id = "Year")
+mcn$Date <- as.Date(paste0(mcn$Year, "-", as.numeric(mcn$variable), "-01"), format = "%Y-%m-%d", tz="Africa/Johannesburg")
+dbgH <- xts(mcn$value, order.by = mcn$Date)
+
+#dbgH <- read.csv("Weatherdata/Dwarsberg rainfall data_Jasper/Historic Dwarsberg rainfall 2_Allsopp2015.csv")
+#dbgH$Comment <- rep("", nrow(dbgH))
+#dbgH$Date <- strptime(substr(dbgH$Date, 1, 10), format = "%Y-%m-%d")#, tz="Africa/Johannesburg")
+#dbgH <- xts(dbgH$DataValue, order.by = dbgH$Date)
 
 #New
 dbgN <- read.csv("Weatherdata/Dwarsberg rainfall data_Jasper/Dwarsberg hourly rainfall.csv")
+x <- gsub("T", " ", dbgN$Date)
+x <- gsub("+02:00", "", x, fixed=T)
+dbgN$Date <- strptime(x, format = "%Y-%m-%d %H:%M:%S")#, tz="Africa/Johannesburg")
+dbgN <- xts(dbgN$DataValue, order.by = dbgN$Date)
+dbgN <- apply.monthly(dbgN, "sum", na.rm=F)
+index(dbgN) <- as.Date(paste0(substr(index(dbgN), 1, 7), "-01"), format = "%Y-%m-%d")
 
 #Bind data
-dbg <- rbind(dbgH, dbgN)
-x <- gsub("T", " ", dbg$Date)
-x <- gsub("+02:00", "", x, fixed=T)
-dbg$Date <- strptime(x, format = "%Y-%m-%d %H:%M:%S", tz="Africa/Johannesburg")
-dbg <- xts(dbg$DataValue, order.by = dbg$Date)
-#dbg <- merge(dbg, timeBasedSeq(paste("1991-09-01", end(dbg), sep="::"))) #Fill in missing dates (with NA)
-#dbg <- na.approx(dbg, maxgap=720) #interpolate missing values (up to a day)
-tzone(dbg) <- "Africa/Johannesburg"
+dbgm <- c(dbgH["/2013-02-01"], dbgN)
+names(dbgm) <- "Summed.rainfall"
+# dbg <- rbind(dbgH, dbgN)
+# x <- substr(dbg$Date, 1, 10)
+# #x <- gsub("T", " ", dbg$Date)
+# #x <- gsub("+02:00", "", x, fixed=T)
+# #dbg$Date <- strptime(x, format = "%Y-%m-%d %H:%M:%S", tz="Africa/Johannesburg")
+# dbg$Date <- strptime(x, format = "%Y-%m-%d", tz="Africa/Johannesburg")
+# dbg <- xts(dbg$DataValue, order.by = dbg$Date)
+# #dbg <- merge(dbg, timeBasedSeq(paste("1991-09-01", end(dbg), sep="::"))) #Fill in missing dates (with NA)
+# #dbg <- na.approx(dbg, maxgap=720) #interpolate missing values (up to a day)
+# tzone(dbg) <- "Africa/Johannesburg"
 
 #Calculate monthly and annual summaries
-names(dbg) <- "Summed rainfall"
-dbgm <- apply.monthly(dbg, "sum", na.rm=F)
 dbgm <- dbgm[-nrow(dbgm),] #Drop last current (incomplete) month
-dbga <- apply.yearly(dbg, "sum", na.rm=F)
+dbga <- apply.yearly(dbgm, "sum", na.rm=F)
 dbga <- dbga[-nrow(dbga),] #Drop last current (incomplete) year
 
 #Make summaries for barplot
@@ -270,8 +287,9 @@ ar <- ggplot(dat, aes(Year, y = Summed.rainfall, fill=as.factor(Season))) +
   ylab(bquote("Rainfall (mm)")) +
   geom_hline(yintercept = mean(dbga, na.rm = T)) +
   geom_vline(xintercept = 47.5, linetype=3) +
-  annotate("text", x = 3.5, y = mean(dbga, na.rm = T) + 200, label = "Average") +
-  annotate("text", x = 47, y = 4000, angle=90, label = "Missing data") +
+  geom_vline(xintercept = 68.5, linetype=3) +
+  annotate("text", x = 4, y = mean(dbga, na.rm = T) + 200, label = "Average") +
+  annotate("text", x = (47+68)/2, y = -100, angle=0, label = "Volunteer data (1992-2013)") +
   scale_fill_manual(name="",values=c("#D6604D", "goldenrod1", "#4393C3", "slateblue4"))
 
 #pdf("/Users/jasper/GIT/Jonkershoek/Output/dwarsberg_annual_rainfall2016.pdf", height = 5, width = 12)
@@ -331,7 +349,7 @@ as
 
 ***
 
-Note that "Summer" denotes the Austral summer (here defined as October - March), overlapping 2 years. In this figure we have lumped summers by the preceding year, e.g. summer 2016 represents the period October 2016 to March 2017, which incidentally has been the driest summer on record in terms of both streamflow and rainfall.
+Note that "Summer" denotes the Austral summer (here defined as October - March), overlapping 2 years. In this figure we have lumped summers by the preceding year, e.g. summer 2016 represents the period October 2016 to March 2017, which incidentally has been the driest summer on record in terms of streamflow.
 
 *Data for October - December from the summer of 2015/2016 are missing due to vandalism of the weir, but January - March 2016 was among the lowest 10% of flows for that period, suggesting that 2015 was likely the driest year on record. Of those with complete data, 2003 was the driest year, followed by 1974.
 
@@ -401,7 +419,7 @@ ar
 
 ***
 
-So 2015 and 2016 have been the lowest rainfall years on record, while 2014 was not far behind...
+So 2015 and 2016 have been the lowest rainfall years on record, while 2014 was not far behind... Note that data for the period 1992-2013 were collected by volunteers and were not necessarily collected on the first of the month or every month, creating issues in the split between years and between summer vs winter data. This appears to be more of an issue in the 2000s. Nevertheless, the low rainfall reported for 2000-2004 does coincide with a period of low streamflow.
 
 ***
 
@@ -420,7 +438,7 @@ dyShading(from = "1991-09-01", to = "2013-03-03")
 
 <br>
 
-Note that this raingauge was not operational from 1991 to 2013, crucially missing some of the low stream flows in the 1990s and the lowest in 2003.
+Note the frequent "zero-rainfall" months in the period 2000 to 2013, likely because the volunteers who collected the data were not able to visit the rain gauge in those months. The gauge can collect >1000mm before overflowing, so this is unlikely to have been a problem for rainfall totals.
 
 <br>
 
