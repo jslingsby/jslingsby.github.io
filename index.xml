@@ -7,8 +7,115 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy;2016 Your name or company</copyright>
-    <lastBuildDate>Mon, 09 Oct 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 31 Oct 2017 00:00:00 +0000</lastBuildDate>
     <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Near-real time satellite monitoring of fynbos vegetation</title>
+      <link>/post/emma/</link>
+      <pubDate>Tue, 31 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/emma/</guid>
+      <description>&lt;p&gt;Recent advances have seen the development of near-real time monitoring tools that report on the state and changes in vegetation based on satellite observations, e.g. &lt;a href=&#34;http://globalforestwatch.org/&#34;&gt;&lt;strong&gt;globalforestwatch.org&lt;/strong&gt;&lt;/a&gt;. These tools are hugely valuable for managing ecosystems and for developing the long term records required to understand ecosystem dynamics and trajectories of change.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;iframe width=&#34;600&#34; height=&#34;600&#34; frameborder=&#34;0&#34; src=&#34;http://www.globalforestwatch.org/embed/map/3/4.27/26.12/ALL/grayscale/loss,forestgain?tab=analysis-tab&amp;amp;begin=2001-01-01&amp;amp;end=2017-01-01&amp;amp;threshold=30&amp;amp;dont_analyze=true&#34;&gt;
+&lt;/iframe&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Unfortunately, near-real time vegetation change detection tools are largely limited to forests. As far as I know, none exist for non-forest ecosystems such as the shrublands, woodlands and grasslands that dominate South Africa and much of the rest of the globe.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Detecting abnormal change in these ecosystems is highly challenging. The state of the vegetation varies dramatically due to natural disturbances, long-term trends or cyclical functions, such as those relating to fire, postfire recovery or seasonality.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;If one just looks at the deviation in the signal of vegetation greenness/health (using &lt;a href=&#34;https://modis.gsfc.nasa.gov/data/dataprod/mod13.php&#34;&gt;&lt;strong&gt;MODIS NDVI&lt;/strong&gt;&lt;/a&gt;) from some base period, you can get quite a mess. Below I’ve used &lt;a href=&#34;http://clim-engine.appspot.com/&#34;&gt;&lt;strong&gt;Climate Engine&lt;/strong&gt;&lt;/a&gt; to calculate and display the difference in the mean vegetation greenness over the past 60 days relative to the long term average 2000 - 2017, focusing on the Fynbos region.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;iframe width=&#34;600&#34; height=&#34;800&#34; frameborder=&#34;0&#34; src=&#34;http://bit.ly/2z5cLT1&#34;&gt;
+&lt;/iframe&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Splotches of red and blue all over the place! The red splotches mostly represent areas that are recovering from recent fires. Since fynbos typically burns every couple of decades or so, very few sites have burnt more than once in our 2000 - current record, and are thus below the long term average. Most of the blue splotches (higher than average greenness) are agricultural areas, but there are interesting ones like the currently empty Theewaterskloof Dam (the bright blue splotch near Villiersdorp!), and, for those in the know, some areas where very dense woody alien plant invasions have been expanding.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;The key missing ingredient here is accounting for postfire recovery. We don’t want to compare the observed vegetation signal against the long term average at that site, we want to compare it to the expected signal at that site &lt;em&gt;for the age of the vegetation since the last fire&lt;/em&gt; and &lt;em&gt;that time of year&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Fortunately, one of my collaborators on this project, &lt;a href=&#34;http://adamwilson.us/&#34;&gt;&lt;strong&gt;Adam Wilson&lt;/strong&gt;&lt;/a&gt;, has already worked out a great way estimate the expected signal in &lt;a href=&#34;http://www.pnas.org/content/112/29/9058.abstract&#34;&gt;&lt;strong&gt;this great paper&lt;/strong&gt;&lt;/a&gt;. He modelled MODIS NDVI as a function of vegetation age since the last fire rather than time, providing a postfire recovery trajectory where NDVI initially increases with age and then saturates after a few years, presumably as plants become large enough to have abutting canopies.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/img/recoverycurve.png&#34; width=&#34;600&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;The postfire recovery curve can be modelled as an exponential function that increases to an asymptote (red line in the figure), to which one can add seasonality by combining it with a sine function (black line).&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Fitting this model allows one to estimate the parameters of the curve, which mostly have relatively intuitive interpretations like the rate of vegetation recovery, the maximum vegetation greeness, the amplitude of the seasonality etc. - the focus of Adam’s paper. By the by, we can use these parameter estimates to make predictions for the expected vegetation greenness for a given vegetation age. Comparing new satellite imagery to these predictions allows us to identify unexpected deviations in near-real time…&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;But first, Adam took his model one step further, not only deriving the curve parameters, but simultaneously estimating their dependence on the environment at each site (climate, soils, topography) - using a &lt;a href=&#34;https://en.wikipedia.org/wiki/Bayesian_hierarchical_modeling&#34;&gt;&lt;strong&gt;Hierarchical Bayesian framework&lt;/strong&gt;&lt;/a&gt; (for the interested nerds among you). This has several advantages in that it extends the ability of the model to infer recovery trajectories for cells with no or patchy data, but it also constrains the estimated curve parameters by the environmental covariates, reducing the influence of any sites that have errors in the data, or that have already suffered negative impacts (e.g. ploughing or alien plant invasion).&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/img/exceedcurvecp.png&#34; width=&#34;400&#34; align=&#34;centre&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Here we see the confidence intervals of the model prediction (50% = dark grey band, 95% = light grey) and the observed data (blue) for a site in the Cape of Good Hope Section of Table Mountain National Park. We fit the model on the 16-day combined MODIS NDVI data for both the Terra and Aqua satellites (i.e. one scene every 8 days) from February 2000 to the end of May 2014 (before the current drought started) and projected to “current” (end of July 2017). This site burnt in March 2015, and it is clear that the postfire recovery has been much slower than we’d expect, likely due to the &lt;a href=&#34;http://www.ecologi.st/post/2017-04-01-Langrivier/&#34;&gt;&lt;strong&gt;drought&lt;/strong&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/img/capepointbelow.jpg&#34; width=&#34;600&#34; align=&#34;centre&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;A field inspection revealed that this is indeed the case, and that many individuals of the fire-resistant shrub &lt;em&gt;Mimetes fimbriifolius&lt;/em&gt;, which is common at the site, have recently died.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Feeling buoyed by this success, we ran the model for the whole of Table Mountain National Park (or at least the bits that we could get good data for without too much effort), highlighting sites that showed multiple deviations below or above the 95% confidence interval of the model predictions since January 2017.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/img/exceedmap.png&#34; width=&#34;600&#34; align=&#34;centre&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;While some of the highlighted areas were clearly due to poor input data, such as incorrect land cover classification, most appear to be genuine shifts in the vegetation state. I’ve highlighted a few examples to discuss below, other than the Cape of Good Hope site, but feel free to peruse the interactive versions of these maps at the end of &lt;a href=&#34;http://www.ecologi.st/post/gsn/&#34;&gt;&lt;strong&gt;this post&lt;/strong&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;div id=&#34;karbonkelberg&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Karbonkelberg&lt;/h3&gt;
+&lt;p&gt;A large part of the Karbonkelberg was highlighted as being far less green than the model predicted. This is the kind of pattern one would expect to observe due to fire…&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/img/exceedcurvekb.png&#34; width=&#34;250&#34;/&gt; &lt;img src=&#34;/img/karbonkelberg_before.png&#34; width=&#34;200&#34;/&gt; &lt;img src=&#34;/img/karbonkelberg_after.png&#34; width=&#34;200&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;…which in this case is easily confirmed with a couple of “before” and “after” Google Earth screen shots. Note the clear steep drop in NDVI signal too. Unfortunately, Google Earth don’t always update their imagery all that frequently, so it’s not necessarily useful for diagnosing impacts in near-real time (i.e. every 8 to 16 days). Commercial imagery providers like &lt;a href=&#34;https://www.planet.com/&#34;&gt;&lt;strong&gt;Planet.com&lt;/strong&gt;&lt;/a&gt; provide very high resolution imagery (3m!) every few days, but probably come with a hefty price tag…&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;silvermine&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Silvermine&lt;/h3&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;There were a few different sites highlighted in the Silvermine area, but for different reasons. The NDVI time series below look near-identical, but with a bit of imagination you may notice subtle differences.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/img/exceedcurvesc.png&#34; width=&#34;300&#34;/&gt; &lt;img src=&#34;/img/exceedcurvesm.png&#34; width=&#34;300&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;The time series on the left (site 1) shows a step change around January 2015, and digging through the Google Earth imagery (below) reveals that this was due to partial vegetation clearing around that time as part of the development of a luxury housing estate. The time series on the right (site 2) perhaps shows a more gradual decline, with deviations starting around May 2015, during the driest winter in Cape Town on record, and becoming progressively worse.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/img/peerscave_before.png&#34; width=&#34;300&#34;/&gt; &lt;img src=&#34;/img/peerscave_after.png&#34; width=&#34;300&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;No impact is evident from the satellite imagery, but a site inpection revealed that a high proportion of the plants at this site have died, likely due to the ongoing drought.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/img/peerscavemortality.jpg&#34; width=&#34;600&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Silvermine also included a large number of sites that deviated above the expected signal, showing faster recovery after a fire in March 2015 than the model predicted.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/img/exceedcurvesa.png&#34; width=&#34;300&#34;/&gt; &lt;img src=&#34;/img/silverminealiens.jpg&#34; width=&#34;300&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;A field inspection revealed a dense invasion of young Australain Port Jackson Willow, &lt;em&gt;Acacia saligna&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;millers-point&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Miller’s Point&lt;/h3&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Lastly, a site near Miller’s Point showed a subtle reduction in greeness, which turns out to be due to ongoing invasive alien plant clearing operations.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/img/exceedcurvemp.png&#34; width=&#34;250&#34;/&gt; &lt;img src=&#34;/img/millers_before.png&#34; width=&#34;200&#34;/&gt; &lt;img src=&#34;/img/millers_after.png&#34; width=&#34;200&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;conclusions-and-where-to-from-here&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Conclusions and where to from here?&lt;/h1&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;This preliminary analysis is very positive and it seems the system has potential to be a valuable asset to any land manager for a range of applications from highlighting illegal clearing of indigenous vegetation or identifying spread of invasive alien species to monitoring invasive plant control operations.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;We’re busy working on a number of improvements and refinements, and are trying to collect enough data to do a proper validation of the system’s abilities&lt;a href=&#34;#fn1&#34; class=&#34;footnoteRef&#34; id=&#34;fnref1&#34;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;. For this we plan to run the model for the whole of the Cape Floristic Region, as this should highlight many areas where potential impacts have occurred. Hopefully it’ll give us insight into the spatial variation in the impacts of this drought too…&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;If the model validation looks good, then its a matter of working out how to launch and run an operational system for the Cape Floristic Region of South Africa. Should this prove successful, we could look to expanding to additional non-forest ecosystems in South Africa and elsewhere :)&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+&lt;hr /&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn1&#34;&gt;&lt;p&gt;To aid in field data collection and rapid assimilation and analysis we’ve been working on developing a &lt;a href=&#34;http://www.ecologi.st/post/veldwatch/&#34;&gt;&lt;strong&gt;Smartphone App&lt;/strong&gt;&lt;/a&gt; that can be used by citizen scientists, field rangers and landowners to map threats to and impacts on biodiversity, by marking a specific GPS location, taking images and adding notes.&lt;a href=&#34;#fnref1&#34;&gt;↩&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>VeldWatch!</title>
@@ -16,9 +123,15 @@
       <pubDate>Mon, 09 Oct 2017 00:00:00 +0000</pubDate>
       
       <guid>/post/veldwatch/</guid>
-      <description>&lt;p&gt;This is not a blog post yet. It’s just a quick link to a &lt;a href=&#34;https://goo.gl/forms/FPLxYT4dOzZjbwKt1&#34;&gt;&lt;strong&gt;Google Form&lt;/strong&gt;&lt;/a&gt; where you can sign up to be kept in the loop regarding the development and release of the VeldWatch Smartphone App. Please &lt;a href=&#34;https://goo.gl/forms/FPLxYT4dOzZjbwKt1&#34;&gt;&lt;strong&gt;Sign Up&lt;/strong&gt;&lt;/a&gt; and I hope to get back to you in the next month or so.&lt;/p&gt;
-&lt;p&gt;The aim of the App is to allow citizen scientists, field rangers and landowners to map threats to and impacts on biodiversity, such as invasive alien plants, plant mortality, landslides and illegal vegetation clearing, by marking a specific GPS location, taking images and adding notes. The app can work while offline (although one of the major snags I’m working on is caching the basemap information).&lt;/p&gt;
-&lt;p&gt;A major short term aim will be tracking the impacts of the current drought…&lt;/p&gt;
+      <description>&lt;p&gt;This is just a very quick post to point out a Smartphone App I’ve been working on that allows citizen scientists, field rangers and landowners to map threats to and impacts on biodiversity. These include a range of impacts from invasive alien plants, plant mortality, landslides or illegal vegetation clearing, etc.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/img/veldwatchscreenshots.png&#34; width=&#34;600&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;The App allows users to mark a specific GPS location, add notes and take images. The App can work while offline, although the two major snags I’m working on are caching the basemap information (because it obviously can’t download new map imagery once you’re out of signal), and testing how accurate different phones are when out of signal or wireless range…&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;I’m desperately trying to get this done fast, because a major short term aim will be tracking the impacts of the current &lt;a href=&#34;http://www.ecologi.st/post/2017-04-01-Langrivier/&#34;&gt;&lt;strong&gt;drought&lt;/strong&gt;&lt;/a&gt;. In the long term, accumulating a database of records like these will be invaluable for any number of purposes. I hope to parse out alerts for the managers of different reserves etc and make the database (excluding any sensitive information) freely accessible. There is also scope to add functionality for specific projects.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;If you are interested in being kept in the loop regarding the development and release of the VeldWatch Smartphone App. Please &lt;a href=&#34;https://goo.gl/forms/FPLxYT4dOzZjbwKt1&#34;&gt;&lt;strong&gt;sign up on this Google Form&lt;/strong&gt;&lt;/a&gt; and I hope to get back to you in the next month or so.&lt;/p&gt;
 </description>
     </item>
     

@@ -8,8 +8,20 @@ categories: ["All"]
 tags: ["All"]
 ---
 
-This is not a blog post yet. It's just a quick link to a [**Google Form**](https://goo.gl/forms/FPLxYT4dOzZjbwKt1) where you can sign up to be kept in the loop regarding the development and release of the VeldWatch Smartphone App. Please [**Sign Up**](https://goo.gl/forms/FPLxYT4dOzZjbwKt1) and I hope to get back to you in the next month or so.
+This is just a very quick post to point out a Smartphone App I've been working on that allows citizen scientists, field rangers and landowners to map threats to and impacts on biodiversity. These include a range of impacts from invasive alien plants, plant mortality, landslides or illegal vegetation clearing, etc. 
 
-The aim of the App is to allow citizen scientists, field rangers and landowners to map threats to and impacts on biodiversity, such as invasive alien plants, plant mortality, landslides and illegal vegetation clearing, by marking a specific GPS location, taking images and adding notes. The app can work while offline (although one of the major snags I'm working on is caching the basemap information).
+<br>
 
-A major short term aim will be tracking the impacts of the current drought...
+<img src="/img/veldwatchscreenshots.png" width="600"/>
+
+<br>
+
+The App allows users to mark a specific GPS location, add notes and take images. The App can work while offline, although the two major snags I'm working on are caching the basemap information (because it obviously can't download new map imagery once you're out of signal), and testing how accurate different phones are when out of signal or wireless range...
+
+<br>
+
+I'm desperately trying to get this done fast, because a major short term aim will be tracking the impacts of the current [**drought**](http://www.ecologi.st/post/2017-04-01-Langrivier/). In the long term, accumulating a database of records like these will be invaluable for any number of purposes. I hope to parse out alerts for the managers of different reserves etc and make the database (excluding any sensitive information) freely accessible. There is also scope to add functionality for specific projects.
+
+<br>
+
+If you are interested in being kept in the loop regarding the development and release of the VeldWatch Smartphone App. Please [**sign up on this Google Form**](https://goo.gl/forms/FPLxYT4dOzZjbwKt1) and I hope to get back to you in the next month or so.
