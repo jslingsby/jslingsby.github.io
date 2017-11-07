@@ -1,12 +1,12 @@
 ---
 title: "Drought Monitor for the Jonkershoek Valley, Western Cape, South Africa"
-date: '2017-10-06'
+date: '2017-11-07'
 image: /img/jonkershoek2.png
 tags: ["All"]
 categories: ["All"]
 output:
   blogdown::html_page:
-    toc: yes
+    toc: no
 ---
 
 
@@ -20,7 +20,7 @@ knitr::include_graphics("/img/SAEON_DST.png")
 
 *This analysis was prepared by the [**Fynbos Node**](http://www.saeon-fynbos.org) of [the **South African Environmental Observation Network (SAEON)**](http://www.saeon.ac.za).*
 
-Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of September 2017. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams.
+Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of October 2017. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams.
 
 <!--more-->
 
@@ -478,7 +478,7 @@ ggplot(rscomp, aes(x = Rainfall, y = Streamflow, colour=Month)) +
 
 While it looks messy, one clear pattern is that a rainfall event in a winter month typically results in greater streamflow than a similar sized event in a summer month. This is especially evident if you compare large rainfall events in late summer/autumn (March, April, May) with those in winter (June, July, August). This is not surprising and likely a result of accumulated soil moisture (or lack thereof) throughout the season, while lower evapotranspiration in winter may also be coming into play.
 
-What does this look like if we aggregate months by season (following the Summer = October to March, Winter = April - September approach from above).
+What does this look like if we aggregate months by season (following the Summer = October to March, Winter = April to September approach from above).
 
 <br>
 
