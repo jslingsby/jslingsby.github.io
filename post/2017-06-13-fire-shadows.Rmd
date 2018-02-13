@@ -166,6 +166,8 @@ dat$layer[which(dat$layer %in% c(2,3))] <- "Stable Forest" #Note there is some e
 
 dat$layer <- as.factor(dat$layer)
 
+#write.csv(dat, "/Users/jasper/Dropbox/SAEON/Projects/Cape Peninsula/FireShadow/spBayes/data.csv")
+
 head(dat)
 ```
 

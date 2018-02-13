@@ -43,8 +43,9 @@
 &lt;p&gt;&lt;strong&gt;NOTE&lt;/strong&gt;: I present the code from the R statistical programming language used to do the analysis. Just skip these if you are only interested in the story. I’ve tried to write this so that it makes sense without the code, but include the code for Annabelle and other students interested in performing this kind of analysis. Send me a comment below or &lt;a href=&#34;http://www.ecologi.st/contact/&#34;&gt;&lt;strong&gt;email&lt;/strong&gt;&lt;/a&gt; if you feel I haven’t got this right. The code appears in grey boxes, and the output of the code appears either as the images or grey boxes with all lines preceeded by “##”.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(raster)
-library(rgdal)
-library(spBayes)
+library(rgdal)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: package &amp;#39;rgdal&amp;#39; was built under R version 3.4.3&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(spBayes)
 library(rgeos)
 library(dplyr)
 library(ggplot2)
@@ -129,6 +130,8 @@ dat$layer[which(dat$layer == 1)] &amp;lt;- &amp;quot;Forest Gain&amp;quot;
 dat$layer[which(dat$layer %in% c(2,3))] &amp;lt;- &amp;quot;Stable Forest&amp;quot; #Note there is some erroneous overlap in the 2008 polygons
 
 dat$layer &amp;lt;- as.factor(dat$layer)
+
+#write.csv(dat, &amp;quot;/Users/jasper/Dropbox/SAEON/Projects/Cape Peninsula/FireShadow/spBayes/data.csv&amp;quot;)
 
 head(dat)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##        x       y untrans_homog_clip trans_homog_clip changeHomog_clip

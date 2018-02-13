@@ -255,7 +255,7 @@ ga('send', 'pageview');
 </div>
 <div id="data-description" class="section level3">
 <h3>Data Description</h3>
-<p>For this exercise we’ll play with fine-scale locality (point) data for the critically endangered Clanwilliam cedar (<em>Widdringtonia cedarbergensis</em>) mapped by my father for the new Cederberg hiking map (check out <strong><a href="http://www.slingsbymaps.com/" class="uri">http://www.slingsbymaps.com/</a></strong>; data for 1000 trees downloadable at <strong><a href="https://dl.dropboxusercontent.com/u/47937308/Cedars.kml" class="uri">https://dl.dropboxusercontent.com/u/47937308/Cedars.kml</a></strong>), a 90m (raster) digital elevation model (DEM) (<strong><a href="https://dl.dropboxusercontent.com/u/47937308/SRTM.zip" class="uri">https://dl.dropboxusercontent.com/u/47937308/SRTM.zip</a></strong>) that I will also show you how to download directly with R, and two “polygon” data sets consisting of mapped burn scars for CapeNature reserves (available at <strong><a href="http://bgis.sanbi.org/Projects/Detail/168" class="uri">http://bgis.sanbi.org/Projects/Detail/168</a></strong>) and the National Vegetation Map (available at <strong><a href="http://bgis.sanbi.org/SpatialDataset/Detail/18" class="uri">http://bgis.sanbi.org/SpatialDataset/Detail/18</a></strong>). You will need to download the cedar dataset into your chosen local data directory (see “datwd” below) and download the other data into your chosen GIS data directory (see “giswd” below) and unzip them. <em>datwd</em> and <em>giswd</em> can be the same for the purposes of this tutorial. You can download the R code (with the RMarkdown content commented out) at <strong><a href="https://dl.dropboxusercontent.com/u/47937308/PrimerSpatialData.R" class="uri">https://dl.dropboxusercontent.com/u/47937308/PrimerSpatialData.R</a></strong>.</p>
+<p>For this exercise we’ll play with fine-scale locality (point) data for the critically endangered Clanwilliam cedar (<em>Widdringtonia cedarbergensis</em>) mapped by my father for the new Cederberg hiking map (check out <strong><a href="http://www.slingsbymaps.com/" class="uri">http://www.slingsbymaps.com/</a></strong>; data for 1000 trees downloadable at <strong><a href="https://www.dropbox.com/s/1ucycs7vcaa5cm9/Cedars.kml?dl=0" class="uri">https://www.dropbox.com/s/1ucycs7vcaa5cm9/Cedars.kml?dl=0</a></strong>), a 90m (raster) digital elevation model (DEM) (<strong><a href="https://www.dropbox.com/s/xqjzeg8uypf45a2/SRTM.zip?dl=0" class="uri">https://www.dropbox.com/s/xqjzeg8uypf45a2/SRTM.zip?dl=0</a></strong>) that I will also show you how to download directly with R, and two “polygon” data sets consisting of mapped burn scars for CapeNature reserves (available at <strong><a href="http://bgis.sanbi.org/Projects/Detail/168" class="uri">http://bgis.sanbi.org/Projects/Detail/168</a></strong>) and the National Vegetation Map (available at <strong><a href="http://bgis.sanbi.org/SpatialDataset/Detail/18" class="uri">http://bgis.sanbi.org/SpatialDataset/Detail/18</a></strong>). You will need to download the cedar dataset into your chosen local data directory (see “datwd” below) and download the other data into your chosen GIS data directory (see “giswd” below) and unzip them. <em>datwd</em> and <em>giswd</em> can be the same for the purposes of this tutorial. You can download the R code (with the RMarkdown content commented out) at <strong><a href="https://www.dropbox.com/s/lkshqxmonq8fenc/PrimerSpatialData.R?dl=0" class="uri">https://www.dropbox.com/s/lkshqxmonq8fenc/PrimerSpatialData.R?dl=0</a></strong>.</p>
 <hr />
 <p><br></p>
 </div>
@@ -281,13 +281,15 @@ if (Sys.getenv(&quot;USERNAME&quot;)==&#39;WINDOZEUseR&#39;) {datwd=&quot;&quot;
 <pre class="r"><code>library(raster, quietly = T) # To handle rasters
 library(rasterVis, quietly = T) # For fancy raster visualisations
 library(rgdal, quietly = T) # To communicate with GDAL and handle shape files</code></pre>
-<pre><code>## rgdal: version: 1.2-7, (SVN revision 660)
+<pre><code>## Warning: package &#39;rgdal&#39; was built under R version 3.4.3</code></pre>
+<pre><code>## rgdal: version: 1.2-16, (SVN revision 701)
 ##  Geospatial Data Abstraction Library extensions to R successfully loaded
 ##  Loaded GDAL runtime: GDAL 2.1.3, released 2017/20/01
 ##  Path to GDAL shared files: /Library/Frameworks/R.framework/Versions/3.4/Resources/library/rgdal/gdal
+##  GDAL binary built with GEOS: FALSE 
 ##  Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
 ##  Path to PROJ.4 shared files: /Library/Frameworks/R.framework/Versions/3.4/Resources/library/rgdal/proj
-##  Linking to sp version: 1.2-4</code></pre>
+##  Linking to sp version: 1.2-5</code></pre>
 <pre class="r"><code>library(sp, quietly = T) # To handle shapefiles
 library(doMC, quietly = T) # To run code in parallel
 library(animation, quietly = T) # To make fancy animations...
@@ -489,9 +491,9 @@ plot(dens) # See anything? Probably not, these are 90m pixels in a large landsca
 <h3>Polygons!</h3>
 <p>Perhaps the best place to start is the National Vegetation Map of South Africa, Lesotho and Swaziland. We need to get the data, set the CRS and crop to our area/extent of interest.</p>
 <p><br></p>
-<pre class="r"><code>vegmap &lt;- readOGR(dsn=paste0(giswd, &quot;nvm2012beta2_wgs84_Geo&quot;), layer=&quot;nvm2012beta2_wgs84_Geo&quot;) # Get the data</code></pre>
+<pre class="r"><code>vegmap &lt;- readOGR(dsn=paste0(giswd, &quot;VegMap/nvm2012beta2_wgs84_Geo&quot;), layer=&quot;nvm2012beta2_wgs84_Geo&quot;) # Get the data</code></pre>
 <pre><code>## OGR data source with driver: ESRI Shapefile 
-## Source: &quot;/Users/jasper/Documents/GIS/nvm2012beta2_wgs84_Geo&quot;, layer: &quot;nvm2012beta2_wgs84_Geo&quot;
+## Source: &quot;/Users/jasper/Documents/GIS/VegMap/nvm2012beta2_wgs84_Geo&quot;, layer: &quot;nvm2012beta2_wgs84_Geo&quot;
 ## with 44822 features
 ## It has 21 fields</code></pre>
 <pre class="r"><code>head(vegmap) # Have a look at the first 6 rows of the attribute table </code></pre>
@@ -616,8 +618,9 @@ firelayers &lt;- readOGR(dsn=paste0(giswd, &quot;CFR/All_fires_15_16_gw&quot;), 
 ## Integer64 fields read as strings:  ID</code></pre>
 <pre class="r"><code>proj4string(firelayers)</code></pre>
 <pre><code>## [1] &quot;+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0&quot;</code></pre>
-<pre class="r"><code>firelayers &lt;- spTransform(firelayers, CRS(stdCRS))
-extent(firelayers)</code></pre>
+<pre class="r"><code>firelayers &lt;- spTransform(firelayers, CRS(stdCRS))</code></pre>
+<pre><code>## Warning in Polygon(coords = crds): less than 4 coordinates in polygon</code></pre>
+<pre class="r"><code>extent(firelayers)</code></pre>
 <pre><code>## class       : Extent 
 ## xmin        : 250253.7 
 ## xmax        : 733752.2 
@@ -924,8 +927,10 @@ levelplot(dem)</code></pre>
 <p><br></p>
 <p>Some fancy tricks with Google Earth…</p>
 <p><br></p>
-<pre class="r"><code>gbmap &lt;- gmap(Mercator(rawpts), type = &quot;satellite&quot;)
-plot(gbmap)</code></pre>
+<pre class="r"><code>gbmap &lt;- gmap(Mercator(rawpts), type = &quot;satellite&quot;)</code></pre>
+<pre><code>## Warning in as.POSIXlt.POSIXct(x, tz): unknown timezone &#39;default/Africa/
+## Johannesburg&#39;</code></pre>
+<pre class="r"><code>plot(gbmap)</code></pre>
 <p><img src="/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 <pre class="r"><code>points(Mercator(rawpts), pch = 20, col = &quot;red&quot;, cex=.3)</code></pre>
 <p><img src="/post/2017-04-01-PrimerSpatialData_files/figure-html/unnamed-chunk-28-2.png" width="672" /></p>
@@ -938,114 +943,114 @@ points.gb &lt;- as.data.frame(rawpts[sample(1:1000, 20),]) # Just select a few t
 points.gb$latlon &lt;- paste(points.gb$coords.x2, points.gb$coords.x1, sep=&quot;:&quot;)
 map.gb &lt;- gvisMap(points.gb, locationvar=&quot;latlon&quot;, tipvar=&quot;Name&quot;)
 plot(map.gb)</code></pre>
-<!-- Map generated in R 3.4.0 by googleVis 0.6.2 package -->
-<!-- Thu Jun 29 13:19:42 2017 -->
+<!-- Map generated in R 3.4.2 by googleVis 0.6.2 package -->
+<!-- Tue Feb 13 17:13:19 2018 -->
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataMapID16bb34e6b69 () {
+function gvisDataMapID14b5f6b2374f () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
  [
--32.28621555,
-19.12212654,
+-32.33270581,
+19.16365065,
 ""
 ],
 [
--32.29224178,
-19.12210154,
+-32.2999858,
+19.13770004,
 ""
 ],
 [
--32.35661931,
-19.1904917,
+-32.34294911,
+19.17310992,
 ""
 ],
 [
--32.21945631,
-19.0831088,
+-32.28597077,
+19.11169719,
 ""
 ],
 [
--32.27348223,
-19.10630658,
+-32.39818109,
+19.20579819,
 ""
 ],
 [
--32.33685064,
-19.12413104,
+-32.2861957,
+19.11150366,
 ""
 ],
 [
--32.30639554,
-19.14437352,
+-32.23579176,
+19.08191324,
 ""
 ],
 [
--32.33865384,
-19.07087484,
+-32.40808433,
+19.16811032,
 ""
 ],
 [
--32.21896741,
-19.044433,
+-32.33987331,
+19.12859551,
 ""
 ],
 [
--32.38853692,
-19.17820817,
+-32.34505456,
+19.1235732,
 ""
 ],
 [
--32.29984199,
-19.1159996,
+-32.28239718,
+19.13514051,
 ""
 ],
 [
--32.34975528,
-19.20061016,
+-32.21763977,
+19.07533489,
 ""
 ],
 [
--32.32448687,
-19.05727396,
+-32.33319262,
+19.17572325,
 ""
 ],
 [
--32.33675489,
-19.15439267,
+-32.23668888,
+19.09185488,
 ""
 ],
 [
--32.28531687,
-19.14781307,
+-32.35873869,
+19.0724481,
 ""
 ],
 [
--32.272453,
-19.10382838,
+-32.23623904,
+19.08043058,
 ""
 ],
 [
--32.33606795,
-19.05279925,
+-32.33671638,
+19.13637937,
 ""
 ],
 [
--32.40671733,
-19.1226425,
+-32.33508886,
+19.18633291,
 ""
 ],
 [
--32.32292255,
-19.1965966,
+-32.33223254,
+19.1149082,
 ""
 ],
 [
--32.26666522,
-19.12202364,
+-32.32449632,
+19.12243733,
 ""
 ] 
 ];
@@ -1057,13 +1062,13 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartMapID16bb34e6b69() {
-var data = gvisDataMapID16bb34e6b69();
+function drawChartMapID14b5f6b2374f() {
+var data = gvisDataMapID14b5f6b2374f();
 var options = {};
 options["showTip"] = true;
 
     var chart = new google.visualization.Map(
-    document.getElementById('MapID16bb34e6b69')
+    document.getElementById('MapID14b5f6b2374f')
     );
     chart.draw(data,options);
     
@@ -1087,9 +1092,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartMapID16bb34e6b69);
+callbacks.push(drawChartMapID14b5f6b2374f);
 })();
-function displayChartMapID16bb34e6b69() {
+function displayChartMapID14b5f6b2374f() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -1112,9 +1117,9 @@ callbacks.shift()();
 // jsFooter
 </script>
 <!-- jsChart -->
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapID16bb34e6b69"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapID14b5f6b2374f"></script>
 <!-- divChart -->
-<div id="MapID16bb34e6b69" style="width: 500; height: automatic;">
+<div id="MapID14b5f6b2374f" style="width: 500; height: automatic;">
 
 </div>
 <pre class="r"><code>options(op) # Reset gvis options to default</code></pre>
@@ -1183,9 +1188,9 @@ points(pts, pch=20, cex=.1)</code></pre>
 <p>If you try this code and have issues the session info is below. Also note that all kinds of weird settings to Flash etc are required to do the gvisMap plot and it only works if embedded in an HTML webpage or similar.</p>
 <p><br></p>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 3.4.0 (2017-04-21)
+<pre><code>## R version 3.4.2 (2017-09-28)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS Sierra 10.12.4
+## Running under: macOS High Sierra 10.13.2
 ## 
 ## Matrix products: default
 ## BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
@@ -1201,18 +1206,18 @@ points(pts, pch=20, cex=.1)</code></pre>
 ## other attached packages:
 ##  [1] googleVis_0.6.2     dismo_1.1-4         animation_2.5      
 ##  [4] doMC_1.3.4          iterators_1.0.8     foreach_1.4.3      
-##  [7] rgdal_1.2-7         rasterVis_0.41      latticeExtra_0.6-28
-## [10] RColorBrewer_1.1-2  lattice_0.20-35     raster_2.5-8       
-## [13] sp_1.2-4           
+##  [7] rgdal_1.2-16        rasterVis_0.41      latticeExtra_0.6-28
+## [10] RColorBrewer_1.1-2  lattice_0.20-35     raster_2.6-7       
+## [13] sp_1.2-5           
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.12.11      knitr_1.16        magrittr_1.5     
-##  [4] viridisLite_0.2.0 stringr_1.2.0     tools_3.4.0      
-##  [7] grid_3.4.0        rgeos_0.3-23      htmltools_0.3.6  
-## [10] yaml_2.1.14       rprojroot_1.2     digest_0.6.12    
-## [13] bookdown_0.4      codetools_0.2-15  evaluate_0.10    
-## [16] rmarkdown_1.6     blogdown_0.0.44   stringi_1.1.5    
-## [19] compiler_3.4.0    backports_1.1.0   jsonlite_1.5     
+##  [1] Rcpp_0.12.14      knitr_1.17        magrittr_1.5     
+##  [4] viridisLite_0.2.0 stringr_1.2.0     tools_3.4.2      
+##  [7] grid_3.4.2        rgeos_0.3-26      htmltools_0.3.6  
+## [10] yaml_2.1.14       rprojroot_1.2     digest_0.6.14    
+## [13] bookdown_0.5      codetools_0.2-15  evaluate_0.10.1  
+## [16] rmarkdown_1.8     blogdown_0.3      stringi_1.1.6    
+## [19] compiler_3.4.2    backports_1.1.1   jsonlite_1.5     
 ## [22] hexbin_1.27.1     zoo_1.8-0</code></pre>
 <p><br></p>
 </div>

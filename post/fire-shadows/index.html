@@ -184,8 +184,9 @@ ga('send', 'pageview');
 <p><strong>NOTE</strong>: I present the code from the R statistical programming language used to do the analysis. Just skip these if you are only interested in the story. I’ve tried to write this so that it makes sense without the code, but include the code for Annabelle and other students interested in performing this kind of analysis. Send me a comment below or <a href="http://www.ecologi.st/contact/"><strong>email</strong></a> if you feel I haven’t got this right. The code appears in grey boxes, and the output of the code appears either as the images or grey boxes with all lines preceeded by “##”.</p>
 <p><br></p>
 <pre class="r"><code>library(raster)
-library(rgdal)
-library(spBayes)
+library(rgdal)</code></pre>
+<pre><code>## Warning: package &#39;rgdal&#39; was built under R version 3.4.3</code></pre>
+<pre class="r"><code>library(spBayes)
 library(rgeos)
 library(dplyr)
 library(ggplot2)
@@ -270,6 +271,8 @@ dat$layer[which(dat$layer == 1)] &lt;- &quot;Forest Gain&quot;
 dat$layer[which(dat$layer %in% c(2,3))] &lt;- &quot;Stable Forest&quot; #Note there is some erroneous overlap in the 2008 polygons
 
 dat$layer &lt;- as.factor(dat$layer)
+
+#write.csv(dat, &quot;/Users/jasper/Dropbox/SAEON/Projects/Cape Peninsula/FireShadow/spBayes/data.csv&quot;)
 
 head(dat)</code></pre>
 <pre><code>##        x       y untrans_homog_clip trans_homog_clip changeHomog_clip
