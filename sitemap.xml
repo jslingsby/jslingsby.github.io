@@ -2,13 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>/post/dear-cape-town/</loc>
-    <lastmod>2018-04-28T00:00:00+00:00</lastmod>
+    <loc>/post/2017-04-01-Langrivier/</loc>
+    <lastmod>2018-05-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/2017-04-01-Langrivier/</loc>
-    <lastmod>2018-04-10T00:00:00+00:00</lastmod>
+    <loc>/post/dear-cape-town/</loc>
+    <lastmod>2018-04-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -84,13 +84,13 @@
   
   <url>
     <loc>/tags/all/</loc>
-    <lastmod>2018-04-10T00:00:00+00:00</lastmod>
+    <lastmod>2018-05-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/all/</loc>
-    <lastmod>2018-04-10T00:00:00+00:00</lastmod>
+    <lastmod>2018-05-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -107,13 +107,13 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2018-04-28T00:00:00+00:00</lastmod>
+    <lastmod>2018-05-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/post/</loc>
-    <lastmod>2018-04-28T00:00:00+00:00</lastmod>
+    <lastmod>2018-05-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
