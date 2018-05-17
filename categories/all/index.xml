@@ -10,6 +10,38 @@
     <atom:link href="/categories/all/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Fire!!!</title>
+      <link>/post/fire/</link>
+      <pubDate>Thu, 17 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/fire/</guid>
+      <description>&lt;center&gt;
+&lt;img src=&#34;/img/scienceinprogress/sip1.jpg&#34; /&gt;
+&lt;/center&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;This is an updated quick and dirty analysis of the &lt;a href=&#34;http://bgis.sanbi.org/Projects/Detail/168&#34;&gt;&lt;strong&gt;CapeNature fire database&lt;/strong&gt;&lt;/a&gt; (spanning 1927 to 2017) to see if the &lt;a href=&#34;http://www.ecologi.st/post/2017-04-01-Langrivier/&#34;&gt;&lt;strong&gt;major drought&lt;/strong&gt;&lt;/a&gt; that is currently being experienced in the Cape Floristic Region has had any impact on the occurrence or extent of wildfires. I first ran this analysis exactly a year ago and I think you’ll find the new year’s worth of data quite interesting.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Wildfires are an essential component of fynbos, but components of the fire regime such as return interval need to be within certain bounds of variability to maintain healthy ecosystems. Too frequent fire and many species do not get time to reproduce, too infrequent fire and plants senesce and/or are invaded by thicket and forest species, eventually excluding fire (see post on &lt;a href=&#34;http://www.ecologi.st/post/fire-shadows/&#34;&gt;&lt;strong&gt;Humans and forests in a changing sea of fire&lt;/strong&gt;&lt;/a&gt;). Another concern is that the weather conditions in the first year or so after fire can have a big impact on community composition and the postfire recovery trajectory. In a &lt;a href=&#34;http://www.ecologi.st/post/intensifying-postfire-weather-and-biological-invasion-drive-species-loss-in-fynbos/&#34;&gt;&lt;strong&gt;recent long-term study&lt;/strong&gt;&lt;/a&gt;, some co-authors and I have shown that sites where fires were followed by summers with extreme hot and dry weather showed a significant decline in species diversity. Unfortunately, these extremes are becoming more frequent and intense. I may follow this post up with an analysis of the interaction between fire and postfire weather to highlight areas that have already suffered abnormal extremes, but don’t hold your breath…&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Note that I can make no guarantees of the accuracy of the fire data. In fact, it is safe to assume that they are far from perfect as the technologies available and the interest in and capacity for mapping fire scars has grown through time. Fire scars are predominantly mapped so that reserve managers know the age of the vegetation, and thus fuel load and fire risk, and there is little incentive to invest time in improving the older records when there are other more pressing issues to deal with. I’ve excluded all reserves that have no data prior to 1980, and have indicated 1980 on the plots as a suggested date from which we could possibly have more confidence in the data, but this is entirely my own assumption…&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Here’s a map of all fires in the record. They essentially cover most of the mountainous regions of the Cape.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-05-09-fire_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Now let’s look at the number of fires through time. Note that I have split fires into Winter (April to October) vs Summer (November to March) fires. Given that the Austral summer spans the change in calendar year I have labeled each summer based on the start year, e.g. the 2016/2017 fire season is labelled as the summer of 2016. Also note that the record ends in the winter of 2017 as data for the summer of 2017/2018 are still being compiled.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-05-09-fire_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Lots more fires in the last few years, with the last three years being the highest on record. Note that there may be many many small fires (e.g. due to arson) that are easily put out. A better reflection is burnt area as this integrates ignition frequency with the state (i.e. moisture content) of the fuel (i.e. vegetation) and the weather at the time of the fire.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-05-09-fire_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Still lots more burnt area in the past few years, but interestingly the 1988/1989, 1999/2000, 2015/2016 and 2016/2017 fire seasons stand head and shoulders above the rest. There are some curiously low years too (e.g. 1995/1996, 2006/2007, 2013/2014).&lt;/p&gt;
+&lt;p&gt;What determined the years with particularly high vs particularly low numbers of fires and burnt area? It looks like I may well have to get stuck into the weather data, but it is likely to be much more complicated than that. A hot, dry year may bear many fires and large burnt areas, but this is not sustainable, because after a few years of these conditions there is less to be burnt. Similarly, one would assume that the accumulation of vegetation biomass is slower in hot, dry years, further reducing the probability of fires in subsequent years. One alternative hypothesis (and there are many) is that frequent fires and hotter, drier weather may shift the system to a grassier state, resulting in more frequent, but less intense fires. Some interesting further reading available &lt;a href=&#34;http://scholar.sun.ac.za/handle/10019.1/14994&#34;&gt;&lt;strong&gt;here&lt;/strong&gt;&lt;/a&gt;, but still lots of science to be done!&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Drought Monitor for the Jonkershoek Valley, Western Cape, South Africa</title>
       <link>/post/2017-04-01-Langrivier/</link>
       <pubDate>Wed, 02 May 2018 00:00:00 +0000</pubDate>
@@ -1382,39 +1414,6 @@ points(pts, pch=20, cex=.1)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Fire!!!</title>
-      <link>/post/fire/</link>
-      <pubDate>Wed, 10 May 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/post/fire/</guid>
-      <description>&lt;center&gt;
-&lt;img src=&#34;/img/scienceinprogress/sip1.jpg&#34; /&gt;
-&lt;/center&gt;
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;This is a quick and dirty analysis of the &lt;a href=&#34;http://bgis.sanbi.org/Projects/Detail/168&#34;&gt;&lt;strong&gt;CapeNature fire database&lt;/strong&gt;&lt;/a&gt; to see if the &lt;a href=&#34;http://www.ecologi.st/post/2017-04-01-Langrivier/&#34;&gt;&lt;strong&gt;major drought&lt;/strong&gt;&lt;/a&gt; that is currently being experienced in the Cape Floristic Region has had any impact on the occurrence or extent of wildfires.&lt;/p&gt;
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;Wildfires are an essential component of fynbos, but components of the fire regime such as return interval need to be within certain bounds of variability to maintain healthy ecosystems. Too frequent fire and many species do not get time to reproduce, too infrequent fire and plants senesce and/or are invaded by thicket and forest species, eventually excluding fire. Another concern is that the weather conditions in the first year or so after fire can have a big impact on community composition and the postfire recovery trajectory. In a &lt;a href=&#34;http://www.ecologi.st/post/intensifying-postfire-weather-and-biological-invasion-drive-species-loss-in-fynbos/&#34;&gt;&lt;strong&gt;recent long-term study&lt;/strong&gt;&lt;/a&gt;, some co-authors and I have shown that sites where fires were followed by summers with extreme hot and dry weather showed a significant decline in species diversity. Unfortunately, these extremes are becoming more frequent and intense. I may follow this post up with an analysis of fire*postfire weather to highlight areas that have already suffered abnormal extremes, but don’t hold your breath :)&lt;/p&gt;
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;Note that I can make no guarantees of the accuracy of the fire data. In fact, it is safe to assume that they are far from perfect as the technologies available and the interest in and capacity for mapping fire scars has grown through time. Fire scars are predominantly mapped so that reserve managers know the age of the vegetation, and thus fuel load and fire risk, and there is little incentive to invest time in improving the older records when there are other more pressing issues to deal with. I’ve excluded all reserves that have no data prior to 1980, and have indicated 1980 on the plots as a suggested date from which we could possibly have more confidence in the data, but this is entirely my own assumption…&lt;/p&gt;
-&lt;p&gt;Here’s a map of the fires in space. They essentially cover most of the mountainous regions of the Cape.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-05-09-fire_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;Now let’s look at the number of fires through time. Note that I have split fires into Winter (April to October) vs Summer (November to March) fires. Given that the Austral summer spans the change in calendar year I have labeled each summer based on the start year, e.g. the 2015/2016 fire season is labelled as the summer of 2015. Also note that the record ends in the winter of 2016 as data for the summer of 2016/2017 are still being compiled.&lt;/p&gt;
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-05-09-fire_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;Lots more fires in the last few years, with the top 6 in the last decade. But note that there may be many many small fires (e.g. due to arson) that are easily put out. A better reflection is burnt area as this integrates ignition frequency with the state (i.e. moisture content) of the fuel (i.e. vegetation) and the weather at the time of the fire.&lt;/p&gt;
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-05-09-fire_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;Still lots more burnt area in the past few years, but interestingly the 1988/1989, 1999/2000 and 2015/2016 fire seasons stand head and shoulders above the rest, while both 2014/2015 and 2015/2016 are in the top 5. It sounds like 2016/2017 may be a little lower in number of fires and burnt area than 2015/2016, but still very high relative to the record.&lt;/p&gt;
-&lt;p&gt;There are some interestingly low years too (e.g. 1995/1996, 2006/2007, 2013/2014).&lt;/p&gt;
-&lt;p&gt;What determined the years with particularly high vs particularly low numbers of fires and burnt area? It looks like I may well have to get stuck into the weather data, but it is likely to be much more complicated than that. A hot, dry year may bear many fires and large burnt areas, but this is not sustainable, because after a few years of these conditions there is less to be burnt. Similarly, one would assume that the accumulation of vegetation biomass is slower in hot, dry years, further reducing the probability of fires in subsequent years. One alternative hypothesis (and there are many) is that frequent fires and hotter, drier weather may shift the system to a grassier state, resulting in more frequent, but less intense fires. Lots of science to be done here…&lt;/p&gt;
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
 </description>
     </item>
     
