@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+ <title>Handling Spatial Data in R - #3. Big Data and Memory Management</title>
+
+
+
+<meta name="description" content="Ecological research and global change in South Africa">
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="all,follow">
+<meta name="googlebot" content="index,follow,snippet,archive">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<link rel="stylesheet" id="ct-tracks-google-fonts-css" href="//fonts.googleapis.com/css?family=Raleway%3A400%2C700&amp;subset=latin%2Clatin-ext&amp;ver=4.7.2" type="text/css" media="all">
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+<link href="/css/style.default.css" rel="stylesheet" id="theme-stylesheet">
+
+<link href="/css/custom.css" rel="stylesheet">
+<link rel="shortcut icon" href="/img/favicon.png">
+
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-97038958-1', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+</head>
+  <body>
+    <div id="root">
+      <div class="container-fluid">
+        <div class="row site-header">
+          <div class="col-md-12">
+            <div class="row">
+              <div class="col-md-12 top-navigation">
+                <div class="row">
+  <div class="col-sm-6">
+    <div class="categories-block">
+      <a href="" class="track-categories">//</a>
+      
+      <a href="/categories/all">all</a>
+      
+      <a href="/categories/r-tutorials">r-tutorials</a>
+      
+      <a href="/categories/research">research</a>
+      
+    </div>
+  </div>
+
+  <div class="col-sm-6">
+    <div class="social-media-block">
+
+      
+      
+      
+      <a href="https://twitter.com/JasperSlingsby" data-animate-hover="pulse" class="external twitter">
+        <i class="fa fa-twitter"></i>
+      </a>
+      
+      
+      
+      <a href="mailto:jslingsby@gmail.com" data-animate-hover="pulse" class="email">
+        <i class="fa fa-envelope"></i>
+      </a>
+      
+      
+      
+      
+      <a href="https://github.com/jslingsby/" data-animate-hover="pulse">
+        <i class="fa fa-github"></i>
+      </a>
+      
+
+    </div>
+  </div>
+</div>
+
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-10 header col-md-offset-1">
+                <div class="row">
+  <div class="col-md-6">
+    <div class="title-info">
+      
+      <a href=""> Jasper Slingsby </a>
+      
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="menu">
+      <a href="/">Home /</a>
+      
+      
+      <a href="/about">about / </a>
+      
+      
+      
+      <a href="/contact">contact / </a>
+      
+      
+      
+      
+      
+      <a href="/publications">publications / </a>
+      
+      
+      
+      <a href="/research">research / </a>
+      
+      
+      
+      <a href="/students">students / </a>
+      
+      
+    </div>
+  </div>
+
+</div>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-10 main-content col-md-offset-1">
+            
+
+<div class="col-md-12 entry">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="entry-meta">
+        30 August 2018
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="entry-header">
+       Handling Spatial Data in R - #3. Big Data and Memory Management
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2">
+      <div class="entry-sidebar">
+        CATEGORIES
+        <div class="entry-categories">
+          <a href="">All</a>
+        </div>
+
+        Tags
+        <div class="entry-tags">
+          <a href="">All</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-10">
+      <div class="entry-content">
+        <div id="TOC">
+<ul>
+<li><a href="#the-basics">The Basics</a></li>
+<li><a href="#interlude">Interlude</a></li>
+<li><a href="#doing-gis-from-r">Doing GIS <em>from</em> R</a></li>
+</ul>
+</div>
+
+<p><br></p>
+<hr />
+<p><br></p>
+<p>Since I first started maintaining blog posts on handling spatial data in R perhaps the most common question I’ve received is “How do I handle big spatial data in R?”. I thought its finally time to provide a blog post to deal with this particular topic. The answer of course is that there are many, many ways.</p>
+<p><br></p>
+<p>Now I know those of you who have asked me in person are thinking “That’s not what he said when I asked?”, he said “That depends on what you mean by big spatial data?”, which was cryptic and unhelpful. I hope this blog post convinces you that both are valid answers and need to be unpacked together.</p>
+<p><br></p>
+<p>Note that for now I’ll address raster data only, but I hope to add to this post (or create another) for vector data. Either way, many of the principals I’ll demonatrate apply for any R coding exercise no matter what the data or objective. For those needing to work with large vector data I recommend you have a look at <a href="https://cran.r-project.org/web/packages/sf/index.html"><strong>Simple Features for R - library(sf)</strong></a>.</p>
+<p><br></p>
+<p>I should point out before we get started that while some of what I cover here may help speed up processing, that is not the focus of this post. My goal here is to help you avoid slowing yourself down. I will not cover topics like parallel processing (although I touched on it in my <a href="http://www.ecologi.st/post/spatial-data-in-r-2-a-practical-example/#going-parallel"><strong>previous post</strong></a>) or processing rasters in chunks - for the latter see <a href="https://cran.r-project.org/web/packages/raster/vignettes/functions.pdf"><strong>this vignette</strong></a> for library(raster).</p>
+<p><br></p>
+<hr />
+<p><br></p>
+<div id="the-basics" class="section level3">
+<h3>The Basics</h3>
+<center>
+<img src="/img/memoryfull.jpg" alt="drawing" width="400"/>
+</center>
+<p><br></p>
+<p>The issue is memory (RAM). Think of it as brain capacity, and if R’s brain is full, things start to happen slowly or not at all. The goal is somewhat like Taoism - keeping the mind clear of all distractions and just being - placing our will in harmony with the natural univeRse.</p>
+<p><br></p>
+<p>Sorry, I’ll avoid all philosophy from here ;) Note that I am also going to avoid complexities and will try to use laymens terms. This may require some abstractions of the truth that could fill whole blogs with caveats and explanations, so I’ll just ask advanced R users to please forgive me and turn a blind eye. I hope some of what I’ll demonstrate here is useful for advanced users, but otherwise I’d recommend reading resources like Hadley Wickham’s section on the way in which R uses memory in his book <a href="http://adv-r.had.co.nz/memory.html"><strong>Advanced R</strong></a> as it really can help you improve your code to manage memory better.</p>
+<p><br></p>
+<p>Let’s start by seeing how full R’s brain is before we’ve asked it to think about anything.</p>
+<pre class="r"><code>ls() #lists all objects in memory</code></pre>
+<pre><code>## character(0)</code></pre>
+<pre class="r"><code>library(pryr)
+mem_used() #gives estimate of memory being used</code></pre>
+<pre><code>## 33.2 MB</code></pre>
+<p><br></p>
+<p>No objects in memory, and not much being used! Note that there’s always something happening so mem_used() will never return 0. I’ll keep calling the mem_used() function throughout to show you how different operations affect how full R’s brain is.</p>
+<p><br></p>
+<p>Now let’s see what happens when we add a raster. Note that I’ll start by using the SRTM90 digital elevation model used in the <a href="http://www.ecologi.st/post/spatial-data-in-r-2-a-practical-example/#data-description"><strong>Handling Spatial Data in R - #2</strong></a> post, which you can download <a href="https://www.dropbox.com/s/xqjzeg8uypf45a2/SRTM.zip?dl=0"><strong>here</strong></a> if you don’t have it already. It’s not a particularly big raster, but it’ll suffice for the purposes of demonatration.</p>
+<p><br></p>
+<p>I’ll also use the working directory tricks I explain in the <a href="http://www.ecologi.st/post/spatial-data-in-r-2-a-practical-example/#housekeeping"><strong>Housekeeping</strong></a> section of that post. Note the addition of <em>tempwd</em>.</p>
+<pre class="r"><code>if (Sys.getenv(&quot;USER&quot;)==&#39;jasper&#39;) {datwd=&quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/&quot;
+giswd=&quot;/Users/jasper/Documents/GIS/&quot;
+reswd=&quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Results/&quot;
+tempwd=&quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/temp/&quot;}
+if (Sys.getenv(&quot;USER&quot;)==&#39;MACUseR&#39;) {datwd=&quot;&quot;; giswd=&quot;&quot;; reswd=&quot;&quot;} #For Mac/Linux users
+if (Sys.getenv(&quot;USERNAME&quot;)==&#39;WINDOZEUseR&#39;) {datwd=&quot;&quot;; giswd=&quot;&quot;; reswd=&quot;&quot;} #For Windows
+
+mem_used()</code></pre>
+<pre><code>## 33.6 MB</code></pre>
+<pre class="r"><code>library(raster, quietly = T)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;raster&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:pryr&#39;:
+## 
+##     subs</code></pre>
+<pre class="r"><code>dem &lt;- raster(paste0(giswd, &quot;SRTM/srtm_40_19.tif&quot;))
+
+mem_used()</code></pre>
+<pre><code>## 87.1 MB</code></pre>
+<p><br></p>
+<p>So adding the directory file paths made almost no difference, but the raster is occupying ~50MB! But hang on… I recall that file being larger when I downloaded it. Let’s check?</p>
+<pre class="r"><code>file.size(paste0(giswd, &quot;SRTM/srtm_40_19.tif&quot;))/10^6 #Note the &quot;/10^6&quot; to convert to MB</code></pre>
+<pre><code>## [1] 72.12069</code></pre>
+<p><br></p>
+<p>The real file is bigger? This is because the raster() function doesn’t call the whole file into memory. It creates a link to the file and only calls the info it needs to manipulate it. This is very clever (thanks Robert Hijmans!), and avoids R’s brain getting too full.</p>
+<p><br></p>
+<p>Ok, so what if we create a new object based on the object that is linked to file?</p>
+<pre class="r"><code>newdem &lt;- dem
+
+mem_used()</code></pre>
+<pre><code>## 87.2 MB</code></pre>
+<p>It hardly changed the memory usage? The reason being that R is very very clever, and knows that <em>newdem</em> is identical to <em>dem</em> in all but name, so all the <em>newdem</em> object is storing is enough info to manipulate it and it’ll call what it needs from <em>dem</em> (or directly from the source file) when it needs it.</p>
+<p><br></p>
+<p>Where we start to get into trouble is when we start to do stupid things like…</p>
+<pre class="r"><code>newdem &lt;- dem*2
+
+mem_used()</code></pre>
+<pre><code>## 376 MB</code></pre>
+<p><br></p>
+<p>Whoa?! ~300MB of brain space filled by one operation!!!</p>
+<p><br></p>
+<p>The issue is that by multiplying <em>dem</em> by 2 we’ve created an object with different properties to the source file, so R has to keep it somewhere, and since you didn’t tell R where to store it on your computer it has to remember it. Let’s compare the properties of <em>dem</em> and <em>newdem</em>.</p>
+<pre class="r"><code>dem</code></pre>
+<pre><code>## class       : RasterLayer 
+## dimensions  : 6001, 6001, 36012001  (nrow, ncol, ncell)
+## resolution  : 0.0008333333, 0.0008333333  (x, y)
+## extent      : 14.99958, 20.00042, -35.00042, -29.99958  (xmin, xmax, ymin, ymax)
+## coord. ref. : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
+## data source : /Users/jasper/Documents/GIS/SRTM/srtm_40_19.tif 
+## names       : srtm_40_19 
+## values      : -32768, 32767  (min, max)</code></pre>
+<pre class="r"><code>newdem</code></pre>
+<pre><code>## class       : RasterLayer 
+## dimensions  : 6001, 6001, 36012001  (nrow, ncol, ncell)
+## resolution  : 0.0008333333, 0.0008333333  (x, y)
+## extent      : 14.99958, 20.00042, -35.00042, -29.99958  (xmin, xmax, ymin, ymax)
+## coord. ref. : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
+## data source : in memory
+## names       : srtm_40_19 
+## values      : -56, 4464  (min, max)</code></pre>
+<p><br></p>
+<p>See how the “data source” for <em>dem</em> is a file path, whereas for <em>newdem</em> it says “in memory”.</p>
+<p><br></p>
+<p>This isn’t a problem if the file is small, but it is a problem for big files or the accumulation of many smaller ones. If you’re working with big files, a better alternative to the code above would be to write out the file and create a link to it. Let’s put it in the <em>tempwd</em> we created earlier.</p>
+<pre class="r"><code>newdem &lt;- writeRaster(dem*2, paste0(tempwd, &quot;newdem&quot;))
+
+mem_used()</code></pre>
+<pre><code>## 88.6 MB</code></pre>
+<p><br></p>
+<p>Wow!</p>
+<p>But hang on? It seems like <em>newdem</em> is much smaller than <em>dem</em>, which was ~50MB? Surely they should be similar? Let’s look at their properties again.</p>
+<pre class="r"><code>dem</code></pre>
+<pre><code>## class       : RasterLayer 
+## dimensions  : 6001, 6001, 36012001  (nrow, ncol, ncell)
+## resolution  : 0.0008333333, 0.0008333333  (x, y)
+## extent      : 14.99958, 20.00042, -35.00042, -29.99958  (xmin, xmax, ymin, ymax)
+## coord. ref. : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
+## data source : /Users/jasper/Documents/GIS/SRTM/srtm_40_19.tif 
+## names       : srtm_40_19 
+## values      : -32768, 32767  (min, max)</code></pre>
+<pre class="r"><code>newdem</code></pre>
+<pre><code>## class       : RasterLayer 
+## dimensions  : 6001, 6001, 36012001  (nrow, ncol, ncell)
+## resolution  : 0.0008333333, 0.0008333333  (x, y)
+## extent      : 14.99958, 20.00042, -35.00042, -29.99958  (xmin, xmax, ymin, ymax)
+## coord. ref. : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
+## data source : /Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/temp/newdem.grd 
+## names       : srtm_40_19 
+## values      : -56, 4464  (min, max)</code></pre>
+<p><br></p>
+<p>This confirms that <em>newdem</em> is now linked to a file, but also that the objects have the same extent and resolution as we expected. Only the pixel values differ, but that should not make a big difference?</p>
+<p><br></p>
+<p>It turns out that the difference ooccurs because by writing out the raster without indicating a file extention or format R has used the native format for library(raster), which in your file system creates the files “newdem.grd” and “newdem.gri” in your <em>tempwd</em> folder. This file format was designed specifically so that R can create a link calling all the info it needs to manipulate the file while minimizing memory usage. The memory required for R to create a link to raster files varies quite a bit between file formats (.asc, .sdat, .img, etc) and it turns out that GeoTiffs (.tif) like the SRTM data we called earlier are particularly bad.</p>
+<p><br></p>
+<p>I know what you’re thinking - “This is cool to know, but adding <em>newdem &lt;- writeRaster()</em> to each line of code where I manipulate a raster is cumbersome and untidy”. Fortunately, Prof R.J. Hijmans has provided a solution for this in most cases by including the “filename =” option in most functions. To do the calculation above we could use the calc() function and rewrite it like so…</p>
+<pre class="r"><code>newdem &lt;- calc(dem, fun=function(x){x * 2}, filename = paste0(tempwd, &quot;newdem&quot;), overwrite=TRUE)
+
+mem_used()</code></pre>
+<pre><code>## 89.5 MB</code></pre>
+<p><br></p>
+<p>In this particular case the code is still more cumbersome than simple raster maths, but in most cases all you’d need add is the “filename = paste0(tempwd,”newdem“)” bit. Note I had to add “overwrite=TRUE” too, otherwise R returns an error. This may seem irritating, but it does save one from embarrasing scenarios like overwriting your source data if you just copied and pasted the filepath and forgot to change it…</p>
+<p><br></p>
+<p>Ok, ok, I hear you! So adding “filename = …, overwrite = …” etc every time is cumbersome and irritating too. You may as well go and pay ESRI lotsa $ and click away in ArcGIS?</p>
+<p><br></p>
+<p>Well it turns out that Prof Bobby J. H. has created a way for eternally lazy typers like you to solve this, but with great power comes great responsibility! The solution is rasterOptions().</p>
+<pre class="r"><code>rasterOptions()</code></pre>
+<pre><code>## format        : raster 
+## datatype      : FLT4S 
+## overwrite     : FALSE 
+## progress      : none 
+## timer         : FALSE 
+## chunksize     : 1e+07 
+## maxmemory     : 1e+09 
+## tmpdir        : /var/folders/93/lxzmv0k90xs0lhsgwtdt5s640000gn/T//Rtmpp0F0QM/raster// 
+## tmptime       : 168 
+## setfileext    : TRUE 
+## tolerance     : 0.1 
+## standardnames : TRUE 
+## warn depracat.: TRUE 
+## header        : none</code></pre>
+<p><br></p>
+<p>Firstly, you’ll notice that “overwrite = FALSE” is the default. You can change this at your own peril. I do not advise it.</p>
+<p><br></p>
+<p>Secondly, if you look at the help file with <em>?rasterOptions</em>, you’ll also note a setting called “todisk”, which by default is set to FALSE. If you set this to TRUE, all operations that create new rasters will write the new raster to disk as a temporary file and the raster object in memory will be linked to that file.</p>
+<p><br></p>
+<p>Neat? Not really. The problem with this solution is that all raster operations will now involve reading and writing files, even if the rasters are small. Reading and writing operations take time, and if you have lots of small file operations this will probably slow you down more than if you just ask R to remember all the small files…</p>
+<p><br></p>
+<p>In short, I’d advocate just typing “filename = …, overwrite = …” when you need it.</p>
+<p><br></p>
+<hr />
+<p><br></p>
+</div>
+<div id="interlude" class="section level3">
+<h3>Interlude</h3>
+<p>To carry on with the irritating mind-reading, I bet you’ve come around to thinking “Well if the goal is to keep everything out of R’s memory, why are we trying to do GIS in R at all?”</p>
+<p><br></p>
+<p>My answer is “Exactly! You’re starting to get it!!!” We’re not trying to do GIS in R, we’re trying to do GIS <em>from</em> R!!!</p>
+<p><br></p>
+<p>If you’re reading this blog, you’re likely already sold on the value of working in R for a variety of other reasons including things like statistical flexibility, visualization tools, reproducibility, etc. You’re probably only interested in handling spatial data in R because you’re sick of clicking on stuff in ArcGIS or QGIS and want to do everything you need in one workflow.</p>
+<p><br></p>
+<p>The beauties are 1) if you’re familiar with R, learning to handle spatial data with R is not that tricky, and 2) you can do massively powerful spatial data analyses from R, because if the internal* functions can’t do it, R can call just about whatever software you need to get the job done!</p>
+<p><br></p>
+<p>*Here I mean functions like those in library(raster), but I should add the proviso that this and many other R libraries are already cleverly designed to call other software to do their bidding wherever it is deemed more efficient to do so.</p>
+<p><br></p>
+<hr />
+<p><br></p>
+</div>
+<div id="doing-gis-from-r" class="section level3">
+<h3>Doing GIS <em>from</em> R</h3>
+<p>In the past few years I have started working with very large datasets like the 30m <a href="https://egis.environment.gov.za/national_land_cover_data_sa"><strong>National Land Cover Data for South Africa</strong></a> and the full record of daily or 16-day composite MODIS images for the Cape Floristic Region. As you would imagine, I have started to come up against some computational issues and have had to find ways around them since just getting a bigger computer is not always a viable option.</p>
+<p><br></p>
+<p>One of my best finds has been library(gdalUtils), which provides wrapper functions for <a href="https://www.gdal.org/"><strong>GDAL (Geospatial Data Abstraction Library)</strong></a>. GDAL is a massively powerful software library (written in C and C++) for reading and writing raster and vector geospatial data formats, and includes many command line utilities for data translation and processing. It actually forms the basis of many (if not most) commonly used GIS programmes like QGIS, GRASS, SAGA, IDRISI, etc - <a href="https://trac.osgeo.org/gdal/wiki/SoftwareUsingGdal"><strong>here’s a list!</strong></a></p>
+<p><br></p>
+<p>Here’s a quick demonstration calling on GDAL to project our DEM to UTM34S, using library(gdalUtils)’ gdalwarp() wrapper function.</p>
+<pre class="r"><code>mem_used()</code></pre>
+<pre><code>## 89.7 MB</code></pre>
+<pre class="r"><code>library(gdalUtils)
+
+gdalwarp(paste0(giswd, &quot;SRTM/srtm_40_19.tif&quot;),
+                  dstfile=paste0(tempwd, &quot;srtm_UTM34S&quot;),
+                  t_srs=&quot;+proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs&quot;,
+                  output_Raster=TRUE,
+                  overwrite=TRUE,verbose=TRUE)</code></pre>
+<pre><code>## Checking gdal_installation...</code></pre>
+<pre><code>## Scanning for GDAL installations...</code></pre>
+<pre><code>## Checking Sys.which...</code></pre>
+<pre><code>## Checking common locations...</code></pre>
+<pre><code>## GDAL version 1.11.4</code></pre>
+<pre><code>## GDAL command being used: &quot;/Library/Frameworks/GDAL.framework/Versions/1.11/Programs/gdalwarp&quot; -overwrite  -t_srs &quot;+proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs&quot; -of &quot;GTiff&quot; &quot;/Users/jasper/Documents/GIS/SRTM/srtm_40_19.tif&quot; &quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/temp/srtm_UTM34S&quot;</code></pre>
+<pre><code>## class       : RasterBrick 
+## dimensions  : 6654, 5693, 37881222, 1  (nrow, ncol, ncell, nlayers)
+## resolution  : 85.7311, 85.7311  (x, y)
+## extent      : -79261.36, 408805.8, 6110386, 6680840  (xmin, xmax, ymin, ymax)
+## coord. ref. : +proj=utm +zone=34 +south +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0 
+## data source : /Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/temp/srtm_UTM34S 
+## names       : srtm_UTM34S 
+## min values  :      -32768 
+## max values  :       32767</code></pre>
+<pre class="r"><code>mem_used()</code></pre>
+<pre><code>## 93.1 MB</code></pre>
+<p><br></p>
+<p>Very little memory taken, because nothing ever came into R’s memory.</p>
+<p><br></p>
+<p>Now let’s compare the time taken to reproject our DEM using library(raster)’s projectRaster() function versus gdalwarp().</p>
+<pre class="r"><code>system.time(
+  gdalwarp(paste0(giswd, &quot;SRTM/srtm_40_19.tif&quot;),
+                  dstfile=paste0(tempwd, &quot;srtm_UTM34S&quot;),
+                  t_srs=&quot;+proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs&quot;,
+                  output_Raster=TRUE,
+                  overwrite=TRUE,verbose=TRUE)
+)</code></pre>
+<pre><code>## Checking gdal_installation...</code></pre>
+<pre><code>## Scanning for GDAL installations...</code></pre>
+<pre><code>## Checking the gdalUtils_gdalPath option...</code></pre>
+<pre><code>## GDAL version 1.11.4</code></pre>
+<pre><code>## GDAL command being used: &quot;/Library/Frameworks/GDAL.framework/Versions/1.11/Programs/gdalwarp&quot; -overwrite  -t_srs &quot;+proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs&quot; -of &quot;GTiff&quot; &quot;/Users/jasper/Documents/GIS/SRTM/srtm_40_19.tif&quot; &quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/temp/srtm_UTM34S&quot;</code></pre>
+<pre><code>##    user  system elapsed 
+##   1.323   0.438   1.994</code></pre>
+<pre class="r"><code>system.time(
+demUTM &lt;- projectRaster(dem, crs = CRS(&quot;+proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs&quot;), filename = paste0(tempwd, &quot;newdem&quot;), overwrite=TRUE)
+)</code></pre>
+<pre><code>##    user  system elapsed 
+##  57.080  75.095 180.687</code></pre>
+<p><br></p>
+<p>Phew! Well that was painful… I think it’s pretty clear that gdalwarp() was MUCH more efficient! Note that you can also use gdalwarp() to read the raster into R (by just assigning it “myobject &lt;- gdalwarp(…)”). This does slow it down, but only by a couple of seconds. If you have a set of different operations you’d like to perform it’s quickest to run them line by line - writing new files from GDAL each time - and then only read in the last file.</p>
+<p><br></p>
+<p>Note that to give projectRaster() a fair chance, I’ve tried it with and without “filename =” and with and without creating the new <em>demUTM</em> object and the results were very similar.</p>
+<p><br></p>
+<p>I’ll leave it there. Have fun exploring other library(gdalUtils) functions! Note that the are similar R packages with wrapper functions for GRASS and SAGA, and probably others, but I’ll leave exploring those up to you too.</p>
+<p><br></p>
+<p>Before we go, lets delete all our temporary files.</p>
+<pre class="r"><code>file.remove(list.files(tempwd, full.names = T)) #remove all files from our temp folder</code></pre>
+<pre><code>## [1] TRUE TRUE TRUE</code></pre>
+<p><br></p>
+<p>And of course…</p>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>## R version 3.5.1 (2018-07-02)
+## Platform: x86_64-apple-darwin15.6.0 (64-bit)
+## Running under: macOS High Sierra 10.13.2
+## 
+## Matrix products: default
+## BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
+## 
+## locale:
+## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] gdalUtils_2.0.1.14 raster_2.6-7       sp_1.3-1          
+## [4] pryr_0.1.4        
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_0.12.18      knitr_1.20        magrittr_1.5     
+##  [4] lattice_0.20-35   foreach_1.4.4     stringr_1.3.1    
+##  [7] tools_3.5.1       rgdal_1.3-4       grid_3.5.1       
+## [10] xfun_0.3          R.oo_1.22.0       htmltools_0.3.6  
+## [13] iterators_1.0.10  yaml_2.2.0        rprojroot_1.3-2  
+## [16] digest_0.6.15     bookdown_0.7      R.utils_2.6.0    
+## [19] codetools_0.2-15  evaluate_0.11     rmarkdown_1.10   
+## [22] blogdown_0.8      stringi_1.2.4     compiler_3.5.1   
+## [25] R.methodsS3_1.7.1 backports_1.1.2</code></pre>
+</div>
+
+      </div>
+    </div>
+  </div>
+
+  <hr/>
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'https-jslingsby-github-io';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  
+
+</div>
+
+          </div>
+        </div>
+        <div class="row site-footer">
+          <div class="col-md-12">
+            <div class="row">
+  <div class="col-md-12 footer-title">
+    <h2>
+      
+      <a href=""> Jasper Slingsby </a>
+      
+    </h2>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12 footer-menu">
+      <a href="/">Home /</a>
+      
+      
+      <a href="/about">about / </a>
+      
+      
+      
+      <a href="/contact">contact / </a>
+      
+      
+      
+      
+      
+      <a href="/publications">publications / </a>
+      
+      
+      
+      <a href="/research">research / </a>
+      
+      
+      
+      <a href="/students">students / </a>
+      
+      
+
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="social-media-block-footer">
+      
+      
+      
+      <a href="https://twitter.com/JasperSlingsby" data-animate-hover="pulse" class="external twitter">
+        <i class="fa fa-twitter"></i>
+      </a>
+      
+      
+      
+      <a href="mailto:jslingsby@gmail.com" data-animate-hover="pulse" class="email">
+        <i class="fa fa-envelope"></i>
+      </a>
+      
+      
+      
+      
+      <a href="https://github.com/jslingsby/" data-animate-hover="pulse">
+        <i class="fa fa-github"></i>
+      </a>
+      
+
+    </div>
+  </div>
+</div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.cookie.js"> </script>
+<script src="/js/ekko-lightbox.js"></script>
+<script src="/js/jquery.scrollTo.min.js"></script>
+<script src="/js/masonry.pkgd.min.js"></script>
+<script src="/js/imagesloaded.pkgd.min.js"></script>
+<script src="/js/owl.carousel.min.js"></script>
+<script src="/js/front.js"></script>
+
+  </body>
+</html>
