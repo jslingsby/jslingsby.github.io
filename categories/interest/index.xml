@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Interest on Jasper Slingsby</title>
+    <link>/categories/interest/</link>
+    <description>Recent content in Interest on Jasper Slingsby</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 03 Sep 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/interest/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Drought Monitor for the Jonkershoek Valley, Western Cape, South Africa</title>
+      <link>/post/2017-04-01-langrivier/</link>
+      <pubDate>Mon, 03 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2017-04-01-langrivier/</guid>
+      <description>This analysis was prepared by the Fynbos Node of the South African Environmental Observation Network (SAEON).
+Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of August 2018. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams.</description>
+    </item>
+    
+    <item>
+      <title>Alien VS Climate Change</title>
+      <link>/post/alienvspredator/</link>
+      <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/alienvspredator/</guid>
+      <description>The current drought experienced by Cape Town and surrounds has brought the issue of climate change to the fore in public discourse (if it wasn’t already). It’s discussed extensively in the media and plays a prominent role in the City’s Water Outlook 2018 Report (Version 25 - updated 20 May 2018) as motivation for the need for long term bulk water augmentation schemes.</description>
+    </item>
+    
+    <item>
+      <title>Fire!!!</title>
+      <link>/post/fire/</link>
+      <pubDate>Thu, 17 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/fire/</guid>
+      <description>This is an updated quick and dirty analysis of the CapeNature fire database (spanning 1927 to 2017) to see if the major drought that is currently being experienced in the Cape Floristic Region has had any impact on the occurrence or extent of wildfires. I first ran this analysis exactly a year ago and I think you’ll find the new year’s worth of data quite interesting.
+Wildfires are an essential component of fynbos, but components of the fire regime such as return interval need to be within certain bounds of variability to maintain healthy ecosystems.</description>
+    </item>
+    
+    <item>
+      <title>How much water are we losing to alien trees?</title>
+      <link>/post/aliens/</link>
+      <pubDate>Wed, 28 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/aliens/</guid>
+      <description>This post provides an interactive visualization of the results of Le Maitre et al. 2016. Estimates of the impacts of invasive alien plants on water flows in South Africa. Water SA Vol. 42 No. 4. It aims to highlight how much water could be reclaimed by clearing alien species from our catchments.
+The extreme drought that is gripping Cape Town and surrounds has municipalities desperately seeking options to augment bulk water supply.</description>
+    </item>
+    
+    <item>
+      <title>Near-real time satellite monitoring of fynbos vegetation</title>
+      <link>/post/emma/</link>
+      <pubDate>Tue, 31 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/emma/</guid>
+      <description>Update! We submitted this project for the UN Global Pulse Data for Climate Action competition and won the Thematic Award for Climate Mitigation at COP23 in Bonn, Germany! :)
+ Recent advances have seen the development of near-real time monitoring tools that report on the state and changes in vegetation based on satellite observations, e.g. globalforestwatch.org. These tools are hugely valuable for managing ecosystems and for developing the long term records required to understand ecosystem dynamics and trajectories of change.</description>
+    </item>
+    
+  </channel>
+</rss>

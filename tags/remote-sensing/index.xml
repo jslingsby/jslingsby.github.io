@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>remote sensing on Jasper Slingsby</title>
+    <link>/tags/remote-sensing/</link>
+    <description>Recent content in remote sensing on Jasper Slingsby</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 04 Apr 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/remote-sensing/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>MODIS and Landsat primer for Hannah</title>
+      <link>/post/modis-primer-for-hannah/</link>
+      <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/modis-primer-for-hannah/</guid>
+      <description>This is a quick primer on how to handle MODIS and Landsat NDVI data from Google Earth Engine (GEE) in R. It’s primarily for my Honours student, Hannah Simon, but I thought why not make it public for all to share? I first posted the MODIS section and had Hannah play with the Landsat data as a learning exercise, so full credit to her for the Landsat code.
+For a general introduction for many of the functions used and handling spatial data in general see A Primer for Handling Spatial Data in R posted previously.</description>
+    </item>
+    
+  </channel>
+</rss>

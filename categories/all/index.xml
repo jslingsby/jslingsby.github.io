@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>All on Jasper Slingsby</title>
+    <link>/categories/all/</link>
+    <description>Recent content in All on Jasper Slingsby</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 17 May 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/all/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Fire!!!</title>
+      <link>/post/fire/</link>
+      <pubDate>Thu, 17 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/fire/</guid>
+      <description>This is an updated quick and dirty analysis of the CapeNature fire database (spanning 1927 to 2017) to see if the major drought that is currently being experienced in the Cape Floristic Region has had any impact on the occurrence or extent of wildfires. I first ran this analysis exactly a year ago and I think you’ll find the new year’s worth of data quite interesting.
+Wildfires are an essential component of fynbos, but components of the fire regime such as return interval need to be within certain bounds of variability to maintain healthy ecosystems.</description>
+    </item>
+    
+  </channel>
+</rss>
