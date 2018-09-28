@@ -286,12 +286,12 @@ if (!doNotTrack) {
 <h2>Streamflow record</h2>
 <hr />
 <p>Here are the recent monthly streamflow values for Langrivier relative to averages across the entire time period (1961 to current).</p>
-<p><img src="/post/2017-04-01-Langrivier_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2017-04-01-langrivier_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Black error bars around the mean (grey column) indicate 95% confidence intervals. Monthly values lower than the lower bar are among the lowest 5% of recorded flows for that month. January, February, March and May 2017 are the lowest stream flows ever recorded for their respective months. Note that missing months (e.g. October-November 2015) are those that overlap a data gap of over 30 days.</p>
 <p>We can also view this cumulatively:</p>
-<p><img src="/post/2017-04-01-Langrivier_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2017-04-01-langrivier_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Or compare across all years on record:</p>
-<p><img src="/post/2017-04-01-Langrivier_files/figure-html/unnamed-chunk-5-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2017-04-01-langrivier_files/figure-html/unnamed-chunk-5-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>Note that the latest season is not yet complete. We just indicate it for reference. “Summer” denotes the Austral summer (here defined as October - March), overlapping 2 years. In this figure we have lumped summers by the preceding year, e.g. summer 2016 represents the period October 2016 to March 2017, which incidentally was the driest summer on record in terms of streamflow.</p>
 <p>*Data for October - December from the summer of 2015/2016 are missing due to vandalism of the weir, but January - March 2016 was among the lowest 10% of flows for that period, suggesting that 2015 was likely the driest year on record. Of those with complete data, 2003 was the driest year, followed by 1974.</p>
 <hr />
@@ -305,14 +305,14 @@ if (!doNotTrack) {
 <h2>Rainfall Record</h2>
 <hr />
 <p>Here are the recent monthly rainfall values relative to averages across the entire time period (1945 to current):</p>
-<p><img src="/post/2017-04-01-Langrivier_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2017-04-01-langrivier_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Black error bars around the mean (grey column) indicate 95% confidence intervals. Monthly values lower than the lower bar are among the lowest 5% of recorded flows for that month.</p>
 <p>*Indicates that these months were missing data in 2015 due to power supply problems.</p>
 <p><br></p>
 <p>And if we view this cumulatively:</p>
-<p><img src="/post/2017-04-01-Langrivier_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2017-04-01-langrivier_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Or compare across all years on record:</p>
-<p><img src="/post/2017-04-01-Langrivier_files/figure-html/unnamed-chunk-10-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2017-04-01-langrivier_files/figure-html/unnamed-chunk-10-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>So 2015 and 2016 have been the lowest rainfall years on record, while 2017 and 2014 were not far behind… Note that data for the period 1992-2013 were collected by volunteers and were not necessarily collected on the first of the month or every month, creating issues in the split between years and between summer vs winter data. This appears to be more of an issue in the 2000s. Nevertheless, the low rainfall reported for 2000-2004 does coincide with a period of low streamflow.</p>
 <p>Or dynamically:</p>
 <div id="htmlwidget-2" style="width:672px;height:480px;" class="dygraphs html-widget"></div>
@@ -327,11 +327,11 @@ if (!doNotTrack) {
 <hr />
 <p>There have been various calls for some sort of indication as to how streamflow responds to rainfall. We all want to know how much it needs to rain to fill the dams. While we don’t have a fully coupled atmosphere-hydrological model on hand, and we’re still reading up on the most appropriate time-series modelling approach (especially considering the data gaps…), here’re some quick and dirty indicators based on the periods of overlapping streamflow and rainfall data (1961 - 1991, 2013 - 2016).</p>
 <p>Firstly, cumulative monthly streamflow as a function of monthly rainfall:</p>
-<p><img src="/post/2017-04-01-Langrivier_files/figure-html/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2017-04-01-langrivier_files/figure-html/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p><br></p>
 <p>While it looks messy, one clear pattern is that a rainfall event in a winter month typically results in greater streamflow than a similar sized event in a summer month. This is especially evident if you compare large rainfall events in late summer/autumn (March, April, May) with those in winter (June, July, August). This is not surprising and likely a result of accumulated soil moisture (or lack thereof) throughout the season, while lower evapotranspiration in winter will also be coming into play.</p>
 <p>What does this look like if we aggregate months by season (following the Summer = October to March, Winter = April to September approach from above).</p>
-<p><img src="/post/2017-04-01-Langrivier_files/figure-html/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2017-04-01-langrivier_files/figure-html/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>The trend shows an inflection reflecting in increase in streamflow for a given unit of rainfall as the total amount of rainfall increases. This could relate to seasonal soil moisture accumulation, but may also relate to groundwater deficit over longer periods.</p>
 <p><br></p>
 <hr />
@@ -341,7 +341,7 @@ if (!doNotTrack) {
 <hr />
 <p>Finally, some data on what many of you have been asking for. Apologies for the delay!</p>
 <p>Here we present soil moisture data from soil moisture probes at three different depths (10, 20 and 30cm) at Dwarsberg from 2013 to current. Data are presented as Volumetric Water Content (VMC) converted to percentage.</p>
-<p><img src="/post/2017-04-01-Langrivier_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2017-04-01-langrivier_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Notice the late onset of wetter soils in 2015 and 2017. While this year has been better, it still looks more like 2016 (i.e. a dry year) than the wetter years (2013/14), despite having had much higher rainfall.</p>
 <p>I hope to add an analysis of monthly streamflow received for a given rainfall and soil moisture for this period soon, but that will have to wait for now. Another thing to think about is including evapotranspiration…</p>
 <p>Feel free to post comments/suggestions below!</p>
