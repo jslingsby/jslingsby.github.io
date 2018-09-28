@@ -1,173 +1,271 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head><meta charset="utf-8">
+<head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<script type="application/ld+json">
+    {
+        "@context" : "http://schema.org",
+        "@type" : "BlogPosting",
+        "mainEntityOfPage": {
+             "@type": "WebPage",
+             "@id": "/"
+        },
+        "articleSection" : "post",
+        "name" : "MODIS and Landsat primer for Hannah",
+        "headline" : "MODIS and Landsat primer for Hannah",
+        "description" : "This is a quick primer on how to handle MODIS and Landsat NDVI data from Google Earth Engine (GEE) in R. It’s primarily for my Honours student, Hannah Simon, but I thought why not make it public for all to share? I first posted the MODIS section and had Hannah play with the Landsat data as a learning exercise, so full credit to her for the Landsat code.
+For a general introduction for many of the functions used and handling spatial data in general see A Primer for Handling Spatial Data in R posted previously.",
+        "inLanguage" : "en",
+        "author" : "Jasper Slingsby",
+        "creator" : "Jasper Slingsby",
+        "publisher": "Jasper Slingsby",
+        "accountablePerson" : "Jasper Slingsby",
+        "copyrightHolder" : "Jasper Slingsby",
+        "copyrightYear" : "2017",
+        "datePublished": "2017-04-04 00:00:00 &#43;0000 UTC",
+        "dateModified" : "2017-04-04 00:00:00 &#43;0000 UTC",
+        "url" : "/post/modis-primer-for-hannah/",
+        "wordCount" : "3325",
+        "image" : //img/jonaskop_landsat.jpg",
+        "keywords" : [ "Blog" ]   
+    }
+    </script>
 
- <title>MODIS and Landsat primer for Hannah</title>
+
+ <title>MODIS and Landsat primer for Hannah </title>
 
 
+<meta name="description" content="Ecological research and global change in South Africa" />
 
-<meta name="description" content="Ecological research and global change in South Africa">
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="all,follow">
 <meta name="googlebot" content="index,follow,snippet,archive">
-
-<link rel="stylesheet" href="/css/bootstrap.min.css">
 <link rel="stylesheet" id="ct-tracks-google-fonts-css" href="//fonts.googleapis.com/css?family=Raleway%3A400%2C700&amp;subset=latin%2Clatin-ext&amp;ver=4.7.2" type="text/css" media="all">
-<link rel="stylesheet" href="/css/font-awesome.min.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css" type='text/css' media='all'>
 
-<link href="/css/style.default.css" rel="stylesheet" id="theme-stylesheet">
+<link href="/css/style.css" rel="stylesheet" id="theme-stylesheet" type='text/css' media='all'>
 
-<link href="/css/custom.css" rel="stylesheet">
-<link rel="shortcut icon" href="/img/favicon.png">
+<link href="/css/custom.css" rel="stylesheet" type='text/css' media='all'>
+<link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/img/favicon.ico" type="image/x-icon">
 
 
-<script>
-window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', 'UA-97038958-1', 'auto');
-ga('send', 'pageview');
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-97038958-1', 'auto');
+	
+	ga('send', 'pageview');
+}
 </script>
-<script async src='//www.google-analytics.com/analytics.js'></script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
 
 </head>
-  <body>
-    <div id="root">
-      <div class="container-fluid">
-        <div class="row site-header">
-          <div class="col-md-12">
-            <div class="row">
-              <div class="col-md-12 top-navigation">
-                <div class="row">
-  <div class="col-sm-6">
-    <div class="categories-block">
-      <a href="" class="track-categories">//</a>
-      
-      <a href="/categories/all">all</a>
-      
-      <a href="/categories/r-tutorials">r-tutorials</a>
-      
-      <a href="/categories/research">research</a>
-      
-    </div>
-  </div>
 
-  <div class="col-sm-6">
-    <div class="social-media-block">
 
-      
-      
-      
-      <a href="https://twitter.com/JasperSlingsby" data-animate-hover="pulse" class="external twitter">
-        <i class="fa fa-twitter"></i>
-      </a>
-      
-      
-      
-      <a href="mailto:jslingsby@gmail.com" data-animate-hover="pulse" class="email">
-        <i class="fa fa-envelope"></i>
-      </a>
-      
-      
-      
-      
-      <a href="https://github.com/jslingsby/" data-animate-hover="pulse">
-        <i class="fa fa-github"></i>
-      </a>
-      
+<body class="post-template-default single single-post single-format-standard ct-body singular singular-post not-front standard">
 
-    </div>
-  </div>
-</div>
+  <div id="overflow-container" class="overflow-container">
+    <a class="skip-content" href="#main">Skip to content</a>
+    <header id="site-header" class="site-header" role="banner">
+      <div class='top-navigation'>
+        <div class='container'>
 
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-10 header col-md-offset-1">
-                <div class="row">
-  <div class="col-md-6">
-    <div class="title-info">
-      
-      <a href=""> Jasper Slingsby </a>
-      
-    </div>
-  </div>
-  <div class="col-md-6">
+  <div id="menu-secondary" class="menu-container menu-secondary" role="navigation">
+    <button id="toggle-secondary-navigation" class="toggle-secondary-navigation"><i class="fa fa-plus"></i></button>
+
     <div class="menu">
-      <a href="/">Home /</a>
-      
-      
-      <a href="/about">about / </a>
-      
-      
-      
-      <a href="/contact">contact / </a>
-      
-      
-      
-      
-      
-      <a href="/publications">publications / </a>
-      
-      
-      
-      <a href="/research">research / </a>
-      
-      
-      
-      <a href="/students">students / </a>
-      
-      
+
+      <ul id="menu-secondary-items" class="menu-secondary-items">
+        
+        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
+          <a href="/categories/interest">Interest</a>
+        </li>
+        
+        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
+          <a href="/categories/r-tutorials">R Tutorials</a>
+        </li>
+        
+        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
+          <a href="/categories/research">Research</a>
+        </li>
+        
+
+      </ul>
+
     </div>
+
   </div>
 
-</div>
+
+  <ul class="social-media-icons">
 
 
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-10 main-content col-md-offset-1">
-            
+    
 
-<div class="col-md-12 entry">
-  <div class="row">
-    <div class="col-md-12">
-      <div class="entry-meta">
-        4 April 2017
+    
+
+    
+    <li>
+      <a href="https://twitter.com/JasperSlingsby" data-animate-hover="pulse" class="twitter" target="_blank">
+        <i class="fa fa-twitter-square" title="twitter"></i>
+        <span class="screen-reader-text">twitter</span>
+      </a>
+    </li>
+    
+
+    
+
+    
+    <li>
+      <a href="mailto:jslingsby@gmail.com" data-animate-hover="pulse" class="email">
+        <i class="fa fa-envelope" title="email"></i>
+        <span class="screen-reader-text">email</span>
+      </a>
+    </li>
+    
+
+    
+
+    
+
+
+    
+    <li>
+      <a href="https://github.com/jslingsby/" data-animate-hover="pulse" class="github" target="_blank">
+        <i class="fa fa-github" title="github"></i>
+        <span class="screen-reader-text">github</span>
+      </a>
+    </li>
+    
+
+
+    
+
+    
+    <li>
+      <a href="/index.xml" data-animate-hover="pulse" class="rss" target="_blank">
+        <i class="fa fa-rss" title="rss"></i>
+        <span class="screen-reader-text">rss</span>
+      </a>
+    </li>
+    
+
+
+  </ul></div>
+
       </div>
+
+      <div class="container">
+        <div id="title-info" class="title-info">
+  <div id='site-title' class='site-title'>
+    
+    <a href="/"> Jasper Slingsby </a>
     </div>
   </div>
-  <div class="row">
-    <div class="col-md-12">
-      <div class="entry-header">
-       MODIS and Landsat primer for Hannah
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      <div class="entry-sidebar">
-        CATEGORIES
-        <div class="entry-categories">
-          <a href="">All</a>
-        </div>
+  <button id="toggle-navigation" class="toggle-navigation">
+    <i class="fa fa-bars"></i>
+  </button>
 
-        Tags
-        <div class="entry-tags">
-          <a href="">All</a>
-        </div>
-      </div>
+  <div id="menu-primary-tracks" class="menu-primary-tracks"></div>
+  <div id="menu-primary" class="menu-container menu-primary" role="navigation">
+    
+    <p class="site-description">Ecologist</p>
+    
+
+    <div class="menu">
+      <ul id="menu-primary-items" class="menu-primary-items">
+        
+        
+        <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page '>
+          <a href="/">Home</a>
+          
+        </li>
+        
+        <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page '>
+          <a href="/about/">About</a>
+          
+        </li>
+        
+        <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page '>
+          <a href="/research/">Research</a>
+          
+        </li>
+        
+        <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page '>
+          <a href="/students/">Students</a>
+          
+        </li>
+        
+        <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page '>
+          <a href="/publications/">Publications</a>
+          
+        </li>
+        
+        <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page '>
+          <a href="/contact/">Contact</a>
+          
+        </li>
+        
+      </ul>
     </div>
-    <div class="col-md-10">
-      <div class="entry-content">
-        <p>This is a quick primer on how to handle MODIS and Landsat NDVI data from <a href="https://earthengine.google.com/"><strong>Google Earth Engine (GEE)</strong></a> in R. It’s primarily for my Honours student, Hannah Simon, but I thought why not make it public for all to share? I first posted the MODIS section and had Hannah play with the Landsat data as a learning exercise, so full credit to her for the Landsat code.</p>
+
+  </div>
+
+      </div>
+    </header>
+
+    <div id="main" class="main" role="main">
+
+      
+  
+  
+    
+  
+  
+  <div id="loop-container" class="loop-container">
+    
+    <div class="post type-post status-publish format-standard has-post-thumbnail hentry category-design tag-design tag-standard-2 tag-tagalicious tag-travel entry full-without-featured odd excerpt-1">
+
+      <div class='featured-image lazy lazy-bg-image'  data-background="/img/jonaskop_landsat.jpg">
+      </div>
+      
+        <div class="entry-meta">
+          <span class="date">04 April</span>	<span> / </span>
+
+          <span class="author">
+            <a href="/" title="Posts by " rel="author"></a>
+          </span>
+
+
+          
+          <span class="category">
+            <span> / </span>
+
+            <a href="/categories/R%20Tutorials">R Tutorials</a>
+          </span>
+          
+          <span class="category">
+            <span> / </span>
+
+            <a href="/categories/Research">Research</a>
+          </span>
+          
+
+
+        </div>
+        <div class='entry-header'>
+          <h1 class='entry-title'> MODIS and Landsat primer for Hannah</h1>
+        </div>
+        <div class="entry-container">
+          <div class="entry-content">
+            <article>
+              <p>This is a quick primer on how to handle MODIS and Landsat NDVI data from <a href="https://earthengine.google.com/"><strong>Google Earth Engine (GEE)</strong></a> in R. It’s primarily for my Honours student, Hannah Simon, but I thought why not make it public for all to share? I first posted the MODIS section and had Hannah play with the Landsat data as a learning exercise, so full credit to her for the Landsat code.</p>
 <p>For a general introduction for many of the functions used and handling spatial data in general see <a href="https://jslingsby.github.io/post/2017-04-01-PrimerSpatialData/"><strong>A Primer for Handling Spatial Data in R</strong></a> posted previously.</p>
 <p>We start by getting the necessary libraries:</p>
-<p><br></p>
 <pre class="r"><code>#Get libraries
 library(raster) #to handle rasters</code></pre>
 <pre><code>## Loading required package: sp</code></pre>
@@ -185,12 +283,9 @@ library(ggplot2) #for pretty plotting
 library(animation) #for silly animations
 
 datwd &lt;- &quot;/Users/jasper/Documents/GIS/CFR/MODISforHannah/&quot;</code></pre>
-<p><br></p>
 <p>Now let’s start with…</p>
-<p><br></p>
 <div id="modis" class="section level2">
 <h2>MODIS</h2>
-<p><br></p>
 <pre class="r"><code>#Get data
 mNDVI &lt;- stack(paste0(datwd, &quot;2017043_MODIS_v1g_JNP_MOD_NDVI.tif&quot;)) #Note that the file has multiple bands so stack() is the easiest way to read all bands
 
@@ -203,9 +298,7 @@ mNDVI #See what the data look like</code></pre>
 ## names       : X2017043_//MOD_NDVI.1, X2017043_//MOD_NDVI.2, X2017043_//MOD_NDVI.3, X2017043_//MOD_NDVI.4, X2017043_//MOD_NDVI.5, X2017043_//MOD_NDVI.6, X2017043_//MOD_NDVI.7, X2017043_//MOD_NDVI.8, X2017043_//MOD_NDVI.9, X2017043_//OD_NDVI.10, X2017043_//OD_NDVI.11, X2017043_//OD_NDVI.12, X2017043_//OD_NDVI.13, X2017043_//OD_NDVI.14, X2017043_//OD_NDVI.15, ... 
 ## min values  :                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768, ... 
 ## max values  :                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767, ...</code></pre>
-<p><br></p>
 <p>So we’ve pulled in the full record of NDVI from the “MODIS/MOD13Q1 16-day composite vegetation indices” product from the dawn of time (i.e. the 18th February 2000) until as recent as possible (6th March 2017), but you’ll notice the names in the raster, e.g. X2017043_MODIS_v1g_JNP_MOD_NDVI.1 aren’t very informative, simply numbering the layers from 1 to 393, but not giving us the dates… For some reason I still haven’t worked out how to embed the dates in the .tif raster exported from GEE, so I save them manually from the console into a text file (stone age, I know, sorry…).</p>
-<p><br></p>
 <pre class="r"><code>metdat &lt;- read.delim(paste0(datwd, &quot;MODIS_metadata.txt&quot;), sep = &quot; &quot;, header = F)
 
 head(metdat)</code></pre>
@@ -216,23 +309,17 @@ head(metdat)</code></pre>
 ## 4 3: Image MODIS/MOD13Q1/MOD13Q1_005_2000_04_06 (1 band)
 ## 5 4: Image MODIS/MOD13Q1/MOD13Q1_005_2000_04_22 (1 band)
 ## 6 5: Image MODIS/MOD13Q1/MOD13Q1_005_2000_05_08 (1 band)</code></pre>
-<p><br></p>
 <p>Still not pretty, but getting closer…</p>
-<p><br></p>
 <pre class="r"><code>date &lt;- substr(metdat[,3], start = 27, stop = 37)
 date[1:5]</code></pre>
 <pre><code>## [1] &quot;2000_02_18&quot; &quot;2000_03_05&quot; &quot;2000_03_21&quot; &quot;2000_04_06&quot; &quot;2000_04_22&quot;</code></pre>
-<p><br></p>
 <p>With a bit of squint-counting and trial and error we manage to use substr() to extract the dates!</p>
 <p>But for R to treat them as dates we need to tell it they are dates with as.Date(), and specify the date format (see ?strptime).</p>
-<p><br></p>
 <pre class="r"><code>date &lt;- as.Date(date, format = &quot;%Y_%m_%d&quot;)
 date[1:5]</code></pre>
 <pre><code>## [1] &quot;2000-02-18&quot; &quot;2000-03-05&quot; &quot;2000-03-21&quot; &quot;2000-04-06&quot; &quot;2000-04-22&quot;</code></pre>
-<p><br></p>
 <p>Et voilà!</p>
 <p>So we now have a stack of MODIS NDVI images through time, and we know their dates. We can embed the dates into the raster like so:</p>
-<p><br></p>
 <pre class="r"><code>names(mNDVI) &lt;- date
 
 mNDVI #Have another look at the data</code></pre>
@@ -244,25 +331,19 @@ mNDVI #Have another look at the data</code></pre>
 ## names       : X2000.02.18, X2000.03.05, X2000.03.21, X2000.04.06, X2000.04.22, X2000.05.08, X2000.05.24, X2000.06.09, X2000.06.25, X2000.07.11, X2000.07.27, X2000.08.12, X2000.08.28, X2000.09.13, X2000.09.29, ... 
 ## min values  :      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768,      -32768, ... 
 ## max values  :       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767,       32767, ...</code></pre>
-<p><br></p>
 <p>Great! But now you’ll notice that the min and max values are rather strange (-32767 to 32767) when we know that NDVI can only range from -1 to 1, and rarely goes below 0. Very strange! Let’s have a look at our first image.</p>
-<p><br></p>
 <pre class="r"><code>plot(mNDVI[[1]])</code></pre>
 <p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<p><br></p>
 <p>0 to 4000? Even stranger!</p>
 <p>It turns out the issue is that GEE has exported the data in what appears to be a strange format to reduce the file size. We need to tell R how to interpret it by setting a gain and offset.</p>
-<p><br></p>
 <pre class="r"><code>NAvalue(mNDVI)=-32767
 offs(mNDVI)=0
 gain(mNDVI)=.0001
 plot(mNDVI[[1]])</code></pre>
 <p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
-<p><br></p>
 <p>Much more reasonable!</p>
 <p>Ok, so now we can begin to look at our questions; namely, how does MODIS NDVI vary in space and time?</p>
 <p>But first, we should set our focal area.</p>
-<p><br></p>
 <pre class="r"><code>site &lt;- readOGR(dsn=paste0(datwd, &quot;Jonaskop 120m.kml&quot;), layer=&quot;Jonaskop 120m.kml&quot;) # A Google Earth KML file</code></pre>
 <pre><code>## OGR data source with driver: KML 
 ## Source: &quot;/Users/jasper/Documents/GIS/CFR/MODISforHannah/Jonaskop 120m.kml&quot;, layer: &quot;Jonaskop 120m.kml&quot;
@@ -275,22 +356,16 @@ plot(mNDVI[[1]])</code></pre>
 plot(mNDVI[[1]])
 plot(site, add=T)</code></pre>
 <p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<p><br></p>
 <p>It looks like we’re wrangling a lot more MODIS data than we need to. Let’s crop to out focal area…</p>
-<p><br></p>
 <pre class="r"><code>mNDVI &lt;- crop(mNDVI, site, snap = &quot;out&quot;) #&quot;snap=&quot;out&quot;&quot; adds a buffer around the site
 
 plot(mNDVI[[1]])
 plot(site, add=T)</code></pre>
 <p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<p><br></p>
 <p>…and look at a few images through time.</p>
-<p><br></p>
 <pre class="r"><code>plot(mNDVI) #Note that R limits it to the first 16 images</code></pre>
 <p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<p><br></p>
 <p>Lots of variation in space! What about time?</p>
-<p><br></p>
 <pre class="r"><code>if(!file.exists(&quot;/Users/jasper/GIT/jslingsby.github.io_local/static/img/output/mNDVI.gif&quot;)) { # Check if the file exists
   saveGIF({
     for (i in 1:dim(mNDVI)[3]) plot(mNDVI[[i]],
@@ -306,10 +381,8 @@ plot(site, add=T)</code></pre>
 <img src="/img/output/mNDVI.gif" />
 
 </div>
-<p><br></p>
 <p>*NOTE: this writes a .gif to file and does not render in R (or R notebook), so I had to insert it in the Markdown script.</p>
 <p>You could make it a lot prettier, but still pretty fancy. Not very useful for the print edition though. How about just a simple line graph? this requires extracting the data to a data.frame.</p>
-<p><br></p>
 <pre class="r"><code>dat &lt;- as.data.frame(mNDVI)
 
 dat[1:10,1:10] #look at the data</code></pre>
@@ -335,9 +408,7 @@ dat[1:10,1:10] #look at the data</code></pre>
 ## 8       0.4885      0.4913      0.4616      0.4300
 ## 9       0.4318      0.4589      0.4908      0.4363
 ## 10      0.4212      0.4413      0.4697      0.4489</code></pre>
-<p><br></p>
 <p>So each date is a column and each cell in space is a row in our data frame. This isn’t ideal for plotting so let’s reshape the data into long format.</p>
-<p><br></p>
 <pre class="r"><code>rownames(dat) &lt;- paste0(&quot;A&quot;,1:20) #Add dummy column labels
 
 dat &lt;- as.data.frame(t(dat)) #transpose data.frame
@@ -354,23 +425,16 @@ head(dat)</code></pre>
 ## 4 2000-04-06       A1 0.3743
 ## 5 2000-04-22       A1 0.3979
 ## 6 2000-05-08       A1 0.3902</code></pre>
-<p><br></p>
 <p>Now let’s make some pretty pictures!</p>
-<p><br></p>
 <pre class="r"><code>ggplot(data = dat, aes(x = Date, y = value, colour = variable)) + geom_line()</code></pre>
 <p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
-<p><br></p>
 <p>Pretty neat! It looks like our site burnt in the summer of 2000/2001. Now let’s split them up.</p>
-<p><br></p>
 <pre class="r"><code>ggplot(data = dat, aes(x = Date, y = value, colour = variable)) + geom_line() + facet_wrap(~variable)</code></pre>
 <p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
-<p><br></p>
 <p>Well there’s definitely clear seasonality and, while subtle, there are differences among the cells. What do we see with…</p>
-<p><br></p>
 </div>
 <div id="landsat" class="section level2">
 <h2>Landsat</h2>
-<p><br></p>
 <p>First we read in the full record of data for Landsat 8 for our area of interest.</p>
 <pre class="r"><code>lsNDVI &lt;- stack(paste0(datwd,&quot;Landsat/2017045_v1_LC8_L1T_TOA_Jonaskop_daily__2013-04-15-2017-03-25.tif&quot;)) #note that I have used LC8 (LandSat 8)
 lsNDVI</code></pre>
@@ -382,9 +446,7 @@ lsNDVI</code></pre>
 ## names       : X2017045_//17.03.25.1, X2017045_//17.03.25.2, X2017045_//17.03.25.3, X2017045_//17.03.25.4, X2017045_//17.03.25.5, X2017045_//17.03.25.6, X2017045_//17.03.25.7, X2017045_//17.03.25.8, X2017045_//17.03.25.9, X2017045_//7.03.25.10, X2017045_//7.03.25.11, X2017045_//7.03.25.12, X2017045_//7.03.25.13, X2017045_//7.03.25.14, X2017045_//7.03.25.15, ... 
 ## min values  :                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768,                -32768, ... 
 ## max values  :                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767,                 32767, ...</code></pre>
-<p><br></p>
 <p>Then the metadata with dates.</p>
-<p><br></p>
 <pre class="r"><code>metdat2 &lt;- read.delim(paste0(datwd,&quot;Landsat/LC8_L1T_TOA_metadata.txt&quot;), sep = &quot; &quot;, header = F) 
 head(metdat2) #first few rows of metdat</code></pre>
 <pre><code>##   V1         V2
@@ -402,45 +464,32 @@ head(metdat2) #first few rows of metdat</code></pre>
 ## 152 151: 2017-03-09
 ## 153 152: 2017-03-16
 ## 154 153: 2017-03-25</code></pre>
-<p><br></p>
 <p>Extract the dates, embed into the raster and have a look at the first scene.</p>
-<p><br></p>
 <pre class="r"><code>date2 &lt;- substr(metdat2[,2], start = 0, stop = 10) #will extract YYYY_MM_DD
 names(lsNDVI) &lt;- date2 #assign the date to the &#39;names&#39; of each NDVI value
 plot(lsNDVI[[1]]) </code></pre>
 <p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
-<p><br></p>
 <p>Looks good, but the scale’s all wrong again, so we need to fix the gain and offset</p>
-<p><br></p>
 <pre class="r"><code>NAvalue(lsNDVI)=0
 offs(lsNDVI)=-1.5
 gain(lsNDVI)=.001
 plot(lsNDVI[[1]])
 plot(site, add=T)</code></pre>
 <p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
-<p><br></p>
 <p>Better! But still suspiscious… Note that I hacked the offset at -1.5 (it’s usually 2) I’ll need to recheck what the gain and offset values should be and fix this later…</p>
-<p><br></p>
 <p>Now let’s zoom in on our focal site</p>
-<p><br></p>
 <pre class="r"><code>lsNDVI &lt;- crop(lsNDVI, site, snap = &quot;out&quot;) #&quot;snap=&quot;out&quot;&quot; adds a buffer around the site
 
 plot(lsNDVI[[1]])
 plot(site, add=T)</code></pre>
 <p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
-<p><br></p>
 <p>Now let’s have a look at the variation in both space and time.</p>
-<p><br></p>
 <pre class="r"><code>plot(lsNDVI)</code></pre>
 <p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
-<p><br></p>
 <p>Lots of errors because of NA’s! It looks like some scenes are empty, while others are dominated by cloud (we applied a cloud masking algorithm in GEE). We’ll need to get rid of these. Note that this isn’t a problem with the MODIS data, because the MODIS data are an 8-day composite based on 2 scenes per day (i.e the choice of 16 scenes to make up one complete one). We can easily exclude the blank Landsat scenes by identifying those with NA values only (if the minimum or maximum value is NA, then there are no values other than NA).</p>
-<p><br></p>
 <pre class="r"><code>metdat2 &lt;- metdat2[-which(is.na(minValue(lsNDVI))),] #Drop empty scenes from metadata
 lsNDVI &lt;- lsNDVI[[-which(is.na(minValue(lsNDVI)))]] #Drop empty scenes from rasterStack</code></pre>
-<p><br></p>
 <p>Now we can look at variation through time using an animation as we did before. Note that in the previous plots the colour range varies. For the animation we need to set a fixed colour range so that a particular shade of green or yellow represents the same value across scenes. For the Landsat data these range from 0.255 to 0.555</p>
-<p><br></p>
 <pre class="r"><code>if(!file.exists(&quot;/Users/jasper/GIT/jslingsby.github.io_local/static/img/output/lsNDVI.gif&quot;)) { # Check if the file exists
   saveGIF({
     for (i in 1:dim(lsNDVI)[3]) plot(lsNDVI[[i]],
@@ -456,11 +505,8 @@ lsNDVI &lt;- lsNDVI[[-which(is.na(minValue(lsNDVI)))]] #Drop empty scenes from r
 <img src="/img/output/lsNDVI.gif" />
 
 </div>
-<p><br></p>
 <p>Looks like there’s generally lower NDVI in the lower righthand corner parhaps?</p>
-<p><br></p>
 <p>Let’s look at some time-series graphs. First the data wrangling, then plotting; following just about the same formula as for the MODIS data.</p>
-<p><br></p>
 <pre class="r"><code>ldat &lt;- as.data.frame(lsNDVI)
 
 #ldat[1:10,1:10] #look at the data
@@ -481,12 +527,9 @@ NDVIplot2 &lt;- ggplot(data = ldat, aes(x = Date, y = NDVI.Value, colour = Pixel
 
 NDVIplot2 </code></pre>
 <p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
-<p><br></p>
 <p>So we still pick up some nice seasonality! Note this is “zoom in” on just the last ~4 years. It is a bit messy with all &gt;800 pixels though, so let’s select just a few.</p>
-<p><br></p>
 <p>Converting a rasterStack into a data.frame fills the dataframe with raster cell values by row from left to right and numbers them. We know there are 28 rows and 31 columns (= 868 pixels), so we can use this to sample cells of interest.</p>
 <p>This is how the grid is numbered:</p>
-<p><br></p>
 <pre class="r"><code>matrix(1:868, 28, 31, byrow = T)</code></pre>
 <pre><code>##       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
 ##  [1,]    1    2    3    4    5    6    7    8    9    10    11    12    13
@@ -575,9 +618,7 @@ NDVIplot2 </code></pre>
 ## [26,]   800   801   802   803   804   805   806
 ## [27,]   831   832   833   834   835   836   837
 ## [28,]   862   863   864   865   866   867   868</code></pre>
-<p><br></p>
 <p>So let’s take a few from the bottom right (where the NDVI is generally low):</p>
-<p><br></p>
 <pre class="r"><code>lowc &lt;- c(614, 617, 707, 710)
 highc &lt;- c(128, 131, 221, 224)
 
@@ -588,124 +629,219 @@ NDVIplot_low &lt;- ggplot(data = lowdat, aes(x = Date, y = NDVI.Value, colour = 
 
 NDVIplot_low </code></pre>
 <p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
-<p><br></p>
 <p>And a few from the top left (where the NDVI is generally high):</p>
-<p><br></p>
 <pre class="r"><code>NDVIplot_high &lt;- ggplot(data = highdat, aes(x = Date, y = NDVI.Value, colour = Pixel.Number)) + geom_line() #+ theme(legend.position=&quot;none&quot;) #remove legend as plot space cannot accommodate it - there are &gt;800 pixels!
 
 NDVIplot_high</code></pre>
 <p><img src="/post/2017-04-03-modis-primer-for-hannah_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 </div>
 
-      </div>
-    </div>
-  </div>
+            </article>
+          </div>
+          
+      <div class='entry-meta-bottom'>
+        
 
-  <hr/>
-  <div id="disqus_thread"></div>
-<script type="text/javascript">
-
-(function() {
+  <div class="entry-categories"><p><span>Categories</span>
     
-    
-    if (window.location.hostname == "localhost")
-        return;
+    <a href="/categories/r-tutorials" title="View all posts in R Tutorials">R Tutorials</a>
+    <a href="/categories/research" title="View all posts in Research">Research</a>
+  </p>
+</div>
 
-    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-    var disqus_shortname = 'https-jslingsby-github-io';
-    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-})();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+<div class="entry-tags"><p><span>Tags</span>
   
 
+</p></div>	</div>
+
+	
+<div class="author-meta">
+
+  <div class="author">
+    	
+      <img alt='Jasper Slingsby' src="https://www.gravatar.com/avatar/10b0f8bbf16f471dc5acc8a221ad4a52?s=100&d=identicon" class='avatar avatar-72 photo' height='72' width='72'>
+    
+    <span>
+      Written by:<a href="http://ecologi.st/" title="Posts by Jasper Slingsby" rel="author">Jasper Slingsby</a> </span>
+    </div>
+    <div class="bio">
+      
+      
+      <p>An ecologist working on global change in terrestrial ecosystems.</p>
+      
+      
+	
+
+
+
+
+
+
+<a class="twitter" target="_blank"
+href="https://twitter.com/JasperSlingsby">
+<i class="fa fa-twitter-square"
+title="twitter icon"></i>
+</a>
+
+
+
+
+<a class="email" target="_blank"
+href="mailto:jslingsby@gmail.com">
+<i class="fa fa-envelope"
+title="email icon"></i>
+</a>
+
+
+
+
+
+
+
+<a class="github" target="_blank"
+href="https://github.com/jslingsby/">
+<i class="fa fa-github"
+title="github icon"></i>
+</a>
+
+
+
+
+
+
+
+</div>
 </div>
 
-          </div>
-        </div>
-        <div class="row site-footer">
-          <div class="col-md-12">
-            <div class="row">
-  <div class="col-md-12 footer-title">
-    <h2>
-      
-      <a href=""> Jasper Slingsby </a>
-      
-    </h2>
-  </div>
 </div>
-<div class="row">
-  <div class="col-md-12 footer-menu">
-      <a href="/">Home /</a>
-      
-      
-      <a href="/about">about / </a>
-      
-      
-      
-      <a href="/contact">contact / </a>
-      
-      
-      
-      
-      
-      <a href="/publications">publications / </a>
-      
-      
-      
-      <a href="/research">research / </a>
-      
-      
-      
-      <a href="/students">students / </a>
-      
-      
+</div>
 
-  </div>
+<section id="comments" class="comments">
+  <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-jslingsby-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  
+
+
+
+
+</section>
 </div>
-<div class="row">
-  <div class="col-sm-12">
-    <div class="social-media-block-footer">
-      
-      
-      
-      <a href="https://twitter.com/JasperSlingsby" data-animate-hover="pulse" class="external twitter">
-        <i class="fa fa-twitter"></i>
-      </a>
-      
-      
-      
-      <a href="mailto:jslingsby@gmail.com" data-animate-hover="pulse" class="email">
-        <i class="fa fa-envelope"></i>
-      </a>
-      
-      
-      
-      
-      <a href="https://github.com/jslingsby/" data-animate-hover="pulse">
-        <i class="fa fa-github"></i>
-      </a>
-      
+
+ 
+
+
 
     </div>
+
+    <footer id="site-footer" class="site-footer" role="contentinfo">
+	<h1>
+    
+    <a href=""> Jasper Slingsby </a>
+    
+	</h1>
+
+			
+			<p class="site-description">Ecologist</p>
+			
+
+		<div id="menu-footer" class="menu-container menu-footer" role="navigation">
+		<div class="menu">
+
+      <ul id="menu-footer-items" class="menu-footer-items">
+        
+</ul>
+
+</div>	</div>
+
+<ul class="social-media-icons">
+
+        
+
+        
+
+
+        
+        <li>
+        <a href="https://twitter.com/JasperSlingsby"  class="twitter" target="_blank">
+            <i class="fa fa-twitter-square" title="twitter"></i>
+            <span class="screen-reader-text">twitter</span>
+        </a>
+        </li>
+        
+
+        
+
+        
+        <li>
+        <a href="mailto:jslingsby@gmail.com"  class="email">
+            <i class="fa fa-envelope" title="email"></i>
+            <span class="screen-reader-text">email</span>
+        </a>
+        </li>
+        
+
+        
+
+        
+
+
+        
+        <li>
+        <a href="https://github.com/jslingsby/"  class="github" target="_blank">
+            <i class="fa fa-github" title="github"></i>
+            <span class="screen-reader-text">github</span>
+        </a>
+        </li>
+        
+
+
+        
+
+        
+        <li>
+        <a href="/index.xml" data-animate-hover="pulse" class="rss" target="_blank">
+            <i class="fa fa-rss" title="rss"></i>
+            <span class="screen-reader-text">rss</span>
+        </a>
+        </li>
+        
+
+				</ul>	<div class="design-credit">
+		
+		<p>&copy; 2018 Jasper Slingsby</p>
+		
+		<p>Nederburg Hugo Theme by <a href="https://appernetic.io">Appernetic</a>.</p>
+		
+		<p>A port of Tracks by Compete Themes.</p>
+		
+	</div>
+</footer>
+
   </div>
-</div>
+  <script src="/js/jquery.min.js"></script>
+<script src="/js/jquerymigrate.js"></script>
+<script src="/js/production.min.js"></script>
 
-          </div>
-        </div>
-      </div>
-    </div>
-    <script src="/js/jquery.min.js"></script>
-<script src="/js/bootstrap.min.js"></script>
-<script src="/js/jquery.cookie.js"> </script>
-<script src="/js/ekko-lightbox.js"></script>
-<script src="/js/jquery.scrollTo.min.js"></script>
-<script src="/js/masonry.pkgd.min.js"></script>
-<script src="/js/imagesloaded.pkgd.min.js"></script>
-<script src="/js/owl.carousel.min.js"></script>
-<script src="/js/front.js"></script>
-
-  </body>
+</body>
 </html>

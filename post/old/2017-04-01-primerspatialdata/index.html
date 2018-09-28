@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<script type="application/ld+json">
+    {
+        "@context" : "http://schema.org",
+        "@type" : "BlogPosting",
+        "mainEntityOfPage": {
+             "@type": "WebPage",
+             "@id": "/"
+        },
+        "articleSection" : "post",
+        "name" : "Handling Spatial Data in R - #1. Getting started",
+        "headline" : "Handling Spatial Data in R - #1. Getting started",
+        "description" : "Installing R (and RStudio) CRAN Spatial Task Views!!! Useful DIY resources   Points, lines, polygons and rasters - R can handle them all. My aim for this post is to give you the basics required to teach yourself spatial data analysis in R - following 3 major sections listed above.
+In the next post I provide a practical example working with point, line, polygon and raster data. If you’re already familiar with R then you can skip straight there, but you may be interested to check out the useful DIY resources before you go.",
+        "inLanguage" : "en",
+        "author" : "Jasper Slingsby",
+        "creator" : "Jasper Slingsby",
+        "publisher": "Jasper Slingsby",
+        "accountablePerson" : "Jasper Slingsby",
+        "copyrightHolder" : "Jasper Slingsby",
+        "copyrightYear" : "2018",
+        "datePublished": "2018-08-28 00:00:00 &#43;0000 UTC",
+        "dateModified" : "2018-08-28 00:00:00 &#43;0000 UTC",
+        "url" : "/post/old/2017-04-01-primerspatialdata/",
+        "wordCount" : "639",
+        "image" : //img/kogelberg_map.jpg",
+        "keywords" : [ "Blog" ]   
+    }
+    </script>
+
+
+ <title>Handling Spatial Data in R - #1. Getting started </title>
+
+
+<meta name="description" content="Ecological research and global change in South Africa" />
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="all,follow">
+<meta name="googlebot" content="index,follow,snippet,archive">
+<link rel="stylesheet" id="ct-tracks-google-fonts-css" href="//fonts.googleapis.com/css?family=Raleway%3A400%2C700&amp;subset=latin%2Clatin-ext&amp;ver=4.7.2" type="text/css" media="all">
+<link rel="stylesheet" href="/css/font-awesome.min.css" type='text/css' media='all'>
+
+<link href="/css/style.css" rel="stylesheet" id="theme-stylesheet" type='text/css' media='all'>
+
+<link href="/css/custom.css" rel="stylesheet" type='text/css' media='all'>
+<link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/img/favicon.ico" type="image/x-icon">
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-97038958-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+</head>
+
+
+<body class="post-template-default single single-post single-format-standard ct-body singular singular-post not-front standard">
+
+  <div id="overflow-container" class="overflow-container">
+    <a class="skip-content" href="#main">Skip to content</a>
+    <header id="site-header" class="site-header" role="banner">
+      <div class='top-navigation'>
+        <div class='container'>
+
+  <div id="menu-secondary" class="menu-container menu-secondary" role="navigation">
+    <button id="toggle-secondary-navigation" class="toggle-secondary-navigation"><i class="fa fa-plus"></i></button>
+
+    <div class="menu">
+
+      <ul id="menu-secondary-items" class="menu-secondary-items">
+        
+        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
+          <a href="/categories/all">All</a>
+        </li>
+        
+        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
+          <a href="/categories/r">R</a>
+        </li>
+        
+        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
+          <a href="/categories/r-tutorials">R Tutorials</a>
+        </li>
+        
+        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
+          <a href="/categories/code">code</a>
+        </li>
+        
+        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
+          <a href="/categories/design">design</a>
+        </li>
+        
+        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
+          <a href="/categories/photography">photography</a>
+        </li>
+        
+        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item">
+          <a href="/categories/travel">travel</a>
+        </li>
+        
+
+      </ul>
+
+    </div>
+
+  </div>
+
+
+  <ul class="social-media-icons">
+
+
+    
+
+    
+
+    
+    <li>
+      <a href="https://twitter.com/JasperSlingsby" data-animate-hover="pulse" class="twitter" target="_blank">
+        <i class="fa fa-twitter-square" title="twitter"></i>
+        <span class="screen-reader-text">twitter</span>
+      </a>
+    </li>
+    
+
+    
+
+    
+    <li>
+      <a href="mailto:jslingsby@gmail.com" data-animate-hover="pulse" class="email">
+        <i class="fa fa-envelope" title="email"></i>
+        <span class="screen-reader-text">email</span>
+      </a>
+    </li>
+    
+
+    
+
+    
+
+
+    
+    <li>
+      <a href="https://github.com/jslingsby/" data-animate-hover="pulse" class="github" target="_blank">
+        <i class="fa fa-github" title="github"></i>
+        <span class="screen-reader-text">github</span>
+      </a>
+    </li>
+    
+
+
+    
+
+    
+    <li>
+      <a href="/index.xml" data-animate-hover="pulse" class="rss" target="_blank">
+        <i class="fa fa-rss" title="rss"></i>
+        <span class="screen-reader-text">rss</span>
+      </a>
+    </li>
+    
+
+
+  </ul></div>
+
+      </div>
+
+      <div class="container">
+        <div id="title-info" class="title-info">
+  <div id='site-title' class='site-title'>
+    
+    <a href="/"> Jasper Slingsby </a>
+    </div>
+  </div>
+  <button id="toggle-navigation" class="toggle-navigation">
+    <i class="fa fa-bars"></i>
+  </button>
+
+  <div id="menu-primary-tracks" class="menu-primary-tracks"></div>
+  <div id="menu-primary" class="menu-container menu-primary" role="navigation">
+    
+    <p class="site-description">Enthusiast, eccentric, ecologist</p>
+    
+
+    <div class="menu">
+      <ul id="menu-primary-items" class="menu-primary-items">
+        
+        
+        <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page '>
+          <a href="/">Home</a>
+          
+        </li>
+        
+        <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page '>
+          <a href="/about/">About</a>
+          
+        </li>
+        
+        <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page '>
+          <a href="/research/">Research</a>
+          
+        </li>
+        
+        <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page '>
+          <a href="/students/">Students</a>
+          
+        </li>
+        
+        <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page '>
+          <a href="/publications/">Publications</a>
+          
+        </li>
+        
+        <li id="menu-item" class='menu-item menu-item-type-post_type menu-item-object-page '>
+          <a href="/contact/">Contact</a>
+          
+        </li>
+        
+      </ul>
+    </div>
+
+  </div>
+
+      </div>
+    </header>
+
+    <div id="main" class="main" role="main">
+
+      
+  
+  
+    
+  
+  
+  <div id="loop-container" class="loop-container">
+    
+    <div class="post type-post status-publish format-standard has-post-thumbnail hentry category-design tag-design tag-standard-2 tag-tagalicious tag-travel entry full-without-featured odd excerpt-1">
+
+      <div class='featured-image lazy lazy-bg-image'  data-background="/img/kogelberg_map.jpg">
+      </div>
+      
+        <div class="entry-meta">
+          <span class="date">28 August</span>	<span> / </span>
+
+          <span class="author">
+            <a href="/" title="Posts by " rel="author"></a>
+          </span>
+
+
+          
+          <span class="category">
+            <span> / </span>
+
+            <a href="/categories/R%20Tutorials">R Tutorials</a>
+          </span>
+          
+          <span class="category">
+            <span> / </span>
+
+            <a href="/categories/All">All</a>
+          </span>
+          
+
+
+        </div>
+        <div class='entry-header'>
+          <h1 class='entry-title'> Handling Spatial Data in R - #1. Getting started</h1>
+        </div>
+        <div class="entry-container">
+          <div class="entry-content">
+            <article>
+              <div id="TOC">
+<ul>
+<li><a href="#installing-r-and-rstudio">Installing R (and RStudio)</a></li>
+<li><a href="#cran-spatial-task-views">CRAN Spatial Task Views!!!</a></li>
+<li><a href="#useful-diy-resources">Useful DIY resources</a></li>
+</ul>
+</div>
+
+<hr />
+<p>Points, lines, polygons and rasters - R can handle them all. My aim for this post is to give you the basics required to teach yourself spatial data analysis in R - following 3 major sections listed above.</p>
+<p>In the <a href="http://www.ecologi.st/post/spatial-data-in-r-2-a-practical-example/"><strong>next post</strong></a> I provide a practical example working with point, line, polygon and raster data. If you’re already familiar with R then you can skip straight there, but you may be interested to check out the <a href="http://www.ecologi.st/post/2017-04-01-PrimerSpatialData/#useful-diy-resources"><strong>useful DIY resources</strong></a> before you go.</p>
+<p>If you’ve been using my old “Primer for Handling Spatial Data in R” post note that this is just an update, but I’ve decided to split it into a series of independent posts to make it less unwieldy and allow me to expand it in future - my apologies if you prefered the old scheme…</p>
+<hr />
+<p><br></p>
+<div id="installing-r-and-rstudio" class="section level2">
+<h2>Installing R (and RStudio)</h2>
+<p>You can download R for Windows, Mac or Linux from <a href="https://cran.r-project.org/"><strong>The Comprehensive R Archive Network (CRAN)</strong></a> and install.</p>
+<p>Base R can be quite clunky to deal with, so there is a range of additional software packages designed to help you manage your R code, plots, projects etc. One of the better ones (i.e. the one that I use and I’m clearly not bias) is <a href="https://www.rstudio.com/products/RStudio/"><strong>RStudio</strong></a>. You want to download the Open Source version of RStudio Desktop. When you open RStudio after installing you’ll see that it has opened R in the “Console” window.</p>
+<p>Note that the base version of R is as small as possible, trimmed down to only the essential functions etc. More advanced and user specific functions are available as “Contributed Extension Packages” or “libraries”. You can access the list of packages from <a href="https://cran.r-project.org/" class="uri">https://cran.r-project.org/</a>. At the time of writing there were almost 13 000 packages and growing!!! This can be quite bewildering if you’re not sure what you need, but fortunately there are…</p>
+<hr />
+<p><br></p>
+</div>
+<div id="cran-spatial-task-views" class="section level2">
+<h2>CRAN Spatial Task Views!!!</h2>
+<p>Some great fellas have taken the time to sift through all the R libraries and make some sense of them for different focal topics and created <a href="https://cran.r-project.org/web/views/"><strong>“Task Views”</strong></a>. Fortunately for us there’s a <a href="https://cran.r-project.org/web/views/Spatial.html"><strong>Spatial Task View</strong></a> maintained by Roger Bivand. There’s also a <a href="https://cran.r-project.org/web/views/SpatioTemporal.html"><strong>SpatioTemporal Task View</strong></a> maintained by Edzer Pebesma, which overlaps somewhat, but specifically focuses on data where both location and time of observation are registered, and relevant for the analysis of the data.</p>
+<p><br></p>
+<p>Each Task View has a landing page with an overview highlighting what you can do with the different packages and their respective strengths, weaknesses etc., e.g.</p>
+<p><br></p>
+<div class="figure">
+<img src="/img/CRAN_spatial.jpg" />
+
+</div>
+<p><br></p>
+<div id="topics-covered-by-the-spatial-task-view-which-focuses-on-analysis-of-spatial-data" class="section level3">
+<h3>Topics covered by the <em>Spatial</em> Task View, which focuses on “Analysis of Spatial Data”:</h3>
+<ul>
+<li>Classes for spatial data</li>
+<li>Handling spatial data</li>
+<li>Reading and writing spatial data</li>
+<li>Reading and writing spatial data - other packages</li>
+<li>Visualisation</li>
+<li>Point pattern analysis</li>
+<li>Geostatistics</li>
+<li>Disease mapping and areal data analysis</li>
+<li>Spatial regression</li>
+<li>Ecological analysis</li>
+</ul>
+<p><br></p>
+<p>Task Views also allow easy download and installation of all packages in a Task View using library(ctv) - see highlighted code below. But beware! It can take a while to download and install if it is a big Task View and the the Spatial one is BIG!!! You don’t need the whole Task View for my tutorials, so don’t bother downloading it if you’re just working through these.</p>
+<div class="figure">
+<img src="/img/CRAN_taskviews.jpg" />
+
+</div>
+<p><br></p>
+<hr />
+<p><br></p>
+</div>
+</div>
+<div id="useful-diy-resources" class="section level2">
+<h2>Useful DIY resources</h2>
+<ul>
+<li>The Analysis of Spatial Data Task View!</li>
+<li><a href="http://robinlovelace.net/" class="uri">http://robinlovelace.net/</a> especially his new online book <a href="https://geocompr.robinlovelace.net/"><strong>Geocomputation with R</strong></a></li>
+<li><a href="https://www.nceas.ucsb.edu/scicomp/solutions" class="uri">https://www.nceas.ucsb.edu/scicomp/solutions</a></li>
+<li><a href="https://statnmap.com/" class="uri">https://statnmap.com/</a></li>
+<li><a href="http://pakillo.github.io/R-GIS-tutorial/" class="uri">http://pakillo.github.io/R-GIS-tutorial/</a></li>
+<li><a href="http://spatial.ly/" class="uri">http://spatial.ly/</a> - For some visual R inspiration!</li>
+<li><a href="http://www.googleityoumoron.com" class="uri">http://www.googleityoumoron.com</a> - There are plenty of resources!!!</li>
+</ul>
+<p><br></p>
+<p>I’d also highly recommend <em>Applied Spatial Data Analysis with R</em> by Roger Bivand et al. (2013) - While the R packages available change every day, this is still a great intro to handling spatial data and a great resource for getting deeper into the statistics!</p>
+<p><br></p>
+<div class="figure">
+<img src="/img/Bivand.jpg" />
+
+</div>
+<hr />
+<p>Move on to the <a href="http://www.ecologi.st/post/spatial-data-in-r-2-a-practical-example/"><strong>next post</strong></a>, which provides a practical example working with point, line, polygon and raster data?</p>
+<p><br></p>
+</div>
+
+            </article>
+          </div>
+          
+      <div class='entry-meta-bottom'>
+        
+
+  <div class="entry-categories"><p><span>Categories</span>
+    
+    <a href="/categories/r-tutorials" title="View all posts in R Tutorials">R Tutorials</a>
+    <a href="/categories/all" title="View all posts in All">All</a>
+  </p>
+</div>
+
+
+
+<div class="entry-tags"><p><span>Tags</span>
+  
+
+</p></div>	</div>
+
+	
+<div class="author-meta">
+
+  <div class="author">
+    	
+      <img alt='Jasper Slingsby' src="https://www.gravatar.com/avatar/10b0f8bbf16f471dc5acc8a221ad4a52?s=100&d=identicon" class='avatar avatar-72 photo' height='72' width='72'>
+    
+    <span>
+      Written by:<a href="http://ecologi.st/" title="Posts by Jasper Slingsby" rel="author">Jasper Slingsby</a> </span>
+    </div>
+    <div class="bio">
+      
+      
+      <p>I am an ecologist working on global change in terrestrial ecosystems.</p>
+      
+      
+	
+
+
+
+
+
+
+<a class="twitter" target="_blank"
+href="https://twitter.com/JasperSlingsby">
+<i class="fa fa-twitter-square"
+title="twitter icon"></i>
+</a>
+
+
+
+
+<a class="email" target="_blank"
+href="mailto:jslingsby@gmail.com">
+<i class="fa fa-envelope"
+title="email icon"></i>
+</a>
+
+
+
+
+
+
+
+<a class="github" target="_blank"
+href="https://github.com/jslingsby/">
+<i class="fa fa-github"
+title="github icon"></i>
+</a>
+
+
+
+
+
+
+
+</div>
+</div>
+
+</div>
+</div>
+
+<section id="comments" class="comments">
+  <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-jslingsby-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  
+
+
+
+
+</section>
+</div>
+
+ 
+
+
+
+    </div>
+
+    <footer id="site-footer" class="site-footer" role="contentinfo">
+	<h1>
+    
+    <a href=""> Jasper Slingsby </a>
+    
+	</h1>
+
+			
+			<p class="site-description">Enthusiast, eccentric, ecologist</p>
+			
+
+		<div id="menu-footer" class="menu-container menu-footer" role="navigation">
+		<div class="menu">
+
+      <ul id="menu-footer-items" class="menu-footer-items">
+        
+</ul>
+
+</div>	</div>
+
+<ul class="social-media-icons">
+
+        
+
+        
+
+
+        
+        <li>
+        <a href="https://twitter.com/JasperSlingsby"  class="twitter" target="_blank">
+            <i class="fa fa-twitter-square" title="twitter"></i>
+            <span class="screen-reader-text">twitter</span>
+        </a>
+        </li>
+        
+
+        
+
+        
+        <li>
+        <a href="mailto:jslingsby@gmail.com"  class="email">
+            <i class="fa fa-envelope" title="email"></i>
+            <span class="screen-reader-text">email</span>
+        </a>
+        </li>
+        
+
+        
+
+        
+
+
+        
+        <li>
+        <a href="https://github.com/jslingsby/"  class="github" target="_blank">
+            <i class="fa fa-github" title="github"></i>
+            <span class="screen-reader-text">github</span>
+        </a>
+        </li>
+        
+
+
+        
+
+        
+        <li>
+        <a href="/index.xml" data-animate-hover="pulse" class="rss" target="_blank">
+            <i class="fa fa-rss" title="rss"></i>
+            <span class="screen-reader-text">rss</span>
+        </a>
+        </li>
+        
+
+				</ul>	<div class="design-credit">
+		
+		<p>&copy; 2018 Jasper Slingsby</p>
+		
+		<p>Nederburg Hugo Theme by <a href="https://appernetic.io">Appernetic</a>.</p>
+		
+		<p>A port of Tracks by Compete Themes.</p>
+		
+	</div>
+</footer>
+
+  </div>
+  <script src="/js/jquery.min.js"></script>
+<script src="/js/jquerymigrate.js"></script>
+<script src="/js/production.min.js"></script>
+
+</body>
+</html>
