@@ -24,7 +24,7 @@
         "datePublished": "2018-08-29 00:00:00 &#43;0000 UTC",
         "dateModified" : "2018-08-29 00:00:00 &#43;0000 UTC",
         "url" : "/post/spatial-data-in-r-2-a-practical-example/",
-        "wordCount" : "8347",
+        "wordCount" : "8469",
         "image" : //img/cederberg_small.jpg",
         "keywords" : [ "Blog" ]   
     }
@@ -274,7 +274,7 @@ if (!doNotTrack) {
 </div>
 
 <hr />
-<p>This post follows on from <a href="http://www.ecologi.st/post/2017-04-01-PrimerSpatialData/"><strong>Handling Spatial Data in R - #1. Getting started</strong></a>, which gives the basics on installing <a href="https://cran.r-project.org/"><strong>R</strong></a> and <a href="https://www.rstudio.com/products/RStudio/"><strong>RStudio</strong></a>, CRAN Spatial Task Views and <a href="http://www.ecologi.st/post/2017-04-01-PrimerSpatialData/#useful-diy-resources"><strong>useful DIY resources</strong></a>. Obviously, if you’re already familiar with these topics then no need to go through that post. You may also be interested in the next post on <a href="http://www.ecologi.st/post/big-spatial-data/"><strong>handling big spatial data and memory management</strong></a>.</p>
+<p>This post follows on from <a href="http://www.ecologi.st/post/2017-04-01-primerspatialdata/"><strong>Handling Spatial Data in R - #1. Getting started</strong></a>, which gives the basics on installing <a href="https://cran.r-project.org/"><strong>R</strong></a> and <a href="https://www.rstudio.com/products/RStudio/"><strong>RStudio</strong></a>, CRAN Spatial Task Views and <a href="http://www.ecologi.st/post/2017-04-01-primerspatialdata/#useful-diy-resources"><strong>useful DIY resources</strong></a>. Obviously, if you’re already familiar with these topics then no need to go through that post. You may also be interested in the next post on <a href="http://www.ecologi.st/post/big-spatial-data/"><strong>handling big spatial data and memory management</strong></a>.</p>
 <p>Here we’ll work through a practical example exploring fire history layers (polygon), topographic (raster) and locality (point) data using the libraries ‘rgdal’, ‘raster’ and ‘sp’ and a few others. The example will cover setting and changing projections and extents, subseting polygons, raster calculations, rasterizing polygons and extracting data with a few neat tricks and visualisations along the way. Note that you can navigate to and/or bookmark the various sections using the links in the table of contents above.</p>
 <hr />
 <div id="a-quick-note-on-the-structure-of-this-tutorial" class="section level3">
@@ -308,13 +308,20 @@ reswd = “/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Result
 <h4>Sharing code between multiple machines</h4>
 <p>If you plan run the same code on multiple machines (e.g. your laptop and a workstation) or are sharing code with a collaborator (and are not using GitHub) it’s easiest to automatically detect what computer the code is being run on and set the appropriate working directories (and anything else you like).</p>
 <p>This can be done by identifying the machine/user using Sys.getenv() and wrapping the code for setting working directories etc in an if() statement for each user, like so:</p>
-<pre class="r"><code>if (Sys.getenv(&quot;USER&quot;)==&#39;jasper&#39;) {datwd=&quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/&quot;
+<pre class="r"><code>Sys.getenv(&quot;USER&quot;) #Tells me the &quot;USER&quot; name on my machine (a Mac)</code></pre>
+<pre><code>## [1] &quot;jasper&quot;</code></pre>
+<p>NOTE!!! If you are on Windows you need to use <code>Sys.getenv(&quot;USERNAME&quot;)</code>. I don;t know why there’s a “USER/USERNAME” difference for Mac vs Windows but we have to live with it. I’m pretty sure Linux is the same as Mac, but try Sys.getenv() and see what you get.</p>
+<p>Then I can set up my <em>if()</em> statement. Note that each user/collaborator can set up their own <em>if()</em> statement one after the other because if the statement <code>Sys.getenv(&quot;USER&quot;)=='jasper'</code> returns <code>FALSE</code> then R doesn’t run the chunk of code in the curly brackets <code>{ ... }</code>.</p>
+<pre class="r"><code>if (Sys.getenv(&quot;USER&quot;)==&#39;jasper&#39;) {
+datwd=&quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/&quot;
 giswd=&quot;/Users/jasper/Documents/GIS/&quot;
 reswd=&quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Results/&quot;}
-if (Sys.getenv(&quot;USER&quot;)==&#39;MACUseR&#39;) {datwd=&quot;&quot;; giswd=&quot;&quot;; reswd=&quot;&quot;} #For Mac/Linux users
-if (Sys.getenv(&quot;USERNAME&quot;)==&#39;WINDOZEUseR&#39;) {datwd=&quot;&quot;; giswd=&quot;&quot;; reswd=&quot;&quot;} #For Windows</code></pre>
-<p>This way a new project member can add a new line of code without deleting anything, and it only sets the working directories (and any other settings you want) for the appropriate user - i.e. the if() statement ignores settings for all other users. NOTE!!! the “USER/USERNAME” difference for Mac vs Windows (I’m pretty sure Linux is the same as Mac, but try Sys.getenv() and see what you get).</p>
-<p>If you are running the code from this tutorial you need to set your username and working directories here. You can just set <em>datwd</em>, <em>giswd</em> and <em>reswd</em> to the same file path for the purposes of this tutorial (if you’ve put all the data in the same place).</p>
+
+if (Sys.getenv(&quot;USER&quot;)==&#39;MACUseR&#39;) {datwd=&quot;&quot;; giswd=&quot;&quot;; reswd=&quot;&quot;} #Change here for Mac/Linux users
+
+if (Sys.getenv(&quot;USERNAME&quot;)==&#39;WINDOWSUseR&#39;) {datwd=&quot;&quot;; giswd=&quot;&quot;; reswd=&quot;&quot;} #CHange here for Windows users</code></pre>
+<p>This way a new project member can add a new line of code without deleting anything, and it only sets the working directories (and any other settings you want) for the appropriate user - i.e. the if() statement ignores settings for all other users.</p>
+<p>If you are running the code from this tutorial you need to set your username and working directories here. You can just set <em>datwd</em>, <em>giswd</em> and <em>reswd</em> to the same file path for the purposes of this tutorial (if you’ve put all the data you downloaded in the same place).</p>
 </div>
 <div id="a-quick-aside-on-slashes" class="section level4">
 <h4>A quick aside on slashes</h4>
@@ -323,7 +330,7 @@ if (Sys.getenv(&quot;USERNAME&quot;)==&#39;WINDOZEUseR&#39;) {datwd=&quot;&quot;
 </div>
 <div id="librariespackages" class="section level4">
 <h4>Libraries/packages</h4>
-<p>Here we call the extention libraries with functions we’ll need for this session. More on what R libraries/packages are in my previous post <a href="http://www.ecologi.st/post/2017-04-01-PrimerSpatialData/#installing-r-and-rstudio"><strong>here</strong></a>.</p>
+<p>Here we call the extention libraries with functions we’ll need for this session. More on what R libraries/packages are in my previous post <a href="http://www.ecologi.st/post/2017-04-01-primerspatialdata/#installing-r-and-rstudio"><strong>here</strong></a>.</p>
 <p>You should install the libraries before running the code below using <a href="https://www.rdocumentation.org/packages/utils/versions/3.5.1/topics/install.packages"><strong>install.packages()</strong></a> while connected to the internet - e.g. install.packages(“raster”). Note that one occasionally encounters issues installing doMC, but you can usually install it from their development page using install.packages(“doMC”, repos=“<a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a>”). If neither of these work for you don’t worry, it is not an essential component of the tutorial.</p>
 <pre class="r"><code>library(raster, quietly = T) # To handle rasters
 library(rasterVis, quietly = T) # For fancy raster visualisations
@@ -349,11 +356,12 @@ suppressPackageStartupMessages(library(googleVis, quietly = T)) # For even more 
 <div id="getting-and-cleaning-the-data-but-first-and-foremost-projection" class="section level3">
 <h3>Getting and cleaning the data, but first and foremost, <em>projection!!!</em></h3>
 <p>R typically uses the PROJ.4 conventions for cartographic projections (or coordinate reference systems - CRS). Check out <a href="http://proj4js.org" class="uri">http://proj4js.org</a> or <a href="http://spatialreference.org/" class="uri">http://spatialreference.org/</a> or google for the “proj4string” for various coordinate reference systems.</p>
-<p>NOTE!!! Many R functions will allow you to play with objects with different CRS resulting in GARBAGE! Others will reproject one or other of the objects for you, but this can be slow and it’s not worth taking the chance. I recommend checking and setting your CRS for all objects. You can check CRS with proj4string(), check that multiple objects have the same CRS using identicalCRS(), and reproject objects of class “Spatial” with spTransform() and objects of class “Raster” with projectRaster(). Note that not all reprojections are possible or sensible, but I’ll leave that homework to you. One key case where reprojection in R appears to work (but hasn’t!) is reprojecting MODIS satellite data from its native <em>Sinusoidal</em> projection. My workaround is to use the <a href="https://www.rdocumentation.org/packages/gdalUtils/versions/2.0.1.14/topics/gdalwarp"><strong>gdalwarp()</strong></a> function in <a href="https://cran.r-project.org/web/packages/gdalUtils/index.html"><strong>library(gdalUtils)</strong></a> - a very powerful set of functions which I hope to write another post about.</p>
+<p>NOTE!!! Many R functions will allow you to play with objects with different CRS resulting in GARBAGE! Others will reproject one or other of the objects for you, but this can be slow and it’s not worth taking the chance. I recommend checking and setting your CRS for all objects. You can check CRS with proj4string(), check that multiple objects have the same CRS using identicalCRS(), and reproject objects of class “Spatial” with spTransform() and objects of class “Raster” with projectRaster(). Note that not all reprojections are possible or sensible, but I’ll leave that homework to you. One key case where reprojection in R appears to work (but doesn’t!) is reprojecting MODIS satellite data from its native <em>Sinusoidal</em> projection. My workaround is to use the <a href="https://www.rdocumentation.org/packages/gdalUtils/versions/2.0.1.14/topics/gdalwarp"><strong>gdalwarp()</strong></a> function in <a href="https://cran.r-project.org/web/packages/gdalUtils/index.html"><strong>library(gdalUtils)</strong></a> - a very powerful set of functions which I explore in the <a href="http://www.ecologi.st/post/big-spatial-data/"><strong>next post</strong></a> on big spatial data and memory management.</p>
 <p>I like to set a standardized CRS as an object that I can call throughout my workflow.</p>
 <pre class="r"><code>#Set a standardized projection using the PROJ.4 string convention
 stdCRS &lt;- &quot;+proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs&quot; 
-#This is also &quot;EPSG:32734&quot; - the European Petroleum Survey Group - another common CRS convention</code></pre>
+
+#This is also &quot;EPSG:32734&quot; - according to the European Petroleum Survey Group CRS convention - another common one</code></pre>
 <p>This is the Universal Transverse Mercator (UTM) projection, which is useful for studies with smallish extents (~&lt;100km a side), because the unit is metres and is easily interpretable. The UTM zone we’re in for this example is 34 South <a href="http://whatutmzoneamiin.blogspot.co.za/p/map.html" class="uri">http://whatutmzoneamiin.blogspot.co.za/p/map.html</a> - so I’ve used UTM34S. More on projections for those interested <a href="https://en.wikipedia.org/wiki/Map_projection#Projections_by_preservation_of_a_metric_property"><strong>here</strong></a>.</p>
 <hr />
 </div>
@@ -484,7 +492,7 @@ dem &lt;- crop(dem, E) # Crop DEM to the buffered extent</code></pre>
 <p>Let’s have a quick look at what we’re working with (using the basic plot functions).</p>
 <pre class="r"><code>plot(dem) #plot the digital elevation model
 points(pts, pch=20, cex=.1) #add the cedar localities</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 </div>
 <div id="calculating-topographic-information-from-a-dem" class="section level4">
 <h4>Calculating topographic information from a DEM</h4>
@@ -525,7 +533,7 @@ topo</code></pre>
 # names(topo) &lt;- c(&quot;name1&quot;, &quot;name2&quot;&quot;, etc)</code></pre>
 <p>Let’s look at what we’ve made.</p>
 <pre class="r"><code>plot(topo)</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 </div>
 <div id="rasterizing-aggregating-and-raster-calculations" class="section level4">
 <h4>Rasterizing, aggregating and raster calculations</h4>
@@ -533,14 +541,14 @@ topo</code></pre>
 <p>e.g. You easily can convert other data types into rasters using rasterize(), which allows you to specify the raster extent and resolution (or match an existing raster), and can apply functions so that you can chose what aspect of the data you’d like to focus on (e.g. the min, max or sum of a field in the attribute table of your vector layer). Here let’s rasterize the cedar points layer and calculate the tree density by 90m grid cell from the DEM.</p>
 <pre class="r"><code>dens &lt;- rasterize(pts, dem, field=&quot;Name&quot;, fun=&quot;count&quot;)
 plot(dens)</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
 <p>See anything? Probably not, these are 90m pixels in a large landscape… We can aggregate() the 90m pixels into larger units to make them more visible - e.g. 210m pixels by aggregating by a factor of three.</p>
 <pre class="r"><code>plot(aggregate(dens, fact=3, fun=&quot;sum&quot;))</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
 <p>Better!</p>
 <p>We can also apply raster calculations to only show the subset of cells with more than 10 trees - plotted in red to make it more visible.</p>
 <pre class="r"><code>plot(dens&gt;10, col=&quot;red&quot;)  # Use raster calculations to subset</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 <p>Note that you can add, subtract, multiply and divide rasters using code like <em>raster1 + raster2</em> etc, which allows you to easily do some quite complicated calculations. Its also worth exploring the calc() function for designing and implementing more complicated functions.</p>
 <hr />
 </div>
@@ -605,7 +613,7 @@ vegmap &lt;- crop(vegmap, E) # Note that extent (E) was created earlier</code></
 plot(vegmap, col = cols[as.factor(as.character(vegmap$NAME))]) # Plot the map coloured by veg type
 legend(&quot;bottomleft&quot;, legend = levels(as.factor(as.character(vegmap$NAME))), text.col = cols, cex=.6) # Add a legend
 points(pts, pch=20, cex=.1) # Add the trees</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
 <p>Looks like our cedars are restricted to “Cederberg Sandstone Fynbos”, but we can test that by extracting the veg type for each tree location. Note that there are a few ways of extracting data from spatial objects - we’ll use variants of the over() function for shapefiles.</p>
 <pre class="r"><code>treeveg &lt;- over(pts, vegmap)
 treeveg2 &lt;- pts %over% vegmap
@@ -745,18 +753,20 @@ extent(firelayers)</code></pre>
 ## 27 Levels: Anysberg Cederberg De Hoop De Mond Driftsands ... Waterval</code></pre>
 <p>Note that we can subset shapefiles based on fields in the attribute table using indexing as one does with a regular dataframe. Each fire polygon is a separate row in the attribute table so we can extract all fires from the Cederberg by subsetting only the rows where the Res_centre = “Cederberg”.</p>
 <pre class="r"><code>firelayers &lt;- firelayers[which(firelayers$Res_centre==&quot;Cederberg&quot;),]
+
 firelayers$Res_centre &lt;- droplevels(firelayers$Res_centre) # Remove unwanted factor levels that were passed on from the original full extent
+
 levels(firelayers$Res_centre)</code></pre>
 <pre><code>## [1] &quot;Cederberg&quot;</code></pre>
 <pre class="r"><code>plot(firelayers) # Plot (without colours)</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
 <p>A cobweb? But vaguely the right shape to suggest its the Cederberg.</p>
 <p>Let’s use rasterize() to create a raster of the number of fires in each 90m pixel of our digital elevation model, which may be prettier to plot. Since we want a raster of the count of fires per pixel we’ll set the function argument withing rasterize() to fun=“count”. Note that this requires a field/column with a unique value for each fire and we’re not sure if we have that, so we’ll create a new unique ID field “uID” and apply the function to that field.</p>
 <pre class="r"><code>firelayers$uID &lt;- 1:nrow(firelayers) # Add an unique ID for each fire
 firecount &lt;- rasterize(firelayers, dem, field=&quot;uID&quot;, fun=&quot;count&quot;) # A count of all fires in each pixel
 plot(firecount) # Note that the extent of our firelayers is larger than the DEM, but when rasterizing to an existing grid R trims it to the smaller extent automatically
 points(pts, pch=20, cex=.1) # Add the trees</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
 <p>Now lets rasterize() each fire (date) into it’s own raster, but first we need to look at the underlying data and see if this will work…</p>
 <pre class="r"><code>names(firelayers)</code></pre>
 <pre><code>##  [1] &quot;id&quot;         &quot;FIRE_CODE&quot;  &quot;Res_code&quot;   &quot;Region&quot;     &quot;Month&quot;     
@@ -864,8 +874,8 @@ writeRaster(rfi,file=rfifile) # Write out rasters to one file
 } # End if() statement
 ) # End timing</code></pre>
 <pre><code>##    user  system elapsed 
-##       0       0       0</code></pre>
-<p>Note that you’ll see it takes 0 seconds on my machine - that’s because the statement <em>if(!file.exists(rfifile))</em> on my machine is true (i.e. I’ve already made the output geotif), so none of that code ran. You should see something different the first time you run it.</p>
+##   0.000   0.000   0.002</code></pre>
+<p>Note that you’ll see it takes 0 seconds on my machine - that’s because the statement <em>if(!file.exists(rfifile))</em> on my machine is <code>TRUE</code> (i.e. I’d already made the output geotif before), so none of that code ran. You should see something different the first time you run it.</p>
 <hr />
 </div>
 <div id="going-parallel" class="section level3">
@@ -908,7 +918,7 @@ rfi # Look at the stack</code></pre>
 <pre class="r"><code>names(rfi)=paste0(&quot;Fire_&quot;,years) # Add year as name for each raster
 rfi &lt;- crop(rfi, E) # Crop to just our area of interest (speeds things up)
 plot(rfi) # Plot all layers</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-43-1.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
 <p>Pretty messy… there must be a sexier way?</p>
 <hr />
 </div>
@@ -953,11 +963,11 @@ plot(rfi) # Plot all layers</code></pre>
 <h3>Some other data visualization and analysis</h3>
 <pre class="r"><code># Plotting functions in library(rasterVis)
 levelplot(dem)</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-46-1.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-47-1.png" width="672" /></p>
 <pre class="r"><code>contourplot(dem)</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-46-2.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-47-2.png" width="672" /></p>
 <pre class="r"><code>persp(dem)</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-46-3.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-47-3.png" width="672" /></p>
 <p>Some fancy tricks with Google Earth and library(googleVis)…</p>
 <p>(Note that this only works for embedding into RMarkdown or an html page).</p>
 <pre class="r"><code>op &lt;- options(gvis.plot.tag=&quot;chart&quot;) # Set gvis options for rmarkdown
@@ -967,113 +977,113 @@ points.gb$latlon &lt;- paste(points.gb$coords.x2, points.gb$coords.x1, sep=&quot
 map.gb &lt;- gvisMap(points.gb, locationvar=&quot;latlon&quot;, tipvar=&quot;Name&quot;)
 plot(map.gb)</code></pre>
 <!-- Map generated in R 3.5.1 by googleVis 0.6.2 package -->
-<!-- Thu Sep 27 12:49:33 2018 -->
+<!-- Thu Oct 11 08:50:29 2018 -->
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataMapID12fc16fdd68c () {
+function gvisDataMapID33243ad9c35a () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
  [
--32.35986078,
-19.07031559,
+-32.29555942,
+19.10333819,
 ""
 ],
 [
--32.31068176,
-19.15272924,
+-32.27254006,
+19.11424736,
 ""
 ],
 [
--32.42237279,
-19.14378709,
+-32.21854222,
+19.07598727,
 ""
 ],
 [
--32.40863478,
-19.17928187,
+-32.23845155,
+19.08988212,
 ""
 ],
 [
--32.27814461,
-19.14136444,
+-32.30418048,
+19.15060669,
 ""
 ],
 [
--32.23255777,
-19.08601471,
+-32.37286197,
+19.10411392,
 ""
 ],
 [
--32.29396474,
-19.1262717,
+-32.26921593,
+19.13509688,
 ""
 ],
 [
--32.33729916,
-19.1302391,
+-32.23741027,
+19.10272347,
 ""
 ],
 [
--32.37854363,
-19.11495898,
+-32.33979677,
+19.19696805,
 ""
 ],
 [
--32.33080189,
-19.10978191,
+-32.23143525,
+19.11357013,
 ""
 ],
 [
--32.23249683,
-19.083964,
+-32.34617253,
+19.09800858,
 ""
 ],
 [
--32.35797047,
-19.10500677,
+-32.23602996,
+19.08715401,
 ""
 ],
 [
--32.33329764,
-19.12235543,
+-32.22815117,
+19.09204365,
 ""
 ],
 [
--32.38853692,
-19.17820817,
+-32.29661346,
+19.13086887,
 ""
 ],
 [
--32.36218121,
-19.07587404,
+-32.21716073,
+19.07429544,
 ""
 ],
 [
--32.33631466,
-19.12124423,
+-32.31642341,
+19.18461521,
 ""
 ],
 [
--32.33221231,
-19.11996805,
+-32.42213197,
+19.14898107,
 ""
 ],
 [
--32.32823618,
-19.1148659,
+-32.29835833,
+19.10684799,
 ""
 ],
 [
--32.42049459,
-19.1114529,
+-32.32544755,
+19.13691942,
 ""
 ],
 [
--32.36407449,
-19.18823433,
+-32.2789765,
+19.10604131,
 ""
 ] 
 ];
@@ -1085,13 +1095,13 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartMapID12fc16fdd68c() {
-var data = gvisDataMapID12fc16fdd68c();
+function drawChartMapID33243ad9c35a() {
+var data = gvisDataMapID33243ad9c35a();
 var options = {};
 options["showTip"] = true;
 
     var chart = new google.visualization.Map(
-    document.getElementById('MapID12fc16fdd68c')
+    document.getElementById('MapID33243ad9c35a')
     );
     chart.draw(data,options);
     
@@ -1115,9 +1125,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartMapID12fc16fdd68c);
+callbacks.push(drawChartMapID33243ad9c35a);
 })();
-function displayChartMapID12fc16fdd68c() {
+function displayChartMapID33243ad9c35a() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -1140,9 +1150,9 @@ callbacks.shift()();
 // jsFooter
 </script>
 <!-- jsChart -->
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapID12fc16fdd68c"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapID33243ad9c35a"></script>
 <!-- divChart -->
-<div id="MapID12fc16fdd68c" style="width: 500; height: automatic;">
+<div id="MapID33243ad9c35a" style="width: 500; height: automatic;">
 
 </div>
 <pre class="r"><code>options(op) # Reset gvis options to default</code></pre>
@@ -1175,13 +1185,13 @@ head(pts_topo) #have a look</code></pre>
 dat = as.data.frame(topo) #check out ?rasterToPoints too
 
 plot(dens ~ fire, data=dat)</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-49-1.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-50-1.png" width="672" /></p>
 <pre class="r"><code>plot(dens ~ tri, data=dat)</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-49-2.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-50-2.png" width="672" /></p>
 <pre class="r"><code>plot(dens ~ dem, data=dat)</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-49-3.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-50-3.png" width="672" /></p>
 <pre class="r"><code>plot(dens ~ northsouth, data=dat)</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-49-4.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-50-4.png" width="672" /></p>
 <p>Current theories around the cedar’s decline include increased fire frequency and climate change. Here are a couple of basic hypotheses we could test:</p>
 <ul>
 <li><p>Under increased fire frequency we would expect fewer cedars in areas where greater numbers of fires occur, but higher survival in areas with greater topographic roughness as this may provide refuge from fire (note that just the perimeters are mapped for most fires).</p></li>
@@ -1193,19 +1203,21 @@ plot(dens ~ fire, data=dat)</code></pre>
 p &lt;- predict(topo, bc) # Predict potential distribution back onto base data
 plot(p)
 points(pts, pch=20, cex=.1)</code></pre>
-<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-50-1.png" width="672" /></p>
+<p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-51-1.png" width="672" /></p>
 <p>NOTE THAT I DO NOT EVALUATE THE MODEL IN ANY WAY - so I will not interpret it either. This is just a quick and dirty, breaking all the rules. Read up on species distribution modelling if you plan to use these techniques - the vignette on Species Distribution Modelling with R in <a href="https://cran.r-project.org/web/packages/dismo/index.html"><strong>library(dismo)</strong></a> is a good place to start. Type vignette(“sdm”) to call up the pdf.</p>
 <hr />
 </div>
 <div id="options-for-writing-out-spatial-data" class="section level3">
 <h3>Options for writing out spatial data</h3>
 <p>Here are a few useful functions, but also look for the <em>“filename = …”</em> or <em>“outputfile = …”</em> or similar options in the functions you use as these are often the most efficient.</p>
-<pre><code>?writeOGR # For shapefiles - can save in many many formats
+<pre><code>
+?writeOGR # For shapefiles - can save in many many formats
 ?writeRaster # For rasters - also has many formats
 ?save # To write out a subset of objects from the project
 ?save.image # To write out the whole project with all objects (like a .mxd in ArcGIS really)</code></pre>
 <p>THANKS!!!</p>
 <p>If you try this code and have issues the session info is below. Also note that all kinds of weird settings to Flash etc are required to do the gvisMap plot and it only works if embedded in an HTML webpage or similar. Feel free to leave a comment below - especially if you spot errors etc!</p>
+<p>If you’re dealing with big spatial data files, you may be interested in the <a href="http://www.ecologi.st/post/big-spatial-data/"><strong>next post</strong></a> on big spatial data and memory management.</p>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 3.5.1 (2018-07-02)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
