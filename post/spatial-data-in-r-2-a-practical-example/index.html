@@ -290,7 +290,7 @@ if (!doNotTrack) {
 </div>
 <div id="data-description" class="section level3">
 <h3>Data Description</h3>
-<p>For this exercise we’ll play with fine-scale locality (point) data for the critically endangered Clanwilliam cedar (<em>Widdringtonia cedarbergensis</em>) mapped by my father for the <em>Hike the Cederberg</em> map (check out <strong><a href="http://www.slingsbymaps.com/" class="uri">http://www.slingsbymaps.com/</a></strong>; data for 1000 trees downloadable <a href="https://www.dropbox.com/s/1ucycs7vcaa5cm9/Cedars.kml?dl=0"><strong>here</strong></a>, a 90m (raster) digital elevation model (DEM) <a href="https://www.dropbox.com/s/xqjzeg8uypf45a2/SRTM.zip?dl=0"><strong>here</strong></a> (I will also show you how to download the DEM directly with R using the <em>raster</em> package), and two “polygon” data sets consisting of mapped burn scars for CapeNature reserves (available from SANBI’s BGIS website <a href="http://bgis.sanbi.org/Projects/Detail/168"><strong>here</strong></a> and the National Vegetation Map (available <a href="http://bgis.sanbi.org/SpatialDataset/Detail/18"><strong>here</strong></a>).</p>
+<p>For this exercise we’ll play with fine-scale locality (point) data for the critically endangered Clanwilliam cedar (<em>Widdringtonia cedarbergensis</em>) mapped by my father for the <em>Hike the Cederberg</em> map (check out <strong><a href="http://www.slingsbymaps.com/" class="uri">http://www.slingsbymaps.com/</a></strong>; data for 1000 trees downloadable <a href="https://www.dropbox.com/s/1ucycs7vcaa5cm9/Cedars.kml?dl=0"><strong>here</strong></a>, a 90m (raster) digital elevation model (DEM) <a href="https://www.dropbox.com/s/nnqd2re8jxazvm4/srtm_ced.tif?dl=0"><strong>here</strong></a> (I will also show you how to download the DEM directly with R using the <em>raster</em> package), and two “polygon” data sets consisting of mapped burn scars for CapeNature reserves (available from SANBI’s BGIS website <a href="http://bgis.sanbi.org/Projects/Detail/168"><strong>here</strong></a> and the National Vegetation Map (available <a href="http://bgis.sanbi.org/SpatialDataset/Detail/18"><strong>here</strong></a>).</p>
 <p>You will need to download the cedar dataset into your chosen local data directory (see <em>datwd</em> under “Housekeeping” below) and download the other data into your chosen GIS data directory (see <em>giswd</em> below) and unzip them. <em>datwd</em> and <em>giswd</em> can be the same for the purposes of this tutorial. You can download the R code (with the RMarkdown content commented out) at <a href="https://www.dropbox.com/s/pwzccav07zwbwj4/PrimerSpatialData.R?dl=0"><strong>here</strong></a>.</p>
 <hr />
 </div>
@@ -466,7 +466,7 @@ str(x) # Note the presence of proj4string info</code></pre>
 <p>We can download the data directly with R using the function getData() (type ?getData for details), but this can be slow because it downloads a much bigger area than we need. To save time I’ve downloaded the data before and saved it locally with the “path =” setting. I’ve also provided you with a link to the subsetted data you need in the <a href="http://www.ecologi.st/post/spatial-data-in-r-2-a-practical-example/#data-description"><strong>Data Description</strong></a> section of the post above. Here’s the code if you’re interested - hashed (#) out so R sees it as a comment and doesn’t run it.</p>
 <pre class="r"><code>#dem &lt;- getData(&#39;SRTM&#39;, lon=19, lat=-32.5, path = paste0(giswd, &quot;SRTM/&quot;)) # download data from CGIAR website</code></pre>
 <p>Instead we’ll read the data in from the local source using the very versatile raster() function.</p>
-<pre class="r"><code>dem &lt;- raster(paste0(giswd, &quot;SRTM/srtm_40_19.tif&quot;)) # read in data from local source - NOTE THAT YOU MAY NEED TO UNZIP THE FILE YOU DOWNLOADED in the Data Description section!!!
+<pre class="r"><code>dem &lt;- raster(paste0(giswd, &quot;SRTM/srtm_ced.tif&quot;)) # read in data from local source - NOTE THAT YOU MAY NEED TO UNZIP THE FILE YOU DOWNLOADED in the Data Description section!!!
 proj4string(dem)</code></pre>
 <pre><code>## [1] &quot;+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0&quot;</code></pre>
 <p>This is not our chosen projection for this tutorial so we need to reproject.</p>
@@ -476,10 +476,10 @@ proj4string(dem)</code></pre>
 <p>Now let’s look at the extent of the DEM relative to the cedar locality data.</p>
 <pre class="r"><code>extent(dem)</code></pre>
 <pre><code>## class       : Extent 
-## xmin        : -79731.16 
-## xmax        : 409252.3 
-## ymin        : 6109993 
-## ymax        : 6681302</code></pre>
+## xmin        : 266615.1 
+## xmax        : 382010.1 
+## ymin        : 6353842 
+## ymax        : 6491056</code></pre>
 <pre class="r"><code>extent(pts)</code></pre>
 <pre><code>## class       : Extent 
 ## xmin        : 315517.9 
@@ -515,20 +515,20 @@ northsouth &lt;- cos(aspect)</code></pre>
 <pre class="r"><code>names(northsouth) </code></pre>
 <pre><code>## [1] &quot;layer&quot;</code></pre>
 <pre class="r"><code>names(dem)</code></pre>
-<pre><code>## [1] &quot;srtm_40_19&quot;</code></pre>
+<pre><code>## [1] &quot;srtm_ced&quot;</code></pre>
 <pre class="r"><code>names(eastwest) &lt;- &quot;eastwest&quot; # To rename the data in the raster
 names(northsouth) &lt;- &quot;northsouth&quot;
 names(dem) &lt;- &quot;dem&quot;
 topo &lt;- stack(dem, slope, eastwest, northsouth, TPI, TRI, roughness, flowdir)
 topo</code></pre>
 <pre><code>## class       : RasterStack 
-## dimensions  : 272, 257, 69904, 8  (nrow, ncol, ncell, nlayers)
-## resolution  : 78.3, 92.4  (x, y)
-## extent      : 314587.6, 334710.7, 6409924, 6435056  (xmin, xmax, ymin, ymax)
+## dimensions  : 272, 256, 69632, 8  (nrow, ncol, ncell, nlayers)
+## resolution  : 78.5, 92.4  (x, y)
+## extent      : 314657.1, 334753.1, 6409929, 6435062  (xmin, xmax, ymin, ymax)
 ## coord. ref. : +proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs +towgs84=0,0,0 
-## names       :         dem,       slope,    eastwest,  northsouth,         tpi,         tri,   roughness,     flowdir 
-## min values  : 296.3650828,   0.0006550,  -1.0000000,  -1.0000000, -70.5164504,   0.2751995,   0.8269874,   1.0000000 
-## max values  : 1956.993141,    1.122555,    1.000000,    1.000000,   91.157818,  140.499398,  438.959923,  128.000000</code></pre>
+## names       :           dem,         slope,      eastwest,    northsouth,           tpi,           tri,     roughness,       flowdir 
+## min values  :  2.978850e+02,  7.817324e-05, -1.000000e+00, -1.000000e+00, -6.984706e+01,  4.181858e-01,  1.042966e+00,  1.000000e+00 
+## max values  :   1957.903873,      1.114246,      1.000000,      1.000000,     90.148799,    139.760182,    436.692354,    128.000000</code></pre>
 <pre class="r"><code># Another way to rename rasters in a stack
 # names(topo) &lt;- c(&quot;name1&quot;, &quot;name2&quot;&quot;, etc)</code></pre>
 <p>Let’s look at what we’ve made.</p>
@@ -874,7 +874,7 @@ writeRaster(rfi,file=rfifile) # Write out rasters to one file
 } # End if() statement
 ) # End timing</code></pre>
 <pre><code>##    user  system elapsed 
-##   0.000   0.000   0.002</code></pre>
+##       0       0       0</code></pre>
 <p>Note that you’ll see it takes 0 seconds on my machine - that’s because the statement <em>if(!file.exists(rfifile))</em> on my machine is <code>TRUE</code> (i.e. I’d already made the output geotif before), so none of that code ran. You should see something different the first time you run it.</p>
 <hr />
 </div>
@@ -977,113 +977,113 @@ points.gb$latlon &lt;- paste(points.gb$coords.x2, points.gb$coords.x1, sep=&quot
 map.gb &lt;- gvisMap(points.gb, locationvar=&quot;latlon&quot;, tipvar=&quot;Name&quot;)
 plot(map.gb)</code></pre>
 <!-- Map generated in R 3.5.1 by googleVis 0.6.2 package -->
-<!-- Thu Oct 11 08:50:29 2018 -->
+<!-- Thu Oct 11 11:30:38 2018 -->
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataMapID33243ad9c35a () {
+function gvisDataMapID3c7eb45dbcb () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
  [
--32.29555942,
-19.10333819,
+-32.319129,
+19.129897,
 ""
 ],
 [
--32.27254006,
-19.11424736,
+-32.4066525,
+19.17575778,
 ""
 ],
 [
--32.21854222,
-19.07598727,
+-32.34740053,
+19.08920374,
 ""
 ],
 [
--32.23845155,
-19.08988212,
+-32.32696587,
+19.10737921,
 ""
 ],
 [
--32.30418048,
-19.15060669,
+-32.32708096,
+19.12562109,
 ""
 ],
 [
--32.37286197,
-19.10411392,
+-32.32690624,
+19.10438327,
 ""
 ],
 [
--32.26921593,
-19.13509688,
+-32.25859592,
+19.13298746,
 ""
 ],
 [
--32.23741027,
-19.10272347,
+-32.25379668,
+19.09995477,
 ""
 ],
 [
--32.33979677,
-19.19696805,
+-32.37522811,
+19.10983985,
 ""
 ],
 [
--32.23143525,
-19.11357013,
+-32.28286268,
+19.10061953,
 ""
 ],
 [
--32.34617253,
-19.09800858,
+-32.21685638,
+19.07623385,
 ""
 ],
 [
--32.23602996,
-19.08715401,
+-32.35229601,
+19.19899018,
 ""
 ],
 [
--32.22815117,
-19.09204365,
+-32.30872075,
+19.16153132,
 ""
 ],
 [
--32.29661346,
-19.13086887,
+-32.28797296,
+19.12805096,
 ""
 ],
 [
--32.21716073,
-19.07429544,
+-32.22175353,
+19.08716032,
 ""
 ],
 [
--32.31642341,
-19.18461521,
+-32.35873869,
+19.0724481,
 ""
 ],
 [
--32.42213197,
-19.14898107,
+-32.33915895,
+19.06411274,
 ""
 ],
 [
--32.29835833,
-19.10684799,
+-32.2177694,
+19.07360248,
 ""
 ],
 [
--32.32544755,
-19.13691942,
+-32.28313763,
+19.12058151,
 ""
 ],
 [
--32.2789765,
-19.10604131,
+-32.33272276,
+19.0536782,
 ""
 ] 
 ];
@@ -1095,13 +1095,13 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartMapID33243ad9c35a() {
-var data = gvisDataMapID33243ad9c35a();
+function drawChartMapID3c7eb45dbcb() {
+var data = gvisDataMapID3c7eb45dbcb();
 var options = {};
 options["showTip"] = true;
 
     var chart = new google.visualization.Map(
-    document.getElementById('MapID33243ad9c35a')
+    document.getElementById('MapID3c7eb45dbcb')
     );
     chart.draw(data,options);
     
@@ -1125,9 +1125,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartMapID33243ad9c35a);
+callbacks.push(drawChartMapID3c7eb45dbcb);
 })();
-function displayChartMapID33243ad9c35a() {
+function displayChartMapID3c7eb45dbcb() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -1150,9 +1150,9 @@ callbacks.shift()();
 // jsFooter
 </script>
 <!-- jsChart -->
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapID33243ad9c35a"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapID3c7eb45dbcb"></script>
 <!-- divChart -->
-<div id="MapID33243ad9c35a" style="width: 500; height: automatic;">
+<div id="MapID3c7eb45dbcb" style="width: 500; height: automatic;">
 
 </div>
 <pre class="r"><code>options(op) # Reset gvis options to default</code></pre>
@@ -1166,20 +1166,20 @@ callbacks.shift()();
 <pre class="r"><code>topo$fire &lt;- firecount #add the layer of numbers of fires
 pts_topo &lt;- extract(topo, pts) #extract data to a dataframe
 head(pts_topo) #have a look</code></pre>
-<pre><code>##           dem      slope   eastwest northsouth        tpi      tri
-## [1,] 1041.944 0.51212442 -0.8172747 -0.5762482  -3.501576 35.57229
-## [2,] 1256.394 0.62649156 -0.5460981 -0.8377212   2.350074 49.98390
-## [3,] 1236.647 0.47959052  0.9325970  0.3609194 -18.461028 32.47396
-## [4,] 1007.179 0.08345699  0.8329197  0.5533938 -12.690890 13.10339
-## [5,] 1229.906 0.39745604  0.2018364 -0.9794193  -3.619142 31.03015
-## [6,] 1420.102 0.50485605  0.9854354  0.1700503   1.978270 34.00052
+<pre><code>##           dem     slope   eastwest northsouth         tpi      tri
+## [1,] 1044.059 0.5108771 -0.8210832 -0.5708085  -3.8863532 35.66669
+## [2,] 1235.577 0.6188006 -0.6050917 -0.7961558  -2.6656155 47.77104
+## [3,] 1225.392 0.4177898  0.9581280  0.2863404 -21.6071677 30.67003
+## [4,] 1011.958 0.1287723  0.9926773 -0.1207966 -13.7023358 15.55578
+## [5,] 1229.284 0.4063195  0.1510045 -0.9885331  -5.8350988 31.47352
+## [6,] 1415.163 0.5016256  0.9872718  0.1590420   0.7006943 33.74041
 ##      roughness flowdir fire
-## [1,]  133.6057       8    2
-## [2,]  158.4853       8    4
-## [3,]  123.0002       1    5
-## [4,]   25.2136       1    2
-## [5,]   85.2815       4    5
-## [6,]  105.1424       1    5</code></pre>
+## [1,] 133.16994       8    2
+## [2,] 164.07892       8    4
+## [3,] 113.06181       1    5
+## [4,]  43.96513       1    2
+## [5,]  88.13804       4    5
+## [6,] 102.90161       1    5</code></pre>
 <p>But there are multiple trees per 90m pixel, so some sites (pixels) are repeated. Perhaps this is better dealt with by including the tree density count raster.</p>
 <pre class="r"><code>topo$dens &lt;- dens #add the tree density raster to the stack
 dat = as.data.frame(topo) #check out ?rasterToPoints too
