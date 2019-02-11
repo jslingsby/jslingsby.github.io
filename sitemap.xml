@@ -4,7 +4,7 @@
   
   <url>
     <loc>/post/2017-04-01-langrivier/</loc>
-    <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+    <lastmod>2019-02-11T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -20,11 +20,6 @@
   <url>
     <loc>/post/2017-04-01-primerspatialdata/</loc>
     <lastmod>2018-08-28T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/research/</loc>
-    <lastmod>2018-08-23T21:05:33+05:30</lastmod>
   </url>
   
   <url>
@@ -73,23 +68,12 @@
   </url>
   
   <url>
-    <loc>/publications/</loc>
-    <lastmod>2017-03-31T21:05:33+05:30</lastmod>
-  </url>
-  
-  <url>
-    <loc>/students/</loc>
-    <lastmod>2017-03-31T21:05:33+05:30</lastmod>
-  </url>
-  
-  <url>
     <loc>/contact/</loc>
     <lastmod>2016-11-06T13:00:25+05:30</lastmod>
   </url>
   
   <url>
     <loc>/about/</loc>
-    <lastmod>2016-11-05T21:05:33+05:30</lastmod>
   </url>
   
   <url>
@@ -99,20 +83,24 @@
   
   <url>
     <loc>/categories/interest/</loc>
-    <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+    <lastmod>2019-02-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+    <lastmod>2019-02-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/post/</loc>
-    <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+    <lastmod>2019-02-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/publications/</loc>
   </url>
   
   <url>
@@ -123,8 +111,16 @@
   
   <url>
     <loc>/categories/research/</loc>
-    <lastmod>2019-01-11T00:00:00+00:00</lastmod>
+    <lastmod>2019-02-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/research/</loc>
+  </url>
+  
+  <url>
+    <loc>/students/</loc>
   </url>
   
   <url>

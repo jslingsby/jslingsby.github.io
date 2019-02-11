@@ -6,7 +6,7 @@
     <description>Recent content on Jasper Slingsby</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 11 Jan 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 11 Feb 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,11 +14,11 @@
     <item>
       <title>Drought Monitor for the Jonkershoek Valley, Western Cape, South Africa</title>
       <link>/post/2017-04-01-langrivier/</link>
-      <pubDate>Fri, 11 Jan 2019 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
       
       <guid>/post/2017-04-01-langrivier/</guid>
       <description>This analysis was prepared by the Fynbos Node of the South African Environmental Observation Network (SAEON).
-Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of December 2018. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams.</description>
+Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of January 2019. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams.</description>
     </item>
     
     <item>
@@ -48,15 +48,6 @@ Now I know those of you who have asked me in person are thinking “That’s not
       <guid>/post/2017-04-01-primerspatialdata/</guid>
       <description>Installing R (and RStudio) CRAN Spatial Task Views!!! Useful DIY resources   Points, lines, polygons and rasters - R can handle them all. My aim for this post is to give you the basics required to teach yourself spatial data analysis in R - following 3 major sections listed above.
 In the next post I provide a practical example working with point, line, polygon and raster data. If you’re already familiar with R then you can skip straight there, but you may be interested to check out the useful DIY resources before you go.</description>
-    </item>
-    
-    <item>
-      <title>Research</title>
-      <link>/research/</link>
-      <pubDate>Thu, 23 Aug 2018 21:05:33 +0530</pubDate>
-      
-      <guid>/research/</guid>
-      <description>To summarize one&amp;rsquo;s research in a few short paragraphs is an impossible task, so please excuse the use of caveats and the general vagueness of this section. You&amp;rsquo;ll also note from my posts and publications that this is not an exhaustive list of my interests and activities. I&amp;rsquo;ve tried to give a broad overview of the kinds of work I am currently doing and where I&amp;rsquo;d like to take them, but obviously there is a long list of ongoing projects that have rolled over from previous interests, collaborations and skills I have developed over time.</description>
     </item>
     
     <item>
@@ -149,9 +140,20 @@ For a general introduction for many of the functions used and handling spatial d
     </item>
     
     <item>
+      <title>About me</title>
+      <link>/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/about/</guid>
+      <description>I am an ecologist based at the Fynbos Node of the South African Environmental Observation Network (SAEON), in Cape Town.
+I created this (personal) site because it&amp;rsquo;s handy to be able to serve webpages for various applications and I got sick of having RPubs webpages floating all over the place.
+I&amp;rsquo;m also considering using it as an Open Lab Book in the interests of supporting Open Notebook Science. There are many motivations for doing this, but primarily I believe that science should be fully transparent and repeatable.</description>
+    </item>
+    
+    <item>
       <title>Publications</title>
       <link>/publications/</link>
-      <pubDate>Fri, 31 Mar 2017 21:05:33 +0530</pubDate>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/publications/</guid>
       <description>Papers and peer-reviewed book chapters 
@@ -162,23 +164,21 @@ For a general introduction for many of the functions used and handling spatial d
     </item>
     
     <item>
-      <title>Students</title>
-      <link>/students/</link>
-      <pubDate>Fri, 31 Mar 2017 21:05:33 +0530</pubDate>
+      <title>Research</title>
+      <link>/research/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/students/</guid>
-      <description>Current students PhD Nasiphi Ntshanga Nasiphi is doing her PhD with &amp;#x15E;erban Proche&amp;#351; and I, based at the School of Agricultural, Earth and Environmental Sciences, University of KwaZulu-Natal. Nasiphi is exploring the interactions between landscape transformation and other drivers of global change and their impacts on ecological processes and biodiversity in the Cape Floristic Region. Nasiphi is Chairperson of SAEON&amp;rsquo;s Graduate Student Network (GSN) and recently won the talk for best speaker at South Africa&amp;rsquo;s Third National Conference on Global Change in Durban in 2016.</description>
+      <guid>/research/</guid>
+      <description>To summarize one&amp;rsquo;s research in a few short paragraphs is an impossible task, so please excuse the use of caveats and the general vagueness of this section. You&amp;rsquo;ll also note from my posts and publications that this is not an exhaustive list of my interests and activities. I&amp;rsquo;ve tried to give a broad overview of the kinds of work I am currently doing and where I&amp;rsquo;d like to take them, but obviously there is a long list of ongoing projects that have rolled over from previous interests, collaborations and skills I have developed over time.</description>
     </item>
     
     <item>
-      <title>About me</title>
-      <link>/about/</link>
-      <pubDate>Sat, 05 Nov 2016 21:05:33 +0530</pubDate>
+      <title>Students</title>
+      <link>/students/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/about/</guid>
-      <description>I am an ecologist based at the Fynbos Node of the South African Environmental Observation Network (SAEON), in Cape Town.
-I created this (personal) site because it&amp;rsquo;s handy to be able to serve webpages for various applications and I got sick of having RPubs webpages floating all over the place.
-I&amp;rsquo;m also considering using it as an Open Lab Book in the interests of supporting Open Notebook Science. There are many motivations for doing this, but primarily I believe that science should be fully transparent and repeatable.</description>
+      <guid>/students/</guid>
+      <description>Current students PhD Nasiphi Ntshanga Nasiphi is doing her PhD with &amp;#x15E;erban Proche&amp;#351; and I, based at the School of Agricultural, Earth and Environmental Sciences, University of KwaZulu-Natal. Nasiphi is exploring the interactions between landscape transformation and other drivers of global change and their impacts on ecological processes and biodiversity in the Cape Floristic Region. Nasiphi is Chairperson of SAEON&amp;rsquo;s Graduate Student Network (GSN) and recently won the talk for best speaker at South Africa&amp;rsquo;s Third National Conference on Global Change in Durban in 2016.</description>
     </item>
     
   </channel>
