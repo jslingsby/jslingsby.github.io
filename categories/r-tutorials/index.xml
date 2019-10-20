@@ -27,7 +27,8 @@ Now I know those of you who have asked me in person are thinking “That’s not
       <pubDate>Wed, 29 Aug 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/spatial-data-in-r-2-a-practical-example/</guid>
-      <description>A quick note on the structure of this tutorial Data Description Housekeeping Getting and cleaning the data, but first and foremost, projection!!! Let’s start with point data Raster data (mostly functions from library(raster)) Polygons! Going parallel!!! Animation! Some other data visualization and analysis But what about our poor cedars? Options for writing out spatial data   This post follows on from Handling Spatial Data in R - #1.</description>
+      <description>This post follows on from Handling Spatial Data in R - #1. Getting started, which gives the basics on installing R and RStudio, CRAN Spatial Task Views and useful DIY resources. Obviously, if you’re already familiar with these topics then no need to go through that post. You may also be interested in the next post on handling big spatial data and memory management.
+Here we’ll work through a practical example exploring fire history layers (polygon), topographic (raster) and locality (point) data using the libraries ‘rgdal’, ‘raster’ and ‘sp’ and a few others.</description>
     </item>
     
     <item>

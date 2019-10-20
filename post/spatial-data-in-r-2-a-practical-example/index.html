@@ -13,7 +13,7 @@
         "articleSection" : "post",
         "name" : "Handling Spatial Data in R - #2. A practical example",
         "headline" : "Handling Spatial Data in R - #2. A practical example",
-        "description" : "A quick note on the structure of this tutorial Data Description Housekeeping Getting and cleaning the data, but first and foremost, projection!!! Let’s start with point data Raster data (mostly functions from library(raster)) Polygons! Going parallel!!! Animation! Some other data visualization and analysis But what about our poor cedars? Options for writing out spatial data   This post follows on from Handling Spatial Data in R - #1.",
+        "description" : "This post follows on from Handling Spatial Data in R - #1. Getting started, which gives the basics on installing R and RStudio, CRAN Spatial Task Views and useful DIY resources. Obviously, if you’re already familiar with these topics then no need to go through that post. You may also be interested in the next post on handling big spatial data and memory management.\nHere we’ll work through a practical example exploring fire history layers (polygon), topographic (raster) and locality (point) data using the libraries ‘rgdal’, ‘raster’ and ‘sp’ and a few others.",
         "inLanguage" : "en",
         "author" : "Jasper Slingsby",
         "creator" : "Jasper Slingsby",
@@ -24,7 +24,7 @@
         "datePublished": "2018-08-29 00:00:00 \x2b0000 UTC",
         "dateModified" : "2018-08-29 00:00:00 \x2b0000 UTC",
         "url" : "\/post\/spatial-data-in-r-2-a-practical-example\/",
-        "wordCount" : "8469",
+        "wordCount" : "8488",
         "image" : "//img/cederberg_small.jpg"",
         "keywords" : [ "Blog" ]   
     }
@@ -260,30 +260,13 @@ if (!doNotTrack) {
             <article>
               
 
-<div id="TOC">
-<ul>
-<li><a href="#a-quick-note-on-the-structure-of-this-tutorial">A quick note on the structure of this tutorial</a></li>
-<li><a href="#data-description">Data Description</a></li>
-<li><a href="#housekeeping">Housekeeping</a></li>
-<li><a href="#getting-and-cleaning-the-data-but-first-and-foremost-projection">Getting and cleaning the data, but first and foremost, <em>projection!!!</em></a></li>
-<li><a href="#lets-start-with-point-data">Let’s start with point data</a></li>
-<li><a href="#raster-data-mostly-functions-from-libraryraster">Raster data (mostly functions from library(raster))</a></li>
-<li><a href="#polygons">Polygons!</a></li>
-<li><a href="#going-parallel">Going parallel!!!</a></li>
-<li><a href="#animation">Animation!</a></li>
-<li><a href="#some-other-data-visualization-and-analysis">Some other data visualization and analysis</a></li>
-<li><a href="#but-what-about-our-poor-cedars">But what about our poor cedars?</a></li>
-<li><a href="#options-for-writing-out-spatial-data">Options for writing out spatial data</a></li>
-</ul>
-</div>
 
 <hr />
 <p>This post follows on from <a href="http://www.ecologi.st/post/2017-04-01-primerspatialdata/"><strong>Handling Spatial Data in R - #1. Getting started</strong></a>, which gives the basics on installing <a href="https://cran.r-project.org/"><strong>R</strong></a> and <a href="https://www.rstudio.com/products/RStudio/"><strong>RStudio</strong></a>, CRAN Spatial Task Views and <a href="http://www.ecologi.st/post/2017-04-01-primerspatialdata/#useful-diy-resources"><strong>useful DIY resources</strong></a>. Obviously, if you’re already familiar with these topics then no need to go through that post. You may also be interested in the next post on <a href="http://www.ecologi.st/post/big-spatial-data/"><strong>handling big spatial data and memory management</strong></a>.</p>
 <p>Here we’ll work through a practical example exploring fire history layers (polygon), topographic (raster) and locality (point) data using the libraries ‘rgdal’, ‘raster’ and ‘sp’ and a few others. The example will cover setting and changing projections and extents, subseting polygons, raster calculations, rasterizing polygons and extracting data with a few neat tricks and visualisations along the way. Note that you can navigate to and/or bookmark the various sections using the links in the table of contents above.</p>
 <hr />
-<div id="a-quick-note-on-the-structure-of-this-tutorial" class="section level3">
-<h3>A quick note on the structure of this tutorial</h3>
-<p>From here this tutorial will include embedded chunks of R code and the output that R returns in little grey boxes. The R code I call starts at the beginning of the line, while each line of R’s output starts with “##”, e.g.</p>
+<p>###A quick note on the structure of this tutorial
+From here this tutorial will include embedded chunks of R code and the output that R returns in little grey boxes. The R code I call starts at the beginning of the line, while each line of R’s output starts with “##”, e.g.</p>
 <pre class="r"><code>1+1</code></pre>
 <pre><code>## [1] 2</code></pre>
 <p>Note that I occassionally include additional comments in the R chunks as one often does in normal R code. Comments are preceded by “#”, e.g.</p>
@@ -291,61 +274,51 @@ if (!doNotTrack) {
 <pre><code>## [1] 2</code></pre>
 <p>Hopefully this will all make sense as you get into the tutorial…</p>
 <hr />
-</div>
-<div id="data-description" class="section level3">
-<h3>Data Description</h3>
-<p>For this exercise we’ll play with fine-scale locality (point) data for the critically endangered Clanwilliam cedar (<em>Widdringtonia cedarbergensis</em>) mapped by my father for the <em>Hike the Cederberg</em> map (check out <strong><a href="http://www.slingsbymaps.com/" class="uri">http://www.slingsbymaps.com/</a></strong>; data for 1000 trees downloadable <a href="https://www.dropbox.com/s/1ucycs7vcaa5cm9/Cedars.kml?dl=0"><strong>here</strong></a>, a 90m (raster) digital elevation model (DEM) <a href="https://www.dropbox.com/s/nnqd2re8jxazvm4/srtm_ced.tif?dl=0"><strong>here</strong></a> (I will also show you how to download the DEM directly with R using the <em>raster</em> package), and two “polygon” data sets consisting of mapped burn scars for CapeNature reserves (available from SANBI’s BGIS website <a href="http://bgis.sanbi.org/Projects/Detail/168"><strong>here</strong></a> and the National Vegetation Map (available <a href="http://bgis.sanbi.org/SpatialDataset/Detail/18"><strong>here</strong></a>).</p>
+<p>###Data Description
+For this exercise we’ll play with fine-scale locality (point) data for the critically endangered Clanwilliam cedar (<em>Widdringtonia cedarbergensis</em>) mapped by my father for the <em>Hike the Cederberg</em> map (check out <strong><a href="http://www.slingsbymaps.com/" class="uri">http://www.slingsbymaps.com/</a></strong>; data for 1000 trees downloadable <a href="https://www.dropbox.com/s/1ucycs7vcaa5cm9/Cedars.kml?dl=0"><strong>here</strong></a>, a 90m (raster) digital elevation model (DEM) <a href="https://www.dropbox.com/s/nnqd2re8jxazvm4/srtm_ced.tif?dl=0"><strong>here</strong></a> (I will also show you how to download the DEM directly with R using the <em>raster</em> package), and two “polygon” data sets consisting of mapped burn scars for CapeNature reserves (available from SANBI’s BGIS website <a href="http://bgis.sanbi.org/Projects/Detail/168"><strong>here</strong></a> and the National Vegetation Map (available <a href="http://bgis.sanbi.org/SpatialDataset/Detail/18"><strong>here</strong></a>).</p>
 <p>You will need to download the cedar dataset into your chosen local data directory (see <em>datwd</em> under “Housekeeping” below) and download the other data into your chosen GIS data directory (see <em>giswd</em> below) and unzip them. <em>datwd</em> and <em>giswd</em> can be the same for the purposes of this tutorial. You can download the R code (with the RMarkdown content commented out) at <a href="https://www.dropbox.com/s/pwzccav07zwbwj4/PrimerSpatialData.R?dl=0"><strong>here</strong></a>.</p>
 <hr />
-</div>
-<div id="housekeeping" class="section level3">
-<h3>Housekeeping</h3>
-<p>Apologies, this bit is a little long-winded, but please read it carefully as it will likely affect your ability to run the code below.</p>
-<div id="working-directories" class="section level4">
-<h4>Working directories</h4>
-<p>I usually work from a “Project” in RStudio linked to a GIT repository (see <strong><a href="https://git-scm.com/" class="uri">https://git-scm.com/</a></strong> and <strong><a href="https://github.com/" class="uri">https://github.com/</a></strong>) for version control and easy code sharing/collaboration. I’m not going to go there with this tutorial, but it is worth exploring if you intend to do big projects in R. R projects set the working directory to a good place automatically. Alternatively you can use the setwd() function. If I’m not in a repo or I am working with large data sets that I don’t want to replicate in every GIT repo on my hard drive I usually set separate “data”, “GIS data” (i.e. biggish data) and “results” working directories by making each path an object and inserting as appropriate for different read and write functions using paste() or paste0(). These would look something like:</p>
-<p>datwd = “/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/”<br />
-giswd = “/Users/jasper/Documents/GIS/”<br />
-reswd = “/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Results/”</p>
-</div>
-<div id="sharing-code-between-multiple-machines" class="section level4">
-<h4>Sharing code between multiple machines</h4>
-<p>If you plan run the same code on multiple machines (e.g. your laptop and a workstation) or are sharing code with a collaborator (and are not using GitHub) it’s easiest to automatically detect what computer the code is being run on and set the appropriate working directories (and anything else you like).</p>
+<p>###Housekeeping
+Apologies, this bit is a little long-winded, but please read it carefully as it will likely affect your ability to run the code below.</p>
+<p>####Working directories
+I usually work from a “Project” in RStudio linked to a GIT repository (see <strong><a href="https://git-scm.com/" class="uri">https://git-scm.com/</a></strong> and <strong><a href="https://github.com/" class="uri">https://github.com/</a></strong>) for version control and easy code sharing/collaboration. I’m not going to go there with this tutorial, but it is worth exploring if you intend to do big projects in R. R projects set the working directory to a good place automatically. Alternatively you can use the setwd() function.
+If I’m not in a repo or I am working with large data sets that I don’t want to replicate in every GIT repo on my hard drive I usually set separate “data”, “GIS data” (i.e. biggish data) and “results” working directories by making each path an object and inserting as appropriate for different read and write functions using paste() or paste0(). These would look something like:</p>
+<p>datwd = “/home/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/”<br />
+giswd = “/home/jasper/Documents/GIS/”<br />
+reswd = “/home/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Results/”</p>
+<p>####Sharing code between multiple machines
+If you plan run the same code on multiple machines (e.g. your laptop and a workstation) or are sharing code with a collaborator (and are not using GitHub) it’s easiest to automatically detect what computer the code is being run on and set the appropriate working directories (and anything else you like).</p>
 <p>This can be done by identifying the machine/user using Sys.getenv() and wrapping the code for setting working directories etc in an if() statement for each user, like so:</p>
 <pre class="r"><code>Sys.getenv(&quot;USER&quot;) #Tells me the &quot;USER&quot; name on my machine (a Mac)</code></pre>
 <pre><code>## [1] &quot;jasper&quot;</code></pre>
-<p>NOTE!!! If you are on Windows you need to use <code>Sys.getenv(&quot;USERNAME&quot;)</code>. I don;t know why there’s a “USER/USERNAME” difference for Mac vs Windows but we have to live with it. I’m pretty sure Linux is the same as Mac, but try Sys.getenv() and see what you get.</p>
+<p>NOTE!!! If you are on Windows you need to use <code>Sys.getenv(&quot;USERNAME&quot;)</code>. I don’t know why there’s a “USER/USERNAME” difference for Mac/Linux vs Windows but we have to live with it.</p>
 <p>Then I can set up my <em>if()</em> statement. Note that each user/collaborator can set up their own <em>if()</em> statement one after the other because if the statement <code>Sys.getenv(&quot;USER&quot;)=='jasper'</code> returns <code>FALSE</code> then R doesn’t run the chunk of code in the curly brackets <code>{ ... }</code>.</p>
 <pre class="r"><code>if (Sys.getenv(&quot;USER&quot;)==&#39;jasper&#39;) {
-datwd=&quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/&quot;
-giswd=&quot;/Users/jasper/Documents/GIS/&quot;
-reswd=&quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Results/&quot;}
+datwd=&quot;/home/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/&quot;
+giswd=&quot;/home/jasper/Dropbox/BlogData/&quot;
+reswd=&quot;/home/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Results/&quot;}
 
 if (Sys.getenv(&quot;USER&quot;)==&#39;MACUseR&#39;) {datwd=&quot;&quot;; giswd=&quot;&quot;; reswd=&quot;&quot;} #Change here for Mac/Linux users
 
 if (Sys.getenv(&quot;USERNAME&quot;)==&#39;WINDOWSUseR&#39;) {datwd=&quot;&quot;; giswd=&quot;&quot;; reswd=&quot;&quot;} #CHange here for Windows users</code></pre>
 <p>This way a new project member can add a new line of code without deleting anything, and it only sets the working directories (and any other settings you want) for the appropriate user - i.e. the if() statement ignores settings for all other users.</p>
 <p>If you are running the code from this tutorial you need to set your username and working directories here. You can just set <em>datwd</em>, <em>giswd</em> and <em>reswd</em> to the same file path for the purposes of this tutorial (if you’ve put all the data you downloaded in the same place).</p>
-</div>
-<div id="a-quick-aside-on-slashes" class="section level4">
-<h4>A quick aside on slashes</h4>
-<p>Often the reason you can’t read in data is because you need to add (or delete) a “/” at the end! - Silly, but that pro tip should help.</p>
+<p>####A quick aside on slashes
+Often the reason you can’t read in data is because you need to add (or delete) a “/” at the end! - Silly, but that pro tip should help.</p>
 <p>Note that we generally use single forwardslashes “/” in R. Windows likes to use single backslashes, but R (and just about every other computer programme in the world) doesn’t like this. You can use double backslashes on Windows if you must…</p>
-</div>
-<div id="librariespackages" class="section level4">
-<h4>Libraries/packages</h4>
-<p>Here we call the extention libraries with functions we’ll need for this session. More on what R libraries/packages are in my previous post <a href="http://www.ecologi.st/post/2017-04-01-primerspatialdata/#installing-r-and-rstudio"><strong>here</strong></a>.</p>
+<p>####Libraries/packages
+Here we call the extention libraries with functions we’ll need for this session. More on what R libraries/packages are in my previous post <a href="http://www.ecologi.st/post/2017-04-01-primerspatialdata/#installing-r-and-rstudio"><strong>here</strong></a>.</p>
 <p>You should install the libraries before running the code below using <a href="https://www.rdocumentation.org/packages/utils/versions/3.5.1/topics/install.packages"><strong>install.packages()</strong></a> while connected to the internet - e.g. install.packages(“raster”). Note that one occasionally encounters issues installing doMC, but you can usually install it from their development page using install.packages(“doMC”, repos=“<a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a>”). If neither of these work for you don’t worry, it is not an essential component of the tutorial.</p>
 <pre class="r"><code>library(raster, quietly = T) # To handle rasters
 library(rasterVis, quietly = T) # For fancy raster visualisations
 library(rgdal, quietly = T) # To communicate with GDAL and handle shape files</code></pre>
-<pre><code>## rgdal: version: 1.3-4, (SVN revision 766)
+<pre><code>## rgdal: version: 1.4-4, (SVN revision 833)
 ##  Geospatial Data Abstraction Library extensions to R successfully loaded
-##  Loaded GDAL runtime: GDAL 2.1.3, released 2017/20/01
-##  Path to GDAL shared files: /Library/Frameworks/R.framework/Versions/3.5/Resources/library/rgdal/gdal
-##  GDAL binary built with GEOS: FALSE 
+##  Loaded GDAL runtime: GDAL 2.2.3, released 2017/11/20
+##  Path to GDAL shared files: /usr/share/gdal/2.2
+##  GDAL binary built with GEOS: TRUE 
 ##  Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
-##  Path to PROJ.4 shared files: /Library/Frameworks/R.framework/Versions/3.5/Resources/library/rgdal/proj
+##  Path to PROJ.4 shared files: (autodetected)
 ##  Linking to sp version: 1.3-1</code></pre>
 <pre class="r"><code>library(sp, quietly = T) # To handle shapefiles
 library(doMC, quietly = T) # To run code in parallel
@@ -355,10 +328,7 @@ suppressPackageStartupMessages(library(googleVis, quietly = T)) # For even more 
 <pre><code>## Creating a generic function for &#39;toJSON&#39; from package &#39;jsonlite&#39; in package &#39;googleVis&#39;</code></pre>
 <p>R should have give you a bunch of feedback after calling the libraries. Look out for errors or warnings suggesting that the packages aren’t installed properly. You can often ignore warnings, but it is useful to take note of them in case you encounter confusing problems later on.</p>
 <hr />
-</div>
-</div>
-<div id="getting-and-cleaning-the-data-but-first-and-foremost-projection" class="section level3">
-<h3>Getting and cleaning the data, but first and foremost, <em>projection!!!</em></h3>
+<p>###Getting and cleaning the data, but first and foremost, <em>projection!!!</em></p>
 <p>R typically uses the PROJ.4 conventions for cartographic projections (or coordinate reference systems - CRS). Check out <a href="http://proj4js.org" class="uri">http://proj4js.org</a> or <a href="http://spatialreference.org/" class="uri">http://spatialreference.org/</a> or google for the “proj4string” for various coordinate reference systems.</p>
 <p>NOTE!!! Many R functions will allow you to play with objects with different CRS resulting in GARBAGE! Others will reproject one or other of the objects for you, but this can be slow and it’s not worth taking the chance. I recommend checking and setting your CRS for all objects. You can check CRS with proj4string(), check that multiple objects have the same CRS using identicalCRS(), and reproject objects of class “Spatial” with spTransform() and objects of class “Raster” with projectRaster(). Note that not all reprojections are possible or sensible, but I’ll leave that homework to you. One key case where reprojection in R appears to work (but doesn’t!) is reprojecting MODIS satellite data from its native <em>Sinusoidal</em> projection. My workaround is to use the <a href="https://www.rdocumentation.org/packages/gdalUtils/versions/2.0.1.14/topics/gdalwarp"><strong>gdalwarp()</strong></a> function in <a href="https://cran.r-project.org/web/packages/gdalUtils/index.html"><strong>library(gdalUtils)</strong></a> - a very powerful set of functions which I explore in the <a href="http://www.ecologi.st/post/big-spatial-data/"><strong>next post</strong></a> on big spatial data and memory management.</p>
 <p>I like to set a standardized CRS as an object that I can call throughout my workflow.</p>
@@ -368,29 +338,24 @@ stdCRS &lt;- &quot;+proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m 
 #This is also &quot;EPSG:32734&quot; - according to the European Petroleum Survey Group CRS convention - another common one</code></pre>
 <p>This is the Universal Transverse Mercator (UTM) projection, which is useful for studies with smallish extents (~&lt;100km a side), because the unit is metres and is easily interpretable. The UTM zone we’re in for this example is 34 South <a href="http://whatutmzoneamiin.blogspot.co.za/p/map.html" class="uri">http://whatutmzoneamiin.blogspot.co.za/p/map.html</a> - so I’ve used UTM34S. More on projections for those interested <a href="https://en.wikipedia.org/wiki/Map_projection#Projections_by_preservation_of_a_metric_property"><strong>here</strong></a>.</p>
 <hr />
-</div>
-<div id="lets-start-with-point-data" class="section level3">
-<h3>Let’s start with point data</h3>
+<p>###Let’s start with point data</p>
 <p><strong>Note!!!</strong> Here I’ll mostly use functions from library(rgdal) and library(sp). These have recently been superceded by <a href="https://cran.r-project.org/web/packages/sf/index.html"><strong>library(sf)</strong></a>, which covers functionality from these two packages and library(rgeos) and follows a <a href="https://www.tidyverse.org/"><strong>Tidyverse</strong></a> approach to R coding. I’ve stuck with library(rgdal) and library(sp) because I first started this primer before library(sf) was released. I also feel its useful to see the diversity of ways in which things can be done in R (each have their pros and cons), and once you’ve learned it one way its easier to learn other ways. I hope to add a library(sf) tutorial (or section to this tutorial) at a later stage and will endeavour to add the link here ;) Note that library(sf) doesn’t deal with rasters so its still worth checking out the raster section of this post either way.</p>
-<div id="reading-in-shapefiles" class="section level4">
-<h4>Reading in shapefiles</h4>
-<p>Ok, so lets use readOGR() from library(rgdal) to read the point data in as a shapefile. Note that readOGR() is incredibly versatile and can read in all kinds of shapefiles with different features (point, line, polygon) from different software - type ?rgdal for more info. Here R essentially calls the GDAL <a href="http://www.gdal.org/" class="uri">http://www.gdal.org/</a> software (the underpinning for QGIS and a number of other GIS software products). Unfortunately some PCs struggle to automatically install GDAL, but there are plenty of online fora providing solutions. Sometimes (although this issue may be fixed) there are conflicts between library(sp) and library(rgdal) depending on what order they are called.</p>
+<p>####Reading in shapefiles
+Ok, so lets use readOGR() from library(rgdal) to read the point data in as a shapefile. Note that readOGR() is incredibly versatile and can read in all kinds of shapefiles with different features (point, line, polygon) from different software - type ?rgdal for more info. Here R essentially calls the GDAL <a href="http://www.gdal.org/" class="uri">http://www.gdal.org/</a> software (the underpinning for QGIS and a number of other GIS software products). Unfortunately some PCs struggle to automatically install GDAL, but there are plenty of online fora providing solutions. Sometimes (although this issue may be fixed) there are conflicts between library(sp) and library(rgdal) depending on what order they are called.</p>
 <pre class="r"><code>rawpts &lt;- readOGR(dsn=paste0(datwd, &quot;Cedars.kml&quot;), layer=&quot;Cedars.kml&quot;) # A Google Earth KML file</code></pre>
-<pre><code>## OGR data source with driver: KML 
-## Source: &quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/Cedars.kml&quot;, layer: &quot;Cedars.kml&quot;
+<pre><code>## OGR data source with driver: LIBKML 
+## Source: &quot;/home/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/Cedars.kml&quot;, layer: &quot;Cedars.kml&quot;
 ## with 1000 features
-## It has 2 fields</code></pre>
+## It has 11 fields</code></pre>
 <pre class="r"><code>proj4string(rawpts) # Check projection</code></pre>
 <pre><code>## [1] &quot;+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0&quot;</code></pre>
 <pre class="r"><code>pts &lt;- spTransform(rawpts, CRS(stdCRS)) # Do spatial transform to project to our chosen CRS</code></pre>
 <p>Note the strange <em>dsn=…, layer=…</em> syntax. This will mess with you at first!!! This syntax is used to allow the function to read in many different file formats - type “ogrDrivers()” into the console to see a list. Different drivers often require different inputs for <em>dsn=</em> and <em>layer=</em>. I often have to play around or ask Google before I get it right for a new file type…</p>
 <p>Also note the use of the <em>paste0(datwd, “Cedars.kml”)</em> trick I mentioned earlier:</p>
 <pre class="r"><code>paste0(datwd, &quot;Cedars.kml&quot;)</code></pre>
-<pre><code>## [1] &quot;/Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/Cedars.kml&quot;</code></pre>
+<pre><code>## [1] &quot;/home/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/Cedars.kml&quot;</code></pre>
 <p>Again, note that the presence and number of /’s are very important… It’s the first thing to check if you get an error!!! IF YOU HAVE ANY ISSUES READING IN DATA AT ANY STAGE THE FIRST THING TO DO IS TO RUN THE <em>“paste0(…)”</em> SECTION OF THE SCRIPT AND MAKE SURE IT MATCHES EXACTLY THE PATH TO YOUR FILE!!!</p>
-</div>
-<div id="spatialdataframes" class="section level4">
-<h4>SpatialDataFrames</h4>
+<p>####SpatialDataFrames</p>
 <p>Let’s explore our point data a little more. Firstly, let’s look at the data class attribute.</p>
 <pre class="r"><code>class(pts)</code></pre>
 <pre><code>## [1] &quot;SpatialPointsDataFrame&quot;
@@ -398,17 +363,22 @@ stdCRS &lt;- &quot;+proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m 
 ## [1] &quot;sp&quot;</code></pre>
 <p>A “SpatialPointsDataFrame” - which is as it suggests - a set of spatial localities linked to a dataframe of information about each locality - like an attribute table in other GIS software. The nice thing is that R allows you to manipulate “Spatial(Point/Polygon/etc)Dataframes” in the same way as you can regular dataframes, e.g.</p>
 <pre class="r"><code>head(pts)</code></pre>
-<pre><code>##   Name Description
-## 1                 
-## 2                 
-## 3                 
-## 4                 
-## 5                 
-## 6</code></pre>
+<pre><code>##   Name description timestamp begin  end altitudeMode tessellate extrude
+## 1                       &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt;         &lt;NA&gt;         -1       0
+## 2                       &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt;         &lt;NA&gt;         -1       0
+## 3                       &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt;         &lt;NA&gt;         -1       0
+## 4                       &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt;         &lt;NA&gt;         -1       0
+## 5                       &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt;         &lt;NA&gt;         -1       0
+## 6                       &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt;         &lt;NA&gt;         -1       0
+##   visibility drawOrder icon
+## 1         -1        NA &lt;NA&gt;
+## 2         -1        NA &lt;NA&gt;
+## 3         -1        NA &lt;NA&gt;
+## 4         -1        NA &lt;NA&gt;
+## 5         -1        NA &lt;NA&gt;
+## 6         -1        NA &lt;NA&gt;</code></pre>
 <p>Revealing that there’s not much in this object’s “attribute table”. Note that you can also subset using indexing [,], access columns using $, apply summary functions, etc as one does with a normal dataframe. We’ll do more of this in the <a href="http://www.ecologi.st/post/spatial-data-in-r-2-a-practical-example/#polygons"><strong>Polygons</strong></a> section.</p>
-</div>
-<div id="accessing-spatial-coordinates-and-creating-point-shapefiles-from-spreadsheet-data" class="section level4">
-<h4>Accessing spatial coordinates and creating point shapefiles from spreadsheet data</h4>
+<p>####Accessing spatial coordinates and creating point shapefiles from spreadsheet data</p>
 <p>We can easily extract the spatial coordinates from our object using coordinates().</p>
 <pre class="r"><code>head(coordinates(pts))</code></pre>
 <pre><code>##      coords.x1 coords.x2
@@ -459,15 +429,11 @@ str(x) # Note the presence of proj4string info</code></pre>
 <pre class="r"><code>rm(x)</code></pre>
 <p>NOTE: Many spatial data objects use “slots” to store various components of the data (the “@” symbols revealed when we look at the data structure with the str() function). The slots can be accessed using “@” like you would “$” to call a variable from a dataframe or object from a list, but it is RECOMMENDED THAT YOU DO NOT DO THIS… The reason being that slots were designed so that the R package developers can change the way slots work to improve efficiency, handle new or different objects etc. If you write code that accesses slots directly it may break next time the libraries are updated. There are functions for accessing all slots (e.g. proj4string(), coordinates(), etc.) or you can simply use regular dataframe functionality.</p>
 <hr />
-</div>
-</div>
-<div id="raster-data-mostly-functions-from-libraryraster" class="section level3">
-<h3>Raster data (mostly functions from library(raster))</h3>
-<p>Let’s get a digital elevation model (DEM) from the SRTM90 (Shuttle Radar Topography Mission)* digital elevation database, match projection, and trim to the same extent as “pts”.</p>
+<p>###Raster data (mostly functions from library(raster))
+Let’s get a digital elevation model (DEM) from the SRTM90 (Shuttle Radar Topography Mission)* digital elevation database, match projection, and trim to the same extent as “pts”.</p>
 <p>*<sub><sup>Jarvis A., H.I. Reuter, A. Nelson, E. Guevara, 2008, Hole-filled seamless SRTM data V4, International Centre for Tropical Agriculture (CIAT), available from <a href="http://srtm.csi.cgiar.org" class="uri">http://srtm.csi.cgiar.org</a> </sup></sub></p>
-<div id="reading-in-reprojecting-and-cropping-raster-data" class="section level4">
-<h4>Reading in, reprojecting and cropping raster data</h4>
-<p>We can download the data directly with R using the function getData() (type ?getData for details), but this can be slow because it downloads a much bigger area than we need. To save time I’ve downloaded the data before and saved it locally with the “path =” setting. I’ve also provided you with a link to the subsetted data you need in the <a href="http://www.ecologi.st/post/spatial-data-in-r-2-a-practical-example/#data-description"><strong>Data Description</strong></a> section of the post above. Here’s the code if you’re interested - hashed (#) out so R sees it as a comment and doesn’t run it.</p>
+<p>####Reading in, reprojecting and cropping raster data
+We can download the data directly with R using the function getData() (type ?getData for details), but this can be slow because it downloads a much bigger area than we need. To save time I’ve downloaded the data before and saved it locally with the “path =” setting. I’ve also provided you with a link to the subsetted data you need in the <a href="http://www.ecologi.st/post/spatial-data-in-r-2-a-practical-example/#data-description"><strong>Data Description</strong></a> section of the post above. Here’s the code if you’re interested - hashed (#) out so R sees it as a comment and doesn’t run it.</p>
 <pre class="r"><code>#dem &lt;- getData(&#39;SRTM&#39;, lon=19, lat=-32.5, path = paste0(giswd, &quot;SRTM/&quot;)) # download data from CGIAR website</code></pre>
 <p>Instead we’ll read the data in from the local source using the very versatile raster() function.</p>
 <pre class="r"><code>dem &lt;- raster(paste0(giswd, &quot;SRTM/srtm_ced.tif&quot;)) # read in data from local source - NOTE THAT YOU MAY NEED TO UNZIP THE FILE YOU DOWNLOADED in the Data Description section!!!
@@ -479,17 +445,17 @@ proj4string(dem)</code></pre>
 <pre><code>## [1] &quot;+proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs +towgs84=0,0,0&quot;</code></pre>
 <p>Now let’s look at the extent of the DEM relative to the cedar locality data.</p>
 <pre class="r"><code>extent(dem)</code></pre>
-<pre><code>## class       : Extent 
-## xmin        : 266615.1 
-## xmax        : 382010.1 
-## ymin        : 6353842 
-## ymax        : 6491056</code></pre>
+<pre><code>## class      : Extent 
+## xmin       : 266615.1 
+## xmax       : 382010.1 
+## ymin       : 6353842 
+## ymax       : 6491056</code></pre>
 <pre class="r"><code>extent(pts)</code></pre>
-<pre><code>## class       : Extent 
-## xmin        : 315517.9 
-## xmax        : 333832.2 
-## ymin        : 6410827 
-## ymax        : 6434186</code></pre>
+<pre><code>## class      : Extent 
+## xmin       : 315517.9 
+## xmax       : 333832.2 
+## ymin       : 6410827 
+## ymax       : 6434186</code></pre>
 <p>Our DEM has a MUCH larger extent than our cedars of interest and we should crop it.</p>
 <pre class="r"><code>E &lt;- extent(pts) + c(-900, 900, -900, 900) # The &quot;+ c(...)&quot; term adds a 900m buffer around the trees
 dem &lt;- crop(dem, E) # Crop DEM to the buffered extent</code></pre>
@@ -497,10 +463,8 @@ dem &lt;- crop(dem, E) # Crop DEM to the buffered extent</code></pre>
 <pre class="r"><code>plot(dem) #plot the digital elevation model
 points(pts, pch=20, cex=.1) #add the cedar localities</code></pre>
 <p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
-</div>
-<div id="calculating-topographic-information-from-a-dem" class="section level4">
-<h4>Calculating topographic information from a DEM</h4>
-<p>Now that we have the DEM cleaned up for our study let’s use the terrain() function to calculate/extract some topographic information. Note that terrain() is based on the more versatile focal() function, should you want to design your own indices etc. Also see rasterEngine() in library(spatial.tools) which is an equivalent, but with easy parallel processing capability.</p>
+<p>####Calculating topographic information from a DEM
+Now that we have the DEM cleaned up for our study let’s use the terrain() function to calculate/extract some topographic information. Note that terrain() is based on the more versatile focal() function, should you want to design your own indices etc. Also see rasterEngine() in library(spatial.tools) which is an equivalent, but with easy parallel processing capability.</p>
 <pre class="r"><code>slope &lt;- terrain(dem, &quot;slope&quot;)
 aspect &lt;- terrain(dem, &quot;aspect&quot;)
 TPI &lt;- terrain(dem, &quot;TPI&quot;) # Topographic Position Index
@@ -510,10 +474,8 @@ flowdir &lt;- terrain(dem, &quot;flowdir&quot;)</code></pre>
 <p>But “aspect” is circular so small changes in the northern aspects (e.g. 2 to 358 degrees) look like big changes in the data. We can break aspect down into east-westness and north-southness using sin() and cos() - remember your trigonometry? (DISCLAIMER: This approach is not perfect and I’d recommend reading up about it if you intend to use it in your research).</p>
 <pre class="r"><code>eastwest &lt;- sin(aspect)
 northsouth &lt;- cos(aspect)</code></pre>
-</div>
-<div id="renaming-and-stacking-rasters" class="section level4">
-<h4>Renaming and stack()ing rasters</h4>
-<p>Dealing with all these different rasters gets a bit cumbersome, but they have the same extent, resolution and grid so we can stack() them into one object. But first, we should make sure the data are named in a sensible way otherwise they can all end out being named “layer”…</p>
+<p>####Renaming and stack()ing rasters
+Dealing with all these different rasters gets a bit cumbersome, but they have the same extent, resolution and grid so we can stack() them into one object. But first, we should make sure the data are named in a sensible way otherwise they can all end out being named “layer”…</p>
 <pre class="r"><code>names(eastwest)</code></pre>
 <pre><code>## [1] &quot;layer&quot;</code></pre>
 <pre class="r"><code>names(northsouth) </code></pre>
@@ -525,23 +487,21 @@ names(northsouth) &lt;- &quot;northsouth&quot;
 names(dem) &lt;- &quot;dem&quot;
 topo &lt;- stack(dem, slope, eastwest, northsouth, TPI, TRI, roughness, flowdir)
 topo</code></pre>
-<pre><code>## class       : RasterStack 
-## dimensions  : 272, 256, 69632, 8  (nrow, ncol, ncell, nlayers)
-## resolution  : 78.5, 92.4  (x, y)
-## extent      : 314657.1, 334753.1, 6409929, 6435062  (xmin, xmax, ymin, ymax)
-## coord. ref. : +proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs +towgs84=0,0,0 
-## names       :           dem,         slope,      eastwest,    northsouth,           tpi,           tri,     roughness,       flowdir 
-## min values  :  2.978850e+02,  7.817324e-05, -1.000000e+00, -1.000000e+00, -6.984706e+01,  4.181858e-01,  1.042966e+00,  1.000000e+00 
-## max values  :   1957.903873,      1.114246,      1.000000,      1.000000,     90.148799,    139.760182,    436.692354,    128.000000</code></pre>
+<pre><code>## class      : RasterStack 
+## dimensions : 272, 256, 69632, 8  (nrow, ncol, ncell, nlayers)
+## resolution : 78.5, 92.4  (x, y)
+## extent     : 314657.1, 334753.1, 6409929, 6435062  (xmin, xmax, ymin, ymax)
+## crs        : +proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs +towgs84=0,0,0 
+## names      :           dem,         slope,      eastwest,    northsouth,           tpi,           tri,     roughness,       flowdir 
+## min values :  2.978850e+02,  7.817324e-05, -1.000000e+00, -1.000000e+00, -6.984706e+01,  4.181858e-01,  1.042966e+00,  1.000000e+00 
+## max values :   1957.903873,      1.114246,      1.000000,      1.000000,     90.148799,    139.760182,    436.692354,    128.000000</code></pre>
 <pre class="r"><code># Another way to rename rasters in a stack
 # names(topo) &lt;- c(&quot;name1&quot;, &quot;name2&quot;&quot;, etc)</code></pre>
 <p>Let’s look at what we’ve made.</p>
 <pre class="r"><code>plot(topo)</code></pre>
 <p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
-</div>
-<div id="rasterizing-aggregating-and-raster-calculations" class="section level4">
-<h4>Rasterizing, aggregating and raster calculations</h4>
-<p>The <em>raster</em> library provides an amazing and very versatile environment for creating and working with rasters.</p>
+<p>####Rasterizing, aggregating and raster calculations
+The <em>raster</em> library provides an amazing and very versatile environment for creating and working with rasters.</p>
 <p>e.g. You easily can convert other data types into rasters using rasterize(), which allows you to specify the raster extent and resolution (or match an existing raster), and can apply functions so that you can chose what aspect of the data you’d like to focus on (e.g. the min, max or sum of a field in the attribute table of your vector layer). Here let’s rasterize the cedar points layer and calculate the tree density by 90m grid cell from the DEM.</p>
 <pre class="r"><code>dens &lt;- rasterize(pts, dem, field=&quot;Name&quot;, fun=&quot;count&quot;)
 plot(dens)</code></pre>
@@ -555,14 +515,11 @@ plot(dens)</code></pre>
 <p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 <p>Note that you can add, subtract, multiply and divide rasters using code like <em>raster1 + raster2</em> etc, which allows you to easily do some quite complicated calculations. Its also worth exploring the calc() function for designing and implementing more complicated functions.</p>
 <hr />
-</div>
-</div>
-<div id="polygons" class="section level3">
-<h3>Polygons!</h3>
+<p>###Polygons!</p>
 <p>Perhaps the best place to start is the National Vegetation Map of South Africa, Lesotho and Swaziland. Let’s get the data, set the CRS and crop to our area/extent of interest. Note that polygons, points and lines are all vector data (as opposed to raster) and you can handle them using the same functions.</p>
 <pre class="r"><code>vegmap &lt;- readOGR(dsn=paste0(giswd, &quot;VegMap/nvm2012beta2_wgs84_Geo&quot;), layer=&quot;nvm2012beta2_wgs84_Geo&quot;) # Get the data</code></pre>
 <pre><code>## OGR data source with driver: ESRI Shapefile 
-## Source: &quot;/Users/jasper/Documents/GIS/VegMap/nvm2012beta2_wgs84_Geo&quot;, layer: &quot;nvm2012beta2_wgs84_Geo&quot;
+## Source: &quot;/home/jasper/Dropbox/BlogData/VegMap/nvm2012beta2_wgs84_Geo&quot;, layer: &quot;nvm2012beta2_wgs84_Geo&quot;
 ## with 44822 features
 ## It has 21 fields</code></pre>
 <pre class="r"><code>head(vegmap) # Have a look at the first 6 rows of the attribute table </code></pre>
@@ -602,11 +559,11 @@ plot(dens)</code></pre>
 ## 4 Descriptions\\AZd_3_2006.docx      &lt;NA&gt; 10 02 003   1.2295
 ## 5 Descriptions\\FFs12_2006.docx      &lt;NA&gt; 01 01 012   0.1208</code></pre>
 <pre class="r"><code>extent(vegmap) # Check the extent</code></pre>
-<pre><code>## class       : Extent 
-## xmin        : 16.45696 
-## xmax        : 32.8914 
-## ymin        : -34.8334 
-## ymax        : -22.12583</code></pre>
+<pre><code>## class      : Extent 
+## xmin       : 16.45696 
+## xmax       : 32.8914 
+## ymin       : -34.8334 
+## ymax       : -22.12583</code></pre>
 <pre class="r"><code>proj4string(vegmap) # Check the projection</code></pre>
 <pre><code>## [1] &quot;+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0&quot;</code></pre>
 <pre class="r"><code>vegmap &lt;- spTransform(vegmap, CRS(stdCRS)) # Reproject - This can take a while...
@@ -675,7 +632,7 @@ identical(treeveg, treeveg2)</code></pre>
 <p>Now let’s play with the CapeNature fire record data we downloaded earlier. Firstly, we get the data and transform to our standard CRS as for the vegmap.</p>
 <pre class="r"><code>firelayers &lt;- readOGR(dsn=paste0(giswd, &quot;CFR/All_fires_16_17_gw&quot;), layer=&quot;All_fires_16_17_gw&quot;)</code></pre>
 <pre><code>## OGR data source with driver: ESRI Shapefile 
-## Source: &quot;/Users/jasper/Documents/GIS/CFR/All_fires_16_17_gw&quot;, layer: &quot;All_fires_16_17_gw&quot;
+## Source: &quot;/home/jasper/Dropbox/BlogData/CFR/All_fires_16_17_gw&quot;, layer: &quot;All_fires_16_17_gw&quot;
 ## with 3842 features
 ## It has 16 fields
 ## Integer64 fields read as strings:  id</code></pre>
@@ -683,17 +640,17 @@ identical(treeveg, treeveg2)</code></pre>
 <pre><code>## [1] &quot;+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0&quot;</code></pre>
 <pre class="r"><code>firelayers &lt;- spTransform(firelayers, CRS(stdCRS))
 extent(firelayers)</code></pre>
-<pre><code>## class       : Extent 
-## xmin        : 250253.7 
-## xmax        : 733752.2 
-## ymin        : 6150231 
-## ymax        : 6453673</code></pre>
+<pre><code>## class      : Extent 
+## xmin       : 250253.7 
+## xmax       : 733752.2 
+## ymin       : 6150231 
+## ymax       : 6453673</code></pre>
 <p>Note that the fire data covers all CapeNature reserves across the CFR - I’ve done a quick and dirty exploration of patterns and trends for the whole region <a href="http://www.ecologi.st/post/fire/"><strong>here</strong></a> for those interested. We could crop() to our extent (E), but there are other ways. Let’s explore and manipulate the data object a little. Note that the str() function is not useful when there are many layers (e.g. fires) - it just prints out all the details for each of the ~3500 separate fire layers… but calling the name of a spatial* object usually reports a summary and we can always explore the data as one does a dataframe.</p>
 <pre class="r"><code>firelayers</code></pre>
 <pre><code>## class       : SpatialPolygonsDataFrame 
 ## features    : 3842 
 ## extent      : 250253.7, 733752.2, 6150231, 6453673  (xmin, xmax, ymin, ymax)
-## coord. ref. : +proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs +towgs84=0,0,0 
+## crs         : +proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs +towgs84=0,0,0 
 ## variables   : 16
 ## names       :   id,       FIRE_CODE, Res_code,  Region, Month, Year, Res_centre,                Res_name,                   Local_desc,  Datestart, Dateexting,  Datewithd,     Report_off,    Police_Cas,                    Ignitionca, ... 
 ## min values  :    0, ANYS/00/1986/01,     ANYS, Central,     0, 1927,   Anysberg,            Anysberg MCA,                            ?, 1927/05/28, 1940/06/27, 1944/01/16,             ??,             -, Fire operations - Block burns, ... 
@@ -881,9 +838,7 @@ writeRaster(rfi,file=rfifile) # Write out rasters to one file
 ##       0       0       0</code></pre>
 <p>Note that you’ll see it takes 0 seconds on my machine - that’s because the statement <em>if(!file.exists(rfifile))</em> on my machine is <code>TRUE</code> (i.e. I’d already made the output geotif before), so none of that code ran. You should see something different the first time you run it.</p>
 <hr />
-</div>
-<div id="going-parallel" class="section level3">
-<h3>Going parallel!!!</h3>
+<p>###Going parallel!!!</p>
 <p>Now lets try it in parallel using the <em>foreach/%dopar%</em> loop in library(doMC)… This is just one of many ways of setting up parallel processing in R, and not necessarily the best. I’ve just used it because foreach() is an easy extention of a for() loop. There are many options!!! For a quick primer have a look at <a href="http://gforge.se/2015/02/how-to-go-parallel-in-r-basics-tips/#Memory_load"><strong>this blog post</strong></a>.</p>
 <p>First, we need to set the machine up for parallel processing by registering the cores we want to use as a cluster. We’ll autodetect the number of cores on your machine (using detectCores()) and use one less - allowing you to still work on other programmes on your machine while the code runs</p>
 <pre class="r"><code>registerDoMC(detectCores()-1)</code></pre>
@@ -913,21 +868,19 @@ writeRaster(rfi,file=rfifileP) # Write out the set of rasters to one file
 <p>Now lets read in the layers we wrote out and plot them.</p>
 <pre class="r"><code>rfi &lt;- stack(rfifile) # Read the files back in as a stack
 rfi # Look at the stack</code></pre>
-<pre><code>## class       : RasterStack 
-## dimensions  : 272, 257, 69904, 74  (nrow, ncol, ncell, nlayers)
-## resolution  : 78.3, 92.4  (x, y)
-## extent      : 314587.6, 334710.7, 6409924, 6435056  (xmin, xmax, ymin, ymax)
-## coord. ref. : +proj=utm +zone=34 +south +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0 
-## names       : fires_annual_90m.1, fires_annual_90m.2, fires_annual_90m.3, fires_annual_90m.4, fires_annual_90m.5, fires_annual_90m.6, fires_annual_90m.7, fires_annual_90m.8, fires_annual_90m.9, fires_annual_90m.10, fires_annual_90m.11, fires_annual_90m.12, fires_annual_90m.13, fires_annual_90m.14, fires_annual_90m.15, ...</code></pre>
+<pre><code>## class      : RasterStack 
+## dimensions : 272, 257, 69904, 74  (nrow, ncol, ncell, nlayers)
+## resolution : 78.3, 92.4  (x, y)
+## extent     : 314587.6, 334710.7, 6409924, 6435056  (xmin, xmax, ymin, ymax)
+## crs        : +proj=utm +zone=34 +south +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0 
+## names      : fires_annual_90m.1, fires_annual_90m.2, fires_annual_90m.3, fires_annual_90m.4, fires_annual_90m.5, fires_annual_90m.6, fires_annual_90m.7, fires_annual_90m.8, fires_annual_90m.9, fires_annual_90m.10, fires_annual_90m.11, fires_annual_90m.12, fires_annual_90m.13, fires_annual_90m.14, fires_annual_90m.15, ...</code></pre>
 <pre class="r"><code>names(rfi)=paste0(&quot;Fire_&quot;,years) # Add year as name for each raster
 rfi &lt;- crop(rfi, E) # Crop to just our area of interest (speeds things up)
 plot(rfi) # Plot all layers</code></pre>
 <p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
 <p>Pretty messy… there must be a sexier way?</p>
 <hr />
-</div>
-<div id="animation" class="section level3">
-<h3>Animation!</h3>
+<p>###Animation!</p>
 <p>There are more and more ways of producing cool animations and interactive graphics in R. Here’s a simple example using library(animation). Note that this reqires installing the stand-alone software <strong><a href="http://www.imagemagick.org/" class="uri">http://www.imagemagick.org/</a></strong>.</p>
 <pre class="r"><code>if(!file.exists(paste0(reswd,&quot;fires.gif&quot;))) { # Check if the file exists
   saveGIF({
@@ -940,10 +893,7 @@ plot(rfi) # Plot all layers</code></pre>
     ani.width = 480, ani.height = 600, 
     interval=.5)
 }</code></pre>
-<div class="figure">
-<img src="/img/fires.gif" />
-
-</div>
+<p><img src="/img/fires.gif" /></p>
 <p>Hmm… not that impressive… What if we take advantage of raster calculations and add all the rasters leading up to each time step using sum()?</p>
 <pre class="r"><code>if(!file.exists(paste0(reswd,&quot;firesadded.gif&quot;))) { # Check if the file exists
   saveGIF({
@@ -956,15 +906,10 @@ plot(rfi) # Plot all layers</code></pre>
     ani.width = 480, ani.height = 600, 
     interval=.5)
 }</code></pre>
-<div class="figure">
-<img src="/img/firesadded.gif" />
-
-</div>
+<p><img src="/img/firesadded.gif" /></p>
 <p>Much prettier!</p>
 <hr />
-</div>
-<div id="some-other-data-visualization-and-analysis" class="section level3">
-<h3>Some other data visualization and analysis</h3>
+<p>###Some other data visualization and analysis</p>
 <pre class="r"><code># Plotting functions in library(rasterVis)
 levelplot(dem)</code></pre>
 <p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-47-1.png" width="672" /></p>
@@ -980,114 +925,114 @@ points.gb &lt;- as.data.frame(rawpts[sample(1:1000, 20),]) # Just select a few t
 points.gb$latlon &lt;- paste(points.gb$coords.x2, points.gb$coords.x1, sep=&quot;:&quot;)
 map.gb &lt;- gvisMap(points.gb, locationvar=&quot;latlon&quot;, tipvar=&quot;Name&quot;)
 plot(map.gb)</code></pre>
-<!-- Map generated in R 3.5.1 by googleVis 0.6.2 package -->
-<!-- Thu Oct 11 11:30:38 2018 -->
+<!-- Map generated in R 3.6.1 by googleVis 0.6.4 package -->
+<!-- Sun Oct 20 21:40:30 2019 -->
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataMapID3c7eb45dbcb () {
+function gvisDataMapID38c47e8c0eef () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
  [
--32.319129,
-19.129897,
+-32.34148433,
+19.16230531,
 ""
 ],
 [
--32.4066525,
-19.17575778,
+-32.40593798,
+19.16821022,
 ""
 ],
 [
--32.34740053,
-19.08920374,
+-32.35388656,
+19.20409355,
 ""
 ],
 [
--32.32696587,
-19.10737921,
+-32.35483019,
+19.19307619,
 ""
 ],
 [
--32.32708096,
-19.12562109,
+-32.3321902,
+19.11513294,
 ""
 ],
 [
--32.32690624,
-19.10438327,
+-32.34651974,
+19.0886594,
 ""
 ],
 [
--32.25859592,
-19.13298746,
+-32.40663931,
+19.17078539,
 ""
 ],
 [
--32.25379668,
-19.09995477,
+-32.37094594,
+19.1033722,
 ""
 ],
 [
--32.37522811,
-19.10983985,
+-32.33675489,
+19.15439267,
 ""
 ],
 [
--32.28286268,
-19.10061953,
+-32.31015351,
+19.13645479,
 ""
 ],
 [
--32.21685638,
-19.07623385,
+-32.21896741,
+19.044433,
 ""
 ],
 [
--32.35229601,
-19.19899018,
+-32.23574733,
+19.07329972,
 ""
 ],
 [
--32.30872075,
-19.16153132,
+-32.25490427,
+19.09547846,
 ""
 ],
 [
--32.28797296,
-19.12805096,
+-32.38964458,
+19.05670005,
 ""
 ],
 [
--32.22175353,
-19.08716032,
+-32.40884652,
+19.17954097,
 ""
 ],
 [
--32.35873869,
-19.0724481,
+-32.35717619,
+19.06980124,
 ""
 ],
 [
--32.33915895,
-19.06411274,
+-32.31104534,
+19.1374879,
 ""
 ],
 [
--32.2177694,
-19.07360248,
+-32.31005297,
+19.14272547,
 ""
 ],
 [
--32.28313763,
-19.12058151,
+-32.38128042,
+19.08648188,
 ""
 ],
 [
--32.33272276,
-19.0536782,
+-32.42450324,
+19.14329079,
 ""
 ] 
 ];
@@ -1099,13 +1044,13 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartMapID3c7eb45dbcb() {
-var data = gvisDataMapID3c7eb45dbcb();
+function drawChartMapID38c47e8c0eef() {
+var data = gvisDataMapID38c47e8c0eef();
 var options = {};
 options["showTip"] = true;
 
     var chart = new google.visualization.Map(
-    document.getElementById('MapID3c7eb45dbcb')
+    document.getElementById('MapID38c47e8c0eef')
     );
     chart.draw(data,options);
     
@@ -1129,9 +1074,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartMapID3c7eb45dbcb);
+callbacks.push(drawChartMapID38c47e8c0eef);
 })();
-function displayChartMapID3c7eb45dbcb() {
+function displayChartMapID38c47e8c0eef() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -1154,18 +1099,17 @@ callbacks.shift()();
 // jsFooter
 </script>
 <!-- jsChart -->
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapID3c7eb45dbcb"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapID38c47e8c0eef"></script>
 <!-- divChart -->
-<div id="MapID3c7eb45dbcb" style="width: 500; height: automatic;">
+<div id="MapID38c47e8c0eef" style="width: 500; height: automatic;">
 
 </div>
 <pre class="r"><code>options(op) # Reset gvis options to default</code></pre>
-<p>Note that you may get a “For development purposes only” or similar watermark. This is because <a href="https://cloud.google.com/maps-platform/pricing/"><strong>Google Maps is no longer free</strong></a> - although it seems like their strategy is in flux. At one stage you needed to register with a credit card and get an API key. Google then allows $200 free usage per month (which is a lot!) before they start charging. This kind of visualization can also be done with <a href="https://rstudio.github.io/leaflet/"><strong>Leaflet for R</strong></a> - for a demo from my work have a look at <a href="http://www.ecologi.st/post/gsn/"><strong>this post</strong></a>.</p>
+<p>Note that you may get a “For development purposes only” or similar watermark. This is because <a href="https://cloud.google.com/maps-platform/pricing/"><strong>Google Maps is no longer free</strong></a> - although it seems like their strategy is in flux. At one stage you needed to register with a credit card and get an API key. Google then allows $200 free usage per month (which is a lot!) before they start charging.
+This kind of visualization can also be done with <a href="https://rstudio.github.io/leaflet/"><strong>Leaflet for R</strong></a> - for a demo from my work have a look at <a href="http://www.ecologi.st/post/gsn/"><strong>this post</strong></a>.</p>
 <hr />
-</div>
-<div id="but-what-about-our-poor-cedars" class="section level3">
-<h3>But what about our poor cedars?</h3>
-<p>I haven’t even shown you how to extract the topographic data from a raster!</p>
+<p>###But what about our poor cedars?
+I haven’t even shown you how to extract the topographic data from a raster!</p>
 <p>This is easily done with extract()</p>
 <pre class="r"><code>topo$fire &lt;- firecount #add the layer of numbers of fires
 pts_topo &lt;- extract(topo, pts) #extract data to a dataframe
@@ -1210,9 +1154,7 @@ points(pts, pch=20, cex=.1)</code></pre>
 <p><img src="/post/spatial-data-in-r-2-a-practical-example_files/figure-html/unnamed-chunk-51-1.png" width="672" /></p>
 <p>NOTE THAT I DO NOT EVALUATE THE MODEL IN ANY WAY - so I will not interpret it either. This is just a quick and dirty, breaking all the rules. Read up on species distribution modelling if you plan to use these techniques - the vignette on Species Distribution Modelling with R in <a href="https://cran.r-project.org/web/packages/dismo/index.html"><strong>library(dismo)</strong></a> is a good place to start. Type vignette(“sdm”) to call up the pdf.</p>
 <hr />
-</div>
-<div id="options-for-writing-out-spatial-data" class="section level3">
-<h3>Options for writing out spatial data</h3>
+<p>###Options for writing out spatial data</p>
 <p>Here are a few useful functions, but also look for the <em>“filename = …”</em> or <em>“outputfile = …”</em> or similar options in the functions you use as these are often the most efficient.</p>
 <pre><code>
 ?writeOGR # For shapefiles - can save in many many formats
@@ -1223,40 +1165,44 @@ points(pts, pch=20, cex=.1)</code></pre>
 <p>If you try this code and have issues the session info is below. Also note that all kinds of weird settings to Flash etc are required to do the gvisMap plot and it only works if embedded in an HTML webpage or similar. Feel free to leave a comment below - especially if you spot errors etc!</p>
 <p>If you’re dealing with big spatial data files, you may be interested in the <a href="http://www.ecologi.st/post/big-spatial-data/"><strong>next post</strong></a> on big spatial data and memory management.</p>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 3.5.1 (2018-07-02)
-## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS High Sierra 10.13.6
+<pre><code>## R version 3.6.1 (2019-07-05)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 18.04.3 LTS
 ## 
 ## Matrix products: default
-## BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
-## LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
+## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
+## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
 ## 
 ## locale:
-## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
+##  [1] LC_CTYPE=en_ZA.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_ZA.UTF-8        LC_COLLATE=en_ZA.UTF-8    
+##  [5] LC_MONETARY=en_ZA.UTF-8    LC_MESSAGES=en_ZA.UTF-8   
+##  [7] LC_PAPER=en_ZA.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_ZA.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
 ## [1] parallel  stats     graphics  grDevices utils     datasets  methods  
 ## [8] base     
 ## 
 ## other attached packages:
-##  [1] googleVis_0.6.2     dismo_1.1-4         animation_2.5      
-##  [4] doMC_1.3.5          iterators_1.0.10    foreach_1.4.4      
-##  [7] rgdal_1.3-4         rasterVis_0.45      latticeExtra_0.6-28
-## [10] RColorBrewer_1.1-2  lattice_0.20-35     raster_2.6-7       
+##  [1] googleVis_0.6.4     dismo_1.1-4         animation_2.6      
+##  [4] doMC_1.3.6          iterators_1.0.10    foreach_1.4.4      
+##  [7] rgdal_1.4-4         rasterVis_0.45      latticeExtra_0.6-28
+## [10] RColorBrewer_1.1-2  lattice_0.20-38     raster_2.9-5       
 ## [13] sp_1.3-1           
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.12.18      knitr_1.20        magrittr_1.5     
-##  [4] viridisLite_0.3.0 stringr_1.3.1     tools_3.5.1      
-##  [7] grid_3.5.1        xfun_0.3          rgeos_0.3-28     
-## [10] htmltools_0.3.6   yaml_2.2.0        rprojroot_1.3-2  
-## [13] digest_0.6.15     bookdown_0.7      codetools_0.2-15 
-## [16] evaluate_0.11     rmarkdown_1.10    blogdown_0.8     
-## [19] stringi_1.2.4     compiler_3.5.1    backports_1.1.2  
-## [22] jsonlite_1.5      hexbin_1.27.2     zoo_1.8-3</code></pre>
-<pre><code>## processing file: /Users/jasper/GIT/jslingsby.github_nederburg/content/post/spatial-data-in-r-2-a-practical-example.Rmd</code></pre>
-<pre><code>## output file: /Users/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/PrimerSpatialData.R</code></pre>
-</div>
+##  [1] Rcpp_1.0.1        knitr_1.23        magrittr_1.5     
+##  [4] viridisLite_0.3.0 stringr_1.4.0     tools_3.6.1      
+##  [7] grid_3.6.1        xfun_0.7          rgeos_0.4-3      
+## [10] htmltools_0.3.6   yaml_2.2.0        digest_0.6.19    
+## [13] bookdown_0.14     codetools_0.2-16  evaluate_0.14    
+## [16] rmarkdown_1.13    blogdown_0.16     stringi_1.4.3    
+## [19] compiler_3.6.1    jsonlite_1.6      hexbin_1.27.3    
+## [22] zoo_1.8-6</code></pre>
+<pre><code>## processing file: /home/jasper/GIT/jslingsbyblog/content/post/spatial-data-in-r-2-a-practical-example.Rmd</code></pre>
+<pre><code>## output file: /home/jasper/Dropbox/SAEON/Training/SpatialDataPrimer/Example/Data/PrimerSpatialData.R</code></pre>
 
             </article>
           </div>

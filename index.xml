@@ -53,7 +53,8 @@ Now I know those of you who have asked me in person are thinking “That’s not
       <pubDate>Wed, 29 Aug 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/spatial-data-in-r-2-a-practical-example/</guid>
-      <description>A quick note on the structure of this tutorial Data Description Housekeeping Getting and cleaning the data, but first and foremost, projection!!! Let’s start with point data Raster data (mostly functions from library(raster)) Polygons! Going parallel!!! Animation! Some other data visualization and analysis But what about our poor cedars? Options for writing out spatial data   This post follows on from Handling Spatial Data in R - #1.</description>
+      <description>This post follows on from Handling Spatial Data in R - #1. Getting started, which gives the basics on installing R and RStudio, CRAN Spatial Task Views and useful DIY resources. Obviously, if you’re already familiar with these topics then no need to go through that post. You may also be interested in the next post on handling big spatial data and memory management.
+Here we’ll work through a practical example exploring fire history layers (polygon), topographic (raster) and locality (point) data using the libraries ‘rgdal’, ‘raster’ and ‘sp’ and a few others.</description>
     </item>
     
     <item>
@@ -91,7 +92,7 @@ Wildfires are an essential component of fynbos, but components of the fire regim
       <pubDate>Wed, 28 Feb 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/aliens/</guid>
-      <description>This post provides an interactive visualization of the results of Le Maitre et al. 2016. Estimates of the impacts of invasive alien plants on water flows in South Africa. Water SA Vol. 42 No. 4. It aims to highlight how much water could be reclaimed by clearing alien species from our catchments.
+      <description>This post provides an interactive visualization of the results of Le Maitre et al. 2016. Estimates of the impacts of invasive alien plants on water flows in South Africa. Water SA Vol. 42 No. 4. It aims to highlight how much water could be reclaimed by clearing alien species from our catchments.
 The extreme drought that is gripping Cape Town and surrounds has municipalities desperately seeking options to augment bulk water supply.</description>
     </item>
     
@@ -173,10 +174,9 @@ I&amp;rsquo;m also considering using it as an Open Lab Book in the interests of 
       
       <guid>/publications/</guid>
       <description>Papers and peer-reviewed book chapters 
- 2019 Slingsby J. A. and Slingsby P. W. O. 2019. Monitoring the critically endangered Clanwilliam cedar with freely available Google Earth imagery. PeerJ 7:e7005; https://doi.org/10.7717/peerj.7005
- Magadzire, N., de Klerk, H. M., Esler, K. J. and Slingsby, J. A. 2019. Fire and life history affect the distribution of plant species in a biodiversity hotspot. Diversity and Distributions; https://doi.org/10.1111/ddi.12921
- 
-2018 Poulos, H.</description>
+ 2019 Slingsby, J. A., Moncrieff, G. R., Rogers, A. J., and February, E. C. 2019. Altered ignition catchments threaten a hyper‐diverse fire‐dependent ecosystem. Global change biology. https://doi.org/10.1111/gcb.14861
+ Allsopp, N., Slingsby, J. A., and Esler, K. J. 2019. Identifying research questions for the conservation of the Cape Floristic Region. South African Journal of Science, 115(9&amp;frasl;10). https://doi.org/10.17159/sajs.2019/5889
+ Moreira, F., Allsopp, N., Esler, K.</description>
     </item>
     
     <item>
