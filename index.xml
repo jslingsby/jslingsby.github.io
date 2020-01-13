@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Jasper Slingsby</title>
@@ -6,7 +6,7 @@
     <description>Recent content on Jasper Slingsby</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 02 Dec 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 13 Jan 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>Drought Monitor for the Jonkershoek Valley, Western Cape, South Africa</title>
       <link>/post/2017-04-01-langrivier/</link>
-      <pubDate>Mon, 02 Dec 2019 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 13 Jan 2020 00:00:00 +0000</pubDate>
       
       <guid>/post/2017-04-01-langrivier/</guid>
       <description>
@@ -23,7 +23,7 @@
 &lt;p&gt;&lt;img src=&#34;/img/SAEON_DST.png&#34; width=&#34;600px&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;This analysis was prepared by the &lt;a href=&#34;http://www.saeon-fynbos.org&#34;&gt;&lt;strong&gt;Fynbos Node&lt;/strong&gt;&lt;/a&gt; of &lt;a href=&#34;http://www.saeon.ac.za&#34;&gt;the &lt;strong&gt;South African Environmental Observation Network (SAEON)&lt;/strong&gt;&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of November 2019. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams.&lt;/p&gt;
+&lt;p&gt;Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of December 2019. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams.&lt;/p&gt;
 </description>
     </item>
     
@@ -162,8 +162,8 @@ For a general introduction for many of the functions used and handling spatial d
       
       <guid>/about/</guid>
       <description>I am an ecologist based at the Fynbos Node of the South African Environmental Observation Network (SAEON), in Cape Town.
-I created this (personal) site because it&amp;rsquo;s handy to be able to serve webpages for various applications and I got sick of having RPubs webpages floating all over the place.
-I&amp;rsquo;m also considering using it as an Open Lab Book in the interests of supporting Open Notebook Science. There are many motivations for doing this, but primarily I believe that science should be fully transparent and repeatable.</description>
+I created this (personal) site because it&#39;s handy to be able to serve webpages for various applications and I got sick of having RPubs webpages floating all over the place.
+I&#39;m also considering using it as an Open Lab Book in the interests of supporting Open Notebook Science. There are many motivations for doing this, but primarily I believe that science should be fully transparent and repeatable.</description>
     </item>
     
     <item>
@@ -172,10 +172,9 @@ I&amp;rsquo;m also considering using it as an Open Lab Book in the interests of 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/publications/</guid>
-      <description>Papers and peer-reviewed book chapters 
- 2019 Weideman, E. A., Slingsby, J. A., Thomson, R. L. and Coetzee, B. T. 2019. Land cover change homogenizes functional and phylogenetic diversity within and among African savanna bird assemblages. Landscape Ecology. https://rdcu.be/bX5Ao
- Slingsby, J. A., Moncrieff, G. R., Rogers, A. J., and February, E. C. 2019. Altered ignition catchments threaten a hyper‐diverse fire‐dependent ecosystem. Global Change Biology. https://doi.org/10.1111/gcb.14861
- Allsopp, N.</description>
+      <description>Papers and peer-reviewed book chapters 2019 Treurnicht, M., Pagel, J, Tonnabel, J., Esler, K. J., Slingsby, J. A. and Schurr, F. M. 2019. Functional traits explain the Hutchinsonian niches of plant species. Global Ecology and Biogeography. https://doi.org/10.1111/geb.13048
+Weideman, E. A., Slingsby, J. A., Thomson, R. L. and Coetzee, B. T. 2019. Land cover change homogenizes functional and phylogenetic diversity within and among African savanna bird assemblages. Landscape Ecology. https://rdcu.be/bX5Ao
+Slingsby, J.</description>
     </item>
     
     <item>
@@ -184,7 +183,7 @@ I&amp;rsquo;m also considering using it as an Open Lab Book in the interests of 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/research/</guid>
-      <description>To summarize one&amp;rsquo;s research in a few short paragraphs is an impossible task, so please excuse the use of caveats and the general vagueness of this section. You&amp;rsquo;ll also note from my posts and publications that this is not an exhaustive list of my interests and activities. I&amp;rsquo;ve tried to give a broad overview of the kinds of work I am currently doing and where I&amp;rsquo;d like to take them, but obviously there is a long list of ongoing projects that have rolled over from previous interests, collaborations and skills I have developed over time.</description>
+      <description>To summarize one&#39;s research in a few short paragraphs is an impossible task, so please excuse the use of caveats and the general vagueness of this section. You&#39;ll also note from my posts and publications that this is not an exhaustive list of my interests and activities. I&#39;ve tried to give a broad overview of the kinds of work I am currently doing and where I&#39;d like to take them, but obviously there is a long list of ongoing projects that have rolled over from previous interests, collaborations and skills I have developed over time.</description>
     </item>
     
     <item>
@@ -193,7 +192,7 @@ I&amp;rsquo;m also considering using it as an Open Lab Book in the interests of 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/students/</guid>
-      <description>Current students PhD Nasiphi Ntshanga Nasiphi is doing her PhD with &amp;#x15E;erban Proche&amp;#351; and I, based at the School of Agricultural, Earth and Environmental Sciences, University of KwaZulu-Natal. Nasiphi is exploring the interactions between landscape transformation and other drivers of global change and their impacts on ecological processes and biodiversity in the Cape Floristic Region. Nasiphi is Chairperson of SAEON&amp;rsquo;s Graduate Student Network (GSN) and recently won the talk for best speaker at South Africa&amp;rsquo;s Third National Conference on Global Change in Durban in 2016.</description>
+      <description>Current students PhD Nasiphi Ntshanga Nasiphi is doing her PhD with Şerban Procheş and I, based at the School of Agricultural, Earth and Environmental Sciences, University of KwaZulu-Natal. Nasiphi is exploring the interactions between landscape transformation and other drivers of global change and their impacts on ecological processes and biodiversity in the Cape Floristic Region. Nasiphi is Chairperson of SAEON&#39;s Graduate Student Network (GSN) and recently won the talk for best speaker at South Africa&#39;s Third National Conference on Global Change in Durban in 2016.</description>
     </item>
     
   </channel>
