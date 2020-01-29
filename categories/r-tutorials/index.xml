@@ -6,10 +6,20 @@
     <description>Recent content in R Tutorials on Jasper Slingsby</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 30 Aug 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 28 Jan 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/r-tutorials/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Weather Data!</title>
+      <link>/post/weather/</link>
+      <pubDate>Tue, 28 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/weather/</guid>
+      <description>I have found that one of the biggest challenges as a scientist working on global change issues in South Africa has been not having access to my country’s long-term weather records. Our weather service charges for the distribution of data (despite it being collected with taxpayer’s money), and a hefty fee at that.
+While one can occassionally access data for research purposes, this is usually only if there’s a student involved, and requires tracking down an individual within the organization who’s willing to field your query.</description>
+    </item>
     
     <item>
       <title>Handling Spatial Data in R - #3. Big Data and Memory Management</title>
